@@ -142,13 +142,13 @@ if os.stat("%s/bmarks.out" % tmp).st_size > 0:
         open("%s/pdfmetadata.in" % tmp, 'w').write(newoutput)
         retval = retval | os.system("pdftk %s update_info %s output %s" % (args.dest, tmp + '/pdfmetadata.in', finaldest))
 
-    else:
-        retval = retval | os.system("mv %s %s" % (args.dest, finaldest))
-        print "No bookmarks were present!"
+else:
+    retval = retval | os.system("mv %s %s" % (args.dest, finaldest))
+    print "No bookmarks were present!"
 
 # If retval is shit, don't delete temp files
 if retval == 0:
-    os.system("rm %s/*" % tmp)
+#    os.system("rm %s/*" % tmp)
     print "SUCCESS. Temporary files cleared."
     exit(0)
 else:

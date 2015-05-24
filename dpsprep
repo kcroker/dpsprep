@@ -53,6 +53,18 @@ args.src = pipes.quote(args.src)
 finaldest = pipes.quote(args.dest)
 args.dest = home + '/.dpsprep/' + pipes.quote(args.dest)
     
+# Check for a file presently being processed
+if os.path.isfile(tmp + '/inprocess'):
+    fname = open(tmp + '/inprocess', 'r').read()
+    if not fname == args.src:
+        print "ERROR: Attempting to process %s before %s is completed. Aborting." % (args.src, fname)
+        exit(3)
+    else:
+        print "NOTE: Continuing to process %s..." % args.src
+else:
+    # Record the file we are about to process
+    open(tmp + '/inprocess', 'w').write(args.src)
+
 # Make the PDF, compressing with JPG so they are not ridiculous in size
 # (cwd)
 if not os.path.isfile(tmp + '/dumpd'):
@@ -73,7 +85,7 @@ if not os.path.isfile(tmp + '/hocrd'):
     for i in range(1,cnt):
         retval = os.system("djvu2hocr -p %d %s | sed 's/ocrx/ocr/g' > %s/pg%06d.html" % (i, args.src, tmp, i))
         if retval > 0:
-            print "\nNOTE: There was a problem extracting the OCRd text on page %d, see above output and try to rectify." % i
+            print "\nNOTE: There was a problem extracting the OCRd text on page %d, see above output." % i
             exit(retval)
 
     print "OCRd text extracted."
@@ -87,7 +99,7 @@ if not os.path.isfile(tmp + '/beadd'):
     os.chdir(tmp)
     retval = os.system('pdfbeads * > ' + args.dest)
     if retval > 0:
-        print "\nNOTE: There was a problem beading, see above output and try to rectify."
+        print "\nNOTE: There was a problem beading, see above output."
         exit(retval)
     
     print "Beading complete."
@@ -107,25 +119,32 @@ retval = 0
 retval = retval | os.system("djvused %s -e 'print-outline' > %s/bmarks.out" % (args.src, tmp))
 print "Bookmarks extracted."
 
-# Extract the metadata from the PDF document
-retval = retval | os.system("pdftk %s dump_data > %s/pdfmetadata.out" % (args.dest, tmp))
-print "Original PDF metadata extracted."
+# Check for zero-length outline
+if os.stat("%s/bmarks.out" % tmp).st_size > 0:
 
-# Parse the sexpr
-pdfbmarks = walk_bmarks(sexpdata.load(open(tmp + '/bmarks.out')), 0)
+    # Extract the metadata from the PDF document
+    retval = retval | os.system("pdftk %s dump_data > %s/pdfmetadata.out" % (args.dest, tmp))
+    print "Original PDF metadata extracted."
 
-# Integrate the parsed bookmarks into the PDF metadata
-p = re.compile('NumberOfPages: [0-9]+')
-metadata = open("%s/pdfmetadata.out" % tmp, 'r').read()
+    # Parse the sexpr
+    pdfbmarks = walk_bmarks(sexpdata.load(open(tmp + '/bmarks.out')), 0)
 
-for m in p.finditer(metadata):
-    loc = int(m.end())
+    # Integrate the parsed bookmarks into the PDF metadata
+    p = re.compile('NumberOfPages: [0-9]+')
+    metadata = open("%s/pdfmetadata.out" % tmp, 'r').read()
 
-newoutput = metadata[:loc] + "\n" + pdfbmarks[:-1] + metadata[loc:]
+    for m in p.finditer(metadata):
+        loc = int(m.end())
 
-# Update the PDF metadata
-open("%s/pdfmetadata.in" % tmp, 'w').write(newoutput)
-retval = retval | os.system("pdftk %s update_info %s output %s" % (args.dest, tmp + '/pdfmetadata.in', finaldest))
+        newoutput = metadata[:loc] + "\n" + pdfbmarks[:-1] + metadata[loc:]
+
+        # Update the PDF metadata
+        open("%s/pdfmetadata.in" % tmp, 'w').write(newoutput)
+        retval = retval | os.system("pdftk %s update_info %s output %s" % (args.dest, tmp + '/pdfmetadata.in', finaldest))
+
+    else:
+        retval = retval | os.system("mv %s %s" % (args.dest, finaldest))
+        print "No bookmarks were present!"
 
 # If retval is shit, don't delete temp files
 if retval == 0:

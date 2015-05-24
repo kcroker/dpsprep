@@ -148,7 +148,7 @@ else:
 
 # If retval is shit, don't delete temp files
 if retval == 0:
-#    os.system("rm %s/*" % tmp)
+    os.system("rm %s/*" % tmp)
     print "SUCCESS. Temporary files cleared."
     exit(0)
 else:

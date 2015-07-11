@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 # dpsprep - Sony Digital Paper DJVU to PDF converter
 # Copyright(c) 2015 Kevin Croker
 # GNU GPL v3

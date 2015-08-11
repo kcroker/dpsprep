@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 # dpsprep - Sony Digital Paper DJVU to PDF converter
 # Copyright(c) 2015 Kevin Croker
 # GNU GPL v3
@@ -80,7 +80,7 @@ else:
 
 # Extract and embed the text
 if not os.path.isfile(tmp + '/hocrd'):
-    cnt = int(subprocess.check_output("djvused %s -e n" % args.src, shell=True))
+    cnt = int(subprocess.check_output("djvused %s -u -e n" % args.src, shell=True))
 
     for i in range(1,cnt):
         retval = os.system("djvu2hocr -p %d %s | sed 's/ocrx/ocr/g' > %s/pg%06d.html" % (i, args.src, tmp, i))
@@ -116,14 +116,14 @@ else:
 # Extract the bookmark data from the DJVU document 
 # (scratch)
 retval = 0
-retval = retval | os.system("djvused %s -e 'print-outline' > %s/bmarks.out" % (args.src, tmp))
+retval = retval | os.system("djvused %s -u -e 'print-outline' > %s/bmarks.out" % (args.src, tmp))
 print "Bookmarks extracted."
 
 # Check for zero-length outline
 if os.stat("%s/bmarks.out" % tmp).st_size > 0:
 
     # Extract the metadata from the PDF document
-    retval = retval | os.system("pdftk %s dump_data > %s/pdfmetadata.out" % (args.dest, tmp))
+    retval = retval | os.system("pdftk %s dump_data_utf8 > %s/pdfmetadata.out" % (args.dest, tmp))
     print "Original PDF metadata extracted."
 
     # Parse the sexpr
@@ -140,7 +140,7 @@ if os.stat("%s/bmarks.out" % tmp).st_size > 0:
 
         # Update the PDF metadata
         open("%s/pdfmetadata.in" % tmp, 'w').write(newoutput)
-        retval = retval | os.system("pdftk %s update_info %s output %s" % (args.dest, tmp + '/pdfmetadata.in', finaldest))
+        retval = retval | os.system("pdftk %s update_info_utf8 %s output %s" % (args.dest, tmp + '/pdfmetadata.in', finaldest))
 
 else:
     retval = retval | os.system("mv %s %s" % (args.dest, finaldest))

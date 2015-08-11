@@ -30,5 +30,5 @@ By implementing the procedure of user pyrocrasty for extracting the outline, and
 http://superuser.com/questions/801893/converting-djvu-to-pdf-and-preserving-table-of-contents-how-is-it-possible (bookmark transfer)
 
 NOTE 1: this script requires many installed toolsuites: see the above links for the requisite packages
-
+NOTE 1.5: you will need the sexpdata Python module.  It is provided in Ubuntu under the package python-pyparsing
 NOTE 2: pdfbeads is a Ruby package.  "gem install" on an Ubuntu system will require further packages: libmagickcore-dev libmagickwand-dev

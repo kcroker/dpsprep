@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "dpsprep"
+version = "1.1.0"
+description = "A DJVU to PDF converter which preserves OCR text and bookmarks"
+authors = ["Kevin Arthur Schiff Croker"]
+license = "GPL-3.0-or-later"
+
+[tool.poetry.dependencies]
+python = "^3.3 | ^2.7"
+sexpdata = "^0.0.3"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

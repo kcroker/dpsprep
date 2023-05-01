@@ -1,0 +1,34 @@
+# dps(1) -- a DjVu to PDF convertor
+
+## SYNOPSIS
+
+`dpsprep` [options] src [dest]
+
+## DESCRIPTION
+
+This tool, initially made specifically for use with Sony's Digital Paper System (DPS), is now a general-purpose DjVu to PDF convertor with the ability to preserve bookmarks and text layers (e.g. ones added by OCR).
+
+## GENERAL OPTIONS
+
+*  `-p`, `--pool`: Size of MultiProcessing pool for handling page-by-page operations.
+*  `-q`, `--quality`: Quality of images in output. Between 0 and 100. Passed directly to Pillow.
+*  `-v`, `--verbose`: Display debug messages.
+*  `--help`: Show this message and exit.
+
+## EXAMPLES
+
+Produce `input.pdf` in the current directory:
+
+    dpsprep /wherever/input.djvu
+
+Produce `output.pdf`:
+
+    dpsprep input.djvu output.pdf
+
+Produce a file with better compression (at the price of image quality):
+
+    dpsprep --quality=30 input.djvu
+
+Produce an output file using a large pool of workers:
+
+    dpsprep --pool=16 input.djvu

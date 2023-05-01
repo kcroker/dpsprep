@@ -1,0 +1,50 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "DPS" "1" "May 2023" ""
+.SH "NAME"
+\fBdps\fR \- a DjVu to PDF convertor
+.P
+===================================
+.SH "SYNOPSIS"
+\fBdpsprep\fR [options] src [dest]
+.SH "DESCRIPTION"
+This tool, initially made specifically for use with Sony\'s Digital Paper System (DPS), is now a general\-purpose DjVu to PDF convertor with the ability to preserve bookmarks and text layers (e\.g\. ones added by OCR)\.
+.SH "GENERAL OPTIONS"
+.IP "\[ci]" 4
+\fB\-p\fR, \fB\-\-pool\fR: Size of MultiProcessing pool for handling page\-by\-page operations\.
+.IP "\[ci]" 4
+\fB\-q\fR, \fB\-\-quality\fR: Quality of images in output\. Between 0 and 100\. Passed directly to Pillow\.
+.IP "\[ci]" 4
+\fB\-v\fR, \fB\-\-verbose\fR: Display more verbose messages\.
+.IP "\[ci]" 4
+\fB\-\-help\fR: Show this message and exit\.
+.IP "" 0
+.SH "EXAMPLES"
+Produce \fBinput\.pdf\fR in the current directory:
+.IP "" 4
+.nf
+dpsprep /wherever/input\.djvu
+.fi
+.IP "" 0
+.P
+Produce \fBoutput\.pdf\fR:
+.IP "" 4
+.nf
+dpsprep input\.djvu output\.pdf
+.fi
+.IP "" 0
+.P
+Produce a file with better compression (at the price of image quality):
+.IP "" 4
+.nf
+dpsprep \-\-quality=30 input\.djvu
+.fi
+.IP "" 0
+.P
+Produce an output file using a large pool of workers:
+.IP "" 4
+.nf
+dpsprep \-\-pool=16 input\.djvu
+.fi
+.IP "" 0
+

@@ -3,41 +3,40 @@
 .TH "DPS" "1" "May 2023" ""
 .SH "NAME"
 \fBdps\fR \- a DjVu to PDF convertor
-.P
-===================================
 .SH "SYNOPSIS"
-\fBdpsprep\fR [options] src [dest]
+\fBdpsprep\fR \fIoptions\fR src [dest]
 .SH "DESCRIPTION"
-This tool, initially made specifically for use with Sony\'s Digital Paper System (DPS), is now a general\-purpose DjVu to PDF convertor with the ability to preserve bookmarks and text layers (e\.g\. ones added by OCR)\.
-.SH "GENERAL OPTIONS"
+This tool, initially made specifically for use with Sony\'s Digital Paper System (DPS), is now a general\-purpose DjVu to PDF convertor with a focus on small output size and the ability to preserve bookmarks and text layers (e\.g\. ones added by OCR)\.
+.SH "OPTIONS"
 .IP "\[ci]" 4
-\fB\-p\fR, \fB\-\-pool\fR: Size of MultiProcessing pool for handling page\-by\-page operations\.
+\fB\-m\fR, \fB\-\-mode\fR: Image mode\. Monochrome by default\.
 .IP "\[ci]" 4
-\fB\-q\fR, \fB\-\-quality\fR: Quality of images in output\. Between 0 and 100\. Passed directly to Pillow\.
+\fB\-q\fR, \fB\-\-quality\fR : Quality of images in output\. Used only for JPEG compression, i\.e\. RGB and Grayscale images\. Passed directly to Pillow\.
 .IP "\[ci]" 4
-\fB\-v\fR, \fB\-\-verbose\fR: Display more verbose messages\.
+\fB\-p\fR, \fB\-\-pool\-size\fR: Size of MultiProcessing pool for handling page\-by\-page operations\.
 .IP "\[ci]" 4
-\fB\-\-help\fR: Show this message and exit\.
+\fB\-v\fR, \fB\-\-verbose\fR : Display debug messages\.
+.IP "\[ci]" 4
+\fB\-o\fR, \fB\-\-overwrite\fR : Overwrite destination file\.
+.IP "\[ci]" 4
+\fB\-w\fR, \fB\-\-preserve\-working\fR : Preserve the working directory after script termination\.
+.IP "\[ci]" 4
+\fB\-d\fR, \fB\-\-delete\-working\fR : Delete any existing files in the working directory prior to writing to it\.
+.IP "\[ci]" 4
+\fB\-\-help\fR: Show help message and exit\.
 .IP "" 0
 .SH "EXAMPLES"
-Produce \fBinput\.pdf\fR in the current directory:
+Produce \fBfile\.pdf\fR in the current directory:
 .IP "" 4
 .nf
-dpsprep /wherever/input\.djvu
+dpsprep /wherever/file\.djvu
 .fi
 .IP "" 0
 .P
-Produce \fBoutput\.pdf\fR:
+Produce \fBoutput\.pdf\fR with RGB image data and reduced image quality:
 .IP "" 4
 .nf
-dpsprep input\.djvu output\.pdf
-.fi
-.IP "" 0
-.P
-Produce a file with better compression (at the price of image quality):
-.IP "" 4
-.nf
-dpsprep \-\-quality=30 input\.djvu
+dpsprep \-\-mode=rgb \-\-quality=30 input\.djvu output\.pdf
 .fi
 .IP "" 0
 .P

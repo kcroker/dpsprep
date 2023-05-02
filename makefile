@@ -1,8 +1,8 @@
 .PHONY: lint test
 
 lint:
-	poetry run ruff check dpsprep src/**/*.py
-	poetry run mypy dpsprep
+	poetry run ruff check dpsprep
+	poetry run mypy --module dpsprep
 
 test:
 	poetry run pytest --capture tee-sys

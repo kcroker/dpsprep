@@ -28,6 +28,18 @@ files = [
 ]
 
 [[package]]
+name = "defusedxml"
+version = "0.7.1"
+description = "XML bomb protection for Python stdlib modules"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+files = [
+    {file = "defusedxml-0.7.1-py2.py3-none-any.whl", hash = "sha256:a352e7e428770286cc899e2542b6cdaedb2b4953ff269a210103ec58f6198a61"},
+    {file = "defusedxml-0.7.1.tar.gz", hash = "sha256:1bb3032db185915b62d7c6209c5a8792be6a32ab2fedacc84e01b52c51aa3e69"},
+]
+
+[[package]]
 name = "diffimg"
 version = "0.3.0"
 description = "Get the % difference in images + generate a diff image"
@@ -55,6 +67,49 @@ files = [
 
 [package.extras]
 test = ["pytest (>=6)"]
+
+[[package]]
+name = "fonttools"
+version = "4.39.3"
+description = "Tools to manipulate font files"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "fonttools-4.39.3-py3-none-any.whl", hash = "sha256:64c0c05c337f826183637570ac5ab49ee220eec66cf50248e8df527edfa95aeb"},
+    {file = "fonttools-4.39.3.zip", hash = "sha256:9234b9f57b74e31b192c3fc32ef1a40750a8fbc1cd9837a7b7bfc4ca4a5c51d7"},
+]
+
+[package.extras]
+all = ["brotli (>=1.0.1)", "brotlicffi (>=0.8.0)", "fs (>=2.2.0,<3)", "lxml (>=4.0,<5)", "lz4 (>=1.7.4.2)", "matplotlib", "munkres", "scipy", "skia-pathops (>=0.5.0)", "sympy", "uharfbuzz (>=0.23.0)", "unicodedata2 (>=15.0.0)", "xattr", "zopfli (>=0.1.4)"]
+graphite = ["lz4 (>=1.7.4.2)"]
+interpolatable = ["munkres", "scipy"]
+lxml = ["lxml (>=4.0,<5)"]
+pathops = ["skia-pathops (>=0.5.0)"]
+plot = ["matplotlib"]
+repacker = ["uharfbuzz (>=0.23.0)"]
+symfont = ["sympy"]
+type1 = ["xattr"]
+ufo = ["fs (>=2.2.0,<3)"]
+unicode = ["unicodedata2 (>=15.0.0)"]
+woff = ["brotli (>=1.0.1)", "brotlicffi (>=0.8.0)", "zopfli (>=0.1.4)"]
+
+[[package]]
+name = "fpdf2"
+version = "2.7.4"
+description = "Simple & fast PDF generation for Python"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "fpdf2-2.7.4-py2.py3-none-any.whl", hash = "sha256:8a62411b66e6901bc576424f113ede0b033e8759a88d0af012bb7c6b0e51ed0d"},
+    {file = "fpdf2-2.7.4.tar.gz", hash = "sha256:b2b7197610a83dd6fe96c3b91a633827acc74973b4290103617d371d0d0a8ecf"},
+]
+
+[package.dependencies]
+defusedxml = "*"
+fonttools = ">=4.34.0"
+Pillow = ">=6.2.2,<9.2.0 || >=9.3.0"
 
 [[package]]
 name = "imgdiff"
@@ -174,6 +229,18 @@ files = [
 ]
 
 [[package]]
+name = "pdfrw"
+version = "0.4"
+description = "PDF file reader/writer library"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pdfrw-0.4-py2.py3-none-any.whl", hash = "sha256:758289edaa3b672e9a1a67504be73c18ec668d4e5b9d5ac9cbc0dc753d8d196b"},
+    {file = "pdfrw-0.4.tar.gz", hash = "sha256:0dc0494a0e6561b268542b28ede2280387c2728114f117d3bb5d8e4787b93ef4"},
+]
+
+[[package]]
 name = "pillow"
 version = "9.5.0"
 description = "Python Imaging Library (Fork)"
@@ -270,28 +337,6 @@ dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
-name = "pypdf"
-version = "3.8.1"
-description = "A pure-python PDF library capable of splitting, merging, cropping, and transforming PDF files"
-category = "main"
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "pypdf-3.8.1-py3-none-any.whl", hash = "sha256:0c34620e4bbceaf9632b6b7a8ec6d4a4d5b0cdee6e39bdb86dc91a8c44cb0f19"},
-    {file = "pypdf-3.8.1.tar.gz", hash = "sha256:761ad6dc33abb78d358b4ae42206c5f185798f8b537be9b8fdecd9ee834a894d"},
-]
-
-[package.dependencies]
-typing_extensions = {version = ">=3.10.0.0", markers = "python_version < \"3.10\""}
-
-[package.extras]
-crypto = ["PyCryptodome"]
-dev = ["black", "flit", "pip-tools", "pre-commit (<2.18.0)", "pytest-cov", "wheel"]
-docs = ["myst_parser", "sphinx", "sphinx_rtd_theme"]
-full = ["Pillow", "PyCryptodome"]
-image = ["Pillow"]
-
-[[package]]
 name = "pytest"
 version = "7.3.1"
 description = "pytest: simple powerful testing with Python"
@@ -347,68 +392,6 @@ files = [
 ]
 
 [[package]]
-name = "reportlab"
-version = "3.6.13"
-description = "The Reportlab Toolkit"
-category = "main"
-optional = false
-python-versions = ">=3.7,<4"
-files = [
-    {file = "reportlab-3.6.13-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:a0330322c6c8123745ac7667fcc6ae3e0de3b73c15bdfaa28c788a9eaa0f50da"},
-    {file = "reportlab-3.6.13-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:753485bb2b18cbd11340e227e4aaf9bde3bb64f83406dfa011e92ad0231a42c9"},
-    {file = "reportlab-3.6.13-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:58ea3471b9b4b8e7952bd357e8487789da11213470be328ffb3e5b7d7690c2c7"},
-    {file = "reportlab-3.6.13-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:f1993a68c0edc45895d3df350d01b0456efe79aaf309cef777762742be501f2a"},
-    {file = "reportlab-3.6.13-cp310-cp310-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:ca8eb7a6607f8a664187a330bab9f8d11c9f81ed885e063dfbb29a130944a72a"},
-    {file = "reportlab-3.6.13-cp310-cp310-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:57add04824bca89a130f9d428ace1b003cce4061386e0ec2a1b45b554ffe7aa3"},
-    {file = "reportlab-3.6.13-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e98965c6e60d76ff63989d9400ae8e65efd67c665d785b377f438f166a57c053"},
-    {file = "reportlab-3.6.13-cp310-cp310-win32.whl", hash = "sha256:3cb0da4975dbade6cc2ea6b0b0b17578af266dc3f669e959648f3306af993369"},
-    {file = "reportlab-3.6.13-cp310-cp310-win_amd64.whl", hash = "sha256:65b441e22d8fe93154567a30662d8539e639b78142815afcaf92b388846eb3c1"},
-    {file = "reportlab-3.6.13-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:d59e62faa03003be81aa14d37ac34ea110e5ac59c8678fd4c0daa7d8b8f42096"},
-    {file = "reportlab-3.6.13-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:afb418409e0d323c6cb5e3be7ea4d14dfbf8a07eb03ab0b0062904cacf819878"},
-    {file = "reportlab-3.6.13-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a477f652e6c417ad40387a8498d9ad827421006f156aab16f67adc9b81699a72"},
-    {file = "reportlab-3.6.13-cp311-cp311-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:0b94e4f65a5f77a631cc010c9a7892d69e33f3251b760639dcc76420e138ce95"},
-    {file = "reportlab-3.6.13-cp311-cp311-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:7efdf68e97e8fea8683bfc17f25747fefbda729b9018bc2e3221658ac41ee0bd"},
-    {file = "reportlab-3.6.13-cp311-cp311-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:e28a8d9cf462e2b4c9e71abd0630f9ec245d88b976b283b0dbb4602c9ddb3938"},
-    {file = "reportlab-3.6.13-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d95fc8bc177a009053548c6d851a513b2147c465a5e8fea82287ea22d6825c4e"},
-    {file = "reportlab-3.6.13-cp311-cp311-win32.whl", hash = "sha256:48eadd93237c7e2739525c74cf6615dd6c1a767c839f4b0d7c12167dc0b09911"},
-    {file = "reportlab-3.6.13-cp311-cp311-win_amd64.whl", hash = "sha256:cca2d4c783f985b91b98e80d09ac79b6ed3f317a729cba5ba86edfe5eb9a2d9c"},
-    {file = "reportlab-3.6.13-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:149718c3eaee937f28094325f0dd9ae1add3172c2dacbb93ff5403f37c9d3c57"},
-    {file = "reportlab-3.6.13-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:8260c002e4845a5af65908d5ee2099bcc25a16c7646c5c417fa27f1e4b844bc1"},
-    {file = "reportlab-3.6.13-cp37-cp37m-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:8e4983486d419daa45cade40874bb869976e27ba11f77fb4b9ae32417284ade7"},
-    {file = "reportlab-3.6.13-cp37-cp37m-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:6ea46fef07c588fef84d1164d4788fef322b39feb2bfb2df0a0706181dff79b8"},
-    {file = "reportlab-3.6.13-cp37-cp37m-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:e5949f3b4e207fa7901c0cc3b49470b2a3372617a47dfbc892db31c2b56af296"},
-    {file = "reportlab-3.6.13-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b0d91663d450c11404ec189ebc5a4abdf20f7c4eca5954a920427cdbf5601525"},
-    {file = "reportlab-3.6.13-cp37-cp37m-win32.whl", hash = "sha256:269c59e508df08be498ab9e5278addb2cc16989677a03f800b17f8a31f8c5cc7"},
-    {file = "reportlab-3.6.13-cp37-cp37m-win_amd64.whl", hash = "sha256:21d6b6bcdecee9c7ce047156d0553a30d736b8172629e4c0fcacab35ba261f3b"},
-    {file = "reportlab-3.6.13-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:36568d3cb4101a210c4d821d9101635c2ef6e06bd649335938c01eb197f50c5d"},
-    {file = "reportlab-3.6.13-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:a043cff1781ddb2a0ba0e8e760a79fc5be2430957c4f2a1f51bd4528cc53178f"},
-    {file = "reportlab-3.6.13-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:dbddadca6f08212732e83a60e30a42cfc7d2695892cedea208b3c3e7131c9993"},
-    {file = "reportlab-3.6.13-cp38-cp38-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:faeebde62f0f6ad86985bec5685411260393d2eb7ba907972da56af586b644e8"},
-    {file = "reportlab-3.6.13-cp38-cp38-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:ff09a0a1e5cef05309ac09dfc5185e8151d927bcf45470d2f540c96260f8a355"},
-    {file = "reportlab-3.6.13-cp38-cp38-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:bbdbba1ec3498b17eefca14d424ee90bb95b53e1423ecb22f1c17733c3406559"},
-    {file = "reportlab-3.6.13-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ba6f533b262f4ee1636b754992bb2fb349df0500d765ac9be014a375c047f4db"},
-    {file = "reportlab-3.6.13-cp38-cp38-win32.whl", hash = "sha256:7ff89011b5ee30209b3106641e3b7b4959f10aa6e9d6f3030205123c178f605d"},
-    {file = "reportlab-3.6.13-cp38-cp38-win_amd64.whl", hash = "sha256:8f00175f8e12e6f7d3a01309de6d7008fac94a2cdce6837ad066f0961472c9e5"},
-    {file = "reportlab-3.6.13-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:a4dbc28fede7f504b9ac65ce9cbea35585e999d63f9fa68bc73f5a75b4929302"},
-    {file = "reportlab-3.6.13-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:9f869286fcefa7f8e89e38448309891ff110ad74f58a7317ec204f3d4b8ad5f5"},
-    {file = "reportlab-3.6.13-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e13a4e81761636591f5b60104f6e1eec70832ffd9aa781db68d7ebb576970d4b"},
-    {file = "reportlab-3.6.13-cp39-cp39-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:6fdac930dfdc6227720545ec44fdb396e92d53ec227a6f5ae58cc8cb9a6cbe89"},
-    {file = "reportlab-3.6.13-cp39-cp39-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:701290747662d2b3be49fc0de33898ecc9ce3fafe0e2887d406e24693465e5ae"},
-    {file = "reportlab-3.6.13-cp39-cp39-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:7b690bc30f58931b0abd47635d93a43a82d67972e83a6511cc8adbcd7da25310"},
-    {file = "reportlab-3.6.13-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6172481e8acffcf72042653e977281fbd807a41705a39456d92d2606d8b8c5e2"},
-    {file = "reportlab-3.6.13-cp39-cp39-win32.whl", hash = "sha256:5a460f4c0c30bdf9d7bef46a816671a4386a9253670a53d35c694c666544261f"},
-    {file = "reportlab-3.6.13-cp39-cp39-win_amd64.whl", hash = "sha256:11a71c314183532d889ad4b3941f61c3fe4bfdda769c768a7f02d93cb69dd1bb"},
-    {file = "reportlab-3.6.13.tar.gz", hash = "sha256:6f75d33f7a3720cf47371ab63ced0f0ebd1aeb6db19386ae92f8977a09be9611"},
-]
-
-[package.dependencies]
-pillow = ">=9.0.0"
-
-[package.extras]
-fttextpath = ["freetype-py (>=2.3.0,<2.4)"]
-rlpycairo = ["rlPyCairo (>=0.1.0)"]
-
-[[package]]
 name = "ruff"
 version = "0.0.263"
 description = "An extremely fast Python linter, written in Rust."
@@ -448,6 +431,21 @@ files = [
 ]
 
 [[package]]
+name = "types-fpdf2"
+version = "2.6.1.10"
+description = "Typing stubs for fpdf2"
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-fpdf2-2.6.1.10.tar.gz", hash = "sha256:f83cecdad64d27f56d8294015781ac8b301a9ff18705ae18885f52988d622846"},
+    {file = "types_fpdf2-2.6.1.10-py3-none-any.whl", hash = "sha256:1ee85108227a5f8fcbde16cb47d4d82e73716c5aef489f327eb28f8428e1c134"},
+]
+
+[package.dependencies]
+types-Pillow = ">=9.2.0"
+
+[[package]]
 name = "types-pillow"
 version = "9.5.0.2"
 description = "Typing stubs for Pillow"
@@ -463,7 +461,7 @@ files = [
 name = "typing-extensions"
 version = "4.5.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -489,4 +487,4 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "a33fa2e86c4062d156c8704006173d0a8d98ae4483cfa80818edc34f8d2dcaec"
+content-hash = "9c0829f43f2f79c038f2ae3a5bf6648548b5977cf0872ed7ec1695bc477d517a"

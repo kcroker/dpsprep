@@ -24,7 +24,7 @@ def get_file_hash(path: os.PathLike | str):
     return h.hexdigest()
 
 
-class PdfPaths:
+class WorkingDirectory:
     src: Path
     dest: Path
     working: Path
@@ -50,9 +50,18 @@ class PdfPaths:
 
         self.working = root / 'dpsprep' / get_file_hash(self.src)
 
+    def create_if_necessary(self):
         if not self.working.exists():
             logger.debug(f'Creating {repr(str(self.working))}')
             self.working.mkdir(parents=True)
 
     def get_page_pdf_path(self, i: int):
-        return self.working / f'{i + 1}.pdf'
+        return self.working / f'page_bg_{i + 1}.pdf'
+
+    @property
+    def text_pdf_path(self):
+        return self.working / 'text.pdf'
+
+    @property
+    def combined_pdf_path(self):
+        return self.working / 'combined.pdf'

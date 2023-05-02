@@ -1,22 +1,22 @@
 # dpsprep
 
-This tool, initially made specifically for use with Sony's Digital Paper System (DPS), is now a general-purpose DjVu to PDF convertor with the ability to preserve bookmarks and text layers (e.g. ones added by OCR).
+This tool, initially made specifically for use with Sony's Digital Paper System (DPS), is now a general-purpose DjVu to PDF convertor with a focus on small output size and the ability to preserve bookmarks and text layers (e.g. ones added by OCR).
 
 ## Usage
 
-Full example:
+Full example (although you would most likely want the mode to be "bitonal", the default):
 
-    dpsprep --pool=8 --quality=80 input.djvu output.pdf
+    dpsprep --pool=8 --mode=rgb --quality=50 input.djvu output.pdf
 
 Consult the [man file](./dpsprep.1.ronn) for details.
 
 ## Installation
 
-This tool depends on several Python libraries, which can easily be installed via [`poetry`](https://python-poetry.org/).
-
-Previous versions of the tool used to depend on third-party binaries, but this is no longer the case. External tools are only used for generating test fixtures, but the fixtures are checked into the source.
+The easiest way to obtain this package is to clone the repository. The tool depends on several Python libraries, which can easily be installed via [`poetry`](https://python-poetry.org/). There is a hard dependency on `djvulibre` (via `python-djvulibre`) and optional dependencies on `libtiff` and `libjpeg` for good bitonal and multitotal compression, correspondingly.
 
 See also the [dpsprep-git](https://aur.archlinux.org/packages/dpsprep-git) package for Arch.
+
+Previous versions of the tool itself used to depend on third-party binaries, but this is no longer the case. The test fixtures are checked in, however regenerating them (see `./fixtures/makefile`) requires `pdflatex` (texlive, among others), `gs` (Ghostscript), `pdftotext` (Poppler) and `djvudigital` (GSDjVU). Similarly, the manfile is checked it, but building it from markdown depends on `ronn`.
 
 ## Acknowledgements
 

@@ -1,4 +1,8 @@
-from reportlab.pdfgen.canvas import Canvas
+from pathlib import Path
+from typing import Sequence
+
+from loguru import logger
+from fpdf import FPDF
 import djvu.sexpr
 
 from .sexpr import SExpressionVisitor
@@ -36,40 +40,34 @@ class TextExtractVisitor(SExpressionVisitor):
 
 
 class TextDrawVisitor(SExpressionVisitor):
-    canvas: Canvas
+    pdf: FPDF
     extractor: TextExtractVisitor
 
-    def __init__(self, canvas: Canvas):
-        self.canvas = canvas
+    def __init__(self, pdf: FPDF):
+        self.pdf = pdf
         self.extractor = TextExtractVisitor()
 
-    def visit_drawable_list(self, node: djvu.sexpr.ListExpression, text: str):
+    def visit_list_word(self, node: djvu.sexpr.ListExpression):
         _, x1, y1, x2, y2, *rest = node
+        text = self.extractor.visit(node)
 
-        # Based on
-        # https://github.com/ocropus/hocr-tools/blob/v1.3.0/hocr-pdf
-        tobject = self.canvas.beginText()
-        tobject.setTextRenderMode(3) # 3 = Invisible
-        tobject.setTextOrigin(x1.value, y1.value)
+        self.pdf.set_font('Invisible', size=BASE_FONT_SIZE)
+        self.pdf.get_string_width(text)
 
         # Adjust font size
         desired_width = x2.value - x1.value
-        actual_width = self.canvas.stringWidth(text, 'Invisible', BASE_FONT_SIZE)
+        actual_width = self.pdf.get_string_width(text)
 
-        if actual_width == 0:
-            return
+        self.pdf.set_font('Invisible', size=BASE_FONT_SIZE * desired_width / actual_width)
 
-        tobject.setFont('Invisible', BASE_FONT_SIZE * desired_width / actual_width)
-
-        # Draw text
-        tobject.textLine(text)
-        self.canvas.drawText(tobject)
-
-    def visit_list_word(self, node: djvu.sexpr.ListExpression):
-        self.visit_drawable_list(node, self.extractor.visit(node))
+        page_width, page_height = self.pdf.pages[self.pdf.page].dimensions()
+        self.pdf.text(x=x1.value, y=page_height - y1.value, txt=text)
 
     def visit_list_line(self, node: djvu.sexpr.ListExpression):
-        self.visit_drawable_list(node, self.extractor.visit(node))
+        _, x1, y1, x2, y2, *rest = node
+
+        for child in rest:
+            self.visit(child)
 
     def visit_list_para(self, node: djvu.sexpr.ListExpression):
         _, x1, y1, x2, y2, *rest = node
@@ -88,3 +86,27 @@ class TextDrawVisitor(SExpressionVisitor):
 
         for child in rest:
             self.visit(child)
+
+
+# We do not need any visible fonts. Actually we could use some of the default PDF type 1 fonts,
+# but then non-latin script would get all messed up. Using a true-type font, even one that doesn't
+# support esoteric characters, would still let us encode the text correctly.
+# The font embedded here is taken from https://www.angelfire.com/pr/pgpf/if.html.
+# It is small (12kb) and contains (invisible) Latin, Cyrillic and Greek characters.
+# After encoding Chinese characters, however, Evince still handles them correctly.
+def djvu_pages_to_text_fpdf(pages: Sequence[djvu.decode.Page]) -> FPDF:
+    pdf = FPDF(unit='pt')
+    pdf.add_font(
+        family='Invisible',
+        fname=Path(__file__).parent.parent.parent / 'invisible1.ttf',
+        style=''
+    )
+
+    for i, page in enumerate(pages):
+        page_job = page.decode(wait=True)
+        pdf.add_page(format=page_job.size)
+        logger.debug(f'Processing text for page {i + 1}')
+        visitor = TextDrawVisitor(pdf)
+        visitor.visit(page.text.sexpr)
+
+    return pdf

@@ -1,7 +1,12 @@
+import string
+
 import djvu.decode
-from pypdf import PdfReader
 
 from .text import TextExtractVisitor
+
+
+def remove_whitespace(src: str):
+    return src.translate({ord(c): None for c in string.whitespace})
 
 
 def test_extract_djvu_page_text_words():
@@ -10,15 +15,14 @@ def test_extract_djvu_page_text_words():
     )
     document.decoding_job.wait()
 
-    visitor = TextExtractVisitor()
     djvu_page = document.pages[0]
     djvu_page.get_info()
-    djvu_text = visitor.visit(djvu_page.text.sexpr)
+    djvu_text = TextExtractVisitor().visit(djvu_page.text.sexpr)
 
-    source_pdf = PdfReader('fixtures/lipsum.pdf')
-    source_pdf_text = source_pdf.pages[0].extract_text()
+    with open('fixtures/lipsum_01.txt') as file:
+        source_pdf_text = file.read()
 
-    assert djvu_text == source_pdf_text
+    assert remove_whitespace(djvu_text) == remove_whitespace(source_pdf_text)
 
 
 def test_extract_djvu_page_text_lines():
@@ -27,12 +31,11 @@ def test_extract_djvu_page_text_lines():
     )
     document.decoding_job.wait()
 
-    visitor = TextExtractVisitor()
     djvu_page = document.pages[0]
     djvu_page.get_info()
-    djvu_text = visitor.visit(djvu_page.text.sexpr)
+    djvu_text = TextExtractVisitor().visit(djvu_page.text.sexpr)
 
-    source_pdf = PdfReader('fixtures/lipsum.pdf')
-    source_pdf_text = source_pdf.pages[0].extract_text()
+    with open('fixtures/lipsum_01.txt') as file:
+        source_pdf_text = file.read()
 
-    assert djvu_text == source_pdf_text
+    assert remove_whitespace(djvu_text) == remove_whitespace(source_pdf_text)

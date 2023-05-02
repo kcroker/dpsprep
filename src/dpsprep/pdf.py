@@ -1,52 +1,25 @@
-import io
-from typing import Iterable
+import pdfrw
 
-from loguru import logger
-from pypdf import PdfMerger
-from reportlab.pdfgen.canvas import Canvas
-import djvu.decode
-import djvu.sexpr
-
-from .paths import PdfPaths
-from .text import TextDrawVisitor
-from .images import djvu_page_to_image, compress_image
+from .workdir import WorkingDirectory
 
 
-def djvu_page_to_pdf(page: djvu.decode.Page, quality: int):
-    page_job = page.decode(wait=True)
-    page.get_info()
+def combine_pdfs_on_fs(workdir: WorkingDirectory):
+    text_pdf = pdfrw.PdfReader(workdir.text_pdf_path)
 
-    image = compress_image(
-        djvu_page_to_image(page),
-        quality
-    )
+    for i, page in enumerate(text_pdf.pages):
+        merger = pdfrw.PageMerge(page)
+        image_pdf = pdfrw.PdfReader(workdir.get_page_pdf_path(i))
+        merger.add(image_pdf.pages[0]).render()
 
-    store = io.BytesIO()
-    canvas = Canvas(store, pagesize=page_job.size)
-    canvas.drawInlineImage(image, 0, 0)
-    visitor = TextDrawVisitor(canvas)
-    visitor.visit(page.text.sexpr)
-    canvas.save()
-
-    store.seek(0)
-    return store
+    writer = pdfrw.PdfWriter()
+    writer.write(workdir.combined_pdf_path, text_pdf)
 
 
-def merge_combined_from_fs(paths: PdfPaths, pages: Iterable[int]):
-    sorted_pages = sorted(pages)
+def substitute_outline(src: pdfrw.PdfReader, outline: pdfrw.IndirectPdfDict):
+    writer = pdfrw.PdfWriter()
 
-    if len(sorted_pages) == 1:
-        logger.info(f'Outputting one page into {repr(str(paths.dest))}')
-    else:
-        logger.info(f'Merging {len(sorted_pages)} pages into {repr(str(paths.dest))}')
+    for page in src.pages:
+        writer.addpage(page)
 
-    output_pdf = PdfMerger()
-
-    for i in sorted_pages:
-        output_pdf.merge(
-            page_number=i,
-            fileobj=paths.get_page_pdf_path(i),
-            import_outline=False
-        )
-
-    return output_pdf
+    writer.trailer.Root.Outlines = outline
+    return writer

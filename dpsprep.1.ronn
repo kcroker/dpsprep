@@ -6,28 +6,28 @@
 
 ## DESCRIPTION
 
-This tool, initially made specifically for use with Sony's Digital Paper System (DPS), is now a general-purpose DjVu to PDF convertor with the ability to preserve bookmarks and text layers (e.g. ones added by OCR).
+This tool, initially made specifically for use with Sony's Digital Paper System (DPS), is now a general-purpose DjVu to PDF convertor with a focus on small output size and the ability to preserve bookmarks and text layers (e.g. ones added by OCR).
 
-## GENERAL OPTIONS
+## OPTIONS
 
-*  `-p`, `--pool`: Size of MultiProcessing pool for handling page-by-page operations.
-*  `-q`, `--quality`: Quality of images in output. Between 0 and 100. Passed directly to Pillow.
-*  `-v`, `--verbose`: Display debug messages.
-*  `--help`: Show this message and exit.
+* `-m`, `--mode`: Image mode. Monochrome by default.
+* `-q`, `--quality` : Quality of images in output. Used only for JPEG compression, i.e. RGB and Grayscale images. Passed directly to Pillow.
+* `-p`, `--pool-size`: Size of MultiProcessing pool for handling page-by-page operations.
+* `-v`, `--verbose` : Display debug messages.
+* `-o`, `--overwrite` : Overwrite destination file.
+* `-w`, `--preserve-working` : Preserve the working directory after script termination.
+* `-d`, `--delete-working` : Delete any existing files in the working directory prior to writing to it.
+* `--help`: Show help message and exit.
 
 ## EXAMPLES
 
-Produce `input.pdf` in the current directory:
+Produce `file.pdf` in the current directory:
 
-    dpsprep /wherever/input.djvu
+    dpsprep /wherever/file.djvu
 
-Produce `output.pdf`:
+Produce `output.pdf` with RGB image data and reduced image quality:
 
-    dpsprep input.djvu output.pdf
-
-Produce a file with better compression (at the price of image quality):
-
-    dpsprep --quality=30 input.djvu
+    dpsprep --mode=rgb --quality=30 input.djvu output.pdf
 
 Produce an output file using a large pool of workers:
 

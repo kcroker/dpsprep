@@ -8,7 +8,7 @@ from .images import djvu_page_to_image
 
 
 class ImageDiffProtocol(Protocol):
-    def __call__(self, a: Image, b: Image, threshold: float = 1e-3) -> DiffCompareResult:
+    def __call__(self, a: Image.Image, b: Image.Image, threshold: float = 1e-3) -> DiffCompareResult:
         ...
 
 

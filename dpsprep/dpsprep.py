@@ -1,8 +1,8 @@
-import multiprocessing
+import multiprocessing.pool
 import os
 import shutil
 from time import time
-from typing import Union
+from typing import Union, List
 
 import click
 import djvu.decode
@@ -123,7 +123,7 @@ def dpsprep(
     document.decoding_job.wait()
 
     pool = multiprocessing.Pool(processes=pool_size)
-    tasks: list[multiprocessing.AsyncResult] = []
+    tasks: List[multiprocessing.pool.AsyncResult] = []
     tasks.append(pool.apply_async(func=process_text, args=[workdir]))
 
     for i in range(len(document.pages)):

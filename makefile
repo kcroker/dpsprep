@@ -2,7 +2,7 @@
 
 lint:
 	poetry run ruff check dpsprep
-	poetry run mypy --module dpsprep
+	poetry run mypy --package dpsprep
 
 test:
 	poetry run pytest --capture tee-sys

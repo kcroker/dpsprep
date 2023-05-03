@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Union
 import hashlib
 import os
+import shutil
 import tempfile
 
 from loguru import logger
@@ -28,7 +29,7 @@ def get_file_hash(path: Union[os.PathLike, str]):
 class WorkingDirectory:
     src: Path
     dest: Path
-    working: Path
+    workdir: Path
 
     def __init__(self, src: Union[os.PathLike, str], dest: Union[os.PathLike, str, None]):
         self.src = Path(src)
@@ -43,22 +44,25 @@ class WorkingDirectory:
         persistent_tmp = Path('/var/tmp')
 
         if persistent_tmp.exists() and (persistent_tmp.stat().st_mode & (os.W_OK | os.X_OK)):
-            logger.debug('Using non-ephemeral storage "/var/tmp"')
+            logger.debug('Using non-ephemeral storage "/var/tmp".')
             root = persistent_tmp
         else:
-            logger.debug(f'Using default system storage {repr(tempfile.gettempdir())}')
+            logger.debug(f'Using default system storage {repr(tempfile.gettempdir())}.')
             root = Path(tempfile.gettempdir())
 
-        self.working = root / 'dpsprep' / get_file_hash(self.src)
+        self.workdir = root / 'dpsprep' / get_file_hash(self.src)
 
     def create_if_necessary(self):
-        if not self.working.exists():
-            logger.debug(f'Creating {repr(str(self.working))}')
-            self.working.mkdir(parents=True)
+        if not self.workdir.exists():
+            logger.debug(f'Creating {repr(str(self.workdir))}.')
+            self.workdir.mkdir(parents=True)
 
     def get_page_pdf_path(self, i: int):
-        return self.working / f'page_bg_{i + 1}.pdf'
+        return self.workdir / f'page_bg_{i + 1}.pdf'
 
     @property
     def text_pdf_path(self):
-        return self.working / 'text.pdf'
+        return self.workdir / 'text.pdf'
+
+    def destroy(self):
+        shutil.rmtree(self.workdir)

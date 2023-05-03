@@ -105,7 +105,7 @@ def djvu_pages_to_text_fpdf(pages: Sequence[djvu.decode.Page]) -> FPDF:
     for i, page in enumerate(pages):
         page_job = page.decode(wait=True)
         pdf.add_page(format=page_job.size)
-        logger.debug(f'Processing text for page {i + 1}')
+        logger.debug(f'Processing text for page {i + 1}.')
         visitor = TextDrawVisitor(pdf)
         visitor.visit(page.text.sexpr)
 

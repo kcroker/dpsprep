@@ -1,6 +1,5 @@
 import multiprocessing.pool
 import os
-import shutil
 from time import time
 from typing import Union, List
 
@@ -22,10 +21,10 @@ def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: int, i:
     page_number = i + 1
 
     if workdir.get_page_pdf_path(i).exists():
-        logger.info(f'Image data from page {page_number} already processed')
+        logger.info(f'Image data from page {page_number} already processed.')
         return
     else:
-        logger.debug(f'Processing image data from page {page_number}')
+        logger.debug(f'Processing image data from page {page_number}.')
 
     start_time = time()
     document = djvu.decode.Context().new_document(
@@ -41,15 +40,15 @@ def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: int, i:
     )
 
     pdf_size = os.path.getsize(workdir.get_page_pdf_path(i))
-    logger.info(f'Image data with size {human_readable_size(pdf_size)} from page {page_number} processed in {time() - start_time:.2f}s and written to working directory')
+    logger.info(f'Image data with size {human_readable_size(pdf_size)} from page {page_number} processed in {time() - start_time:.2f}s and written to working directory.')
 
 
 def process_text(workdir: WorkingDirectory):
     if workdir.text_pdf_path.exists():
-        logger.info('Text data already processed')
+        logger.info('Text data already processed.')
         return
     else:
-        logger.debug('Processing text data')
+        logger.debug('Processing text data.')
 
     start_time = time()
     document = djvu.decode.Context().new_document(
@@ -101,20 +100,16 @@ def dpsprep(
         if not hasattr(Image.core, 'libjpeg_encoder'):  # type: ignore
             logger.warning('Multitonal image compression may suffer because Pillow has been built without libjpeg support.')
 
-    if delete_working:
-        if workdir.working.exists():
-            logger.debug(f'Removing existing working directory {workdir.working}.')
-            shutil.rmtree(workdir.working)
-            logger.info(f'Removed existing working directory {workdir.working}.')
+    if workdir.workdir.exists():
+        if delete_working:
+            logger.debug(f'Removing existing working directory {workdir.workdir}.')
+            workdir.destroy()
+            logger.info(f'Removed existing working directory {workdir.workdir}.')
         else:
-            logger.info(f'Working directory {workdir.working} does not exist.')
+            logger.info(f'Working directory {workdir.workdir} does not exist.')
     else:
-        if workdir.working.exists():
-            logger.info(f'Working directory {workdir.working} already exists.')
-        else:
-            logger.info(f'Working directory {workdir.working} does not exist and will be created.')
-
-    workdir.create_if_necessary()
+        workdir.create_if_necessary()
+        logger.info(f'Working directory {workdir.workdir} has been created.')
 
     logger.info(f'Processing {workdir.src} with {pool_size} workers.')
     document = djvu.decode.Context().new_document(
@@ -147,19 +142,19 @@ def dpsprep(
     outline = pdfrw.IndirectPdfDict()
 
     if len(document.outline.sexpr) > 0:
-        logger.debug('Processing metadata')
+        logger.debug('Processing metadata.')
         outline = OutlineTransformVisitor().visit(document.outline.sexpr)
-        logger.info('Metadata processed')
+        logger.info('Metadata processed.')
     else:
-        logger.info('No metadata to process')
+        logger.info('No metadata to process.')
 
     logger.debug('Combining everything')
     combine_pdfs_on_fs(workdir, outline)
     dest_size = os.path.getsize(workdir.dest)
-    logger.info(f'Produced an output file with size {human_readable_size(dest_size)} in {time() - start_time:.2f}s')
+    logger.info(f'Produced an output file with size {human_readable_size(dest_size)} in {time() - start_time:.2f}s.')
 
     if preserve_working:
-        logger.info(f'Working directory {workdir.working} will be preserved.')
+        logger.info(f'Working directory {workdir.workdir} will be preserved.')
     else:
-        logger.info(f'Deleting the working directory {workdir.working}.')
-        shutil.rmtree(workdir.working)
+        logger.info(f'Deleting the working directory {workdir.workdir}.')
+        workdir.destroy()

@@ -13,7 +13,7 @@ from PIL import Image
 from .images import ImageMode, djvu_page_to_image
 from .logging import configure_loguru, human_readable_size
 from .outline import OutlineTransformVisitor
-from .pdf import combine_pdfs_on_fs, substitute_outline
+from .pdf import combine_pdfs_on_fs
 from .text import djvu_pages_to_text_fpdf
 from .workdir import WorkingDirectory
 
@@ -92,6 +92,8 @@ def dpsprep(
         logger.error(f'File {workdir.dest} already exists.')
         return
 
+    start_time = time()
+
     if mode == 'bitonal':
         if not hasattr(Image.core, 'libtiff_encoder'):  # type: ignore
             logger.warning('Bitonal image compression may suffer because Pillow has been built without libtiff support.')
@@ -101,8 +103,9 @@ def dpsprep(
 
     if delete_working:
         if workdir.working.exists():
-            logger.info(f'Removing existing working directory {workdir.working}.')
+            logger.debug(f'Removing existing working directory {workdir.working}.')
             shutil.rmtree(workdir.working)
+            logger.info(f'Removed existing working directory {workdir.working}.')
         else:
             logger.info(f'Working directory {workdir.working} does not exist.')
     else:
@@ -141,23 +144,19 @@ def dpsprep(
 
     pool.join()
 
-    logger.info('Combining image and text data')
-    combine_pdfs_on_fs(workdir)
-
-    combined_pdf = pdfrw.PdfReader(workdir.combined_pdf_path)
     outline = pdfrw.IndirectPdfDict()
 
     if len(document.outline.sexpr) > 0:
-        logger.info('Processing metadata')
+        logger.debug('Processing metadata')
         outline = OutlineTransformVisitor().visit(document.outline.sexpr)
+        logger.info('Metadata processed')
     else:
         logger.info('No metadata to process')
 
-    final_pdf = substitute_outline(combined_pdf, outline)
-    final_pdf.write(workdir.dest)
-
+    logger.debug('Combining everything')
+    combine_pdfs_on_fs(workdir, outline)
     dest_size = os.path.getsize(workdir.dest)
-    logger.info(f'Output ({human_readable_size(dest_size)}) written to {workdir.dest}')
+    logger.info(f'Produced an output file with size {human_readable_size(dest_size)} in {time() - start_time:.2f}s')
 
     if preserve_working:
         logger.info(f'Working directory {workdir.working} will be preserved.')

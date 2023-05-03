@@ -62,7 +62,3 @@ class WorkingDirectory:
     @property
     def text_pdf_path(self):
         return self.working / 'text.pdf'
-
-    @property
-    def combined_pdf_path(self):
-        return self.working / 'combined.pdf'

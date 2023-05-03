@@ -14,7 +14,7 @@ See the next section for different ways to run the program.
 
 ## Installation
 
-The easiest way to obtain this package is to clone the repository.
+The easiest way to obtain `dpsprep` is to clone the repository.
 
 The tool depends on several Python libraries, which can easily be installed via `poetry`.
 
@@ -22,12 +22,7 @@ The only hard prerequisite is `djvulibre`. Optional prerequisites are `libtiff` 
 
 Note that Windows support requires 64-bit `djvulibre`, and they only officially distribute 32-bit Windows packages. If you manage to build it yourself, then `dpsprep` will likely work on Windows.
 
-Once inside the cloned repository, the environment for the program can be set up as follows:
-
-    poetry env use <executable or version>
-    poetry install
-
-Now the following should work:
+Once inside the cloned repository, the environment for the program can be set up by simply running `poetry install`. After than, the following should work:
 
     poetry run python -m dpsprep input.djvu
 
@@ -38,7 +33,7 @@ The program can be installed as a Python module via:
 
 A convenience script that can be copied or linked to any directory in `$PATH` can be found at [`./bin/dpsprep`](./bin/dpsprep).
 
-Previous versions of the tool itself used to depend on third-party binaries, but this is no longer the case. The test fixtures are checked in, however regenerating them (see [`./fixtures/makefile`](./fixtures/makefile)) requires `pdflatex` (texlive, among others), `gs` (Ghostscript), `pdftotext` (Poppler) and `djvudigital` (GSDjVU). Similarly, the man file is checked it, but building it from markdown depends on `ronn`.
+Previous versions of the tool itself used to depend on third-party binaries, but this is no longer the case. The test fixtures are checked in, however regenerating them (see [`./fixtures/makefile`](./fixtures/makefile)) requires `pdflatex` (texlive, among others), `gs` (Ghostscript), `pdftotext` (Poppler) and `djvudigital` (GSDjVU). Similarly, the man file is checked in, but building it from markdown depends on `ronn`.
 
 ## Acknowledgements
 

@@ -128,12 +128,16 @@ def dpsprep(
         tasks.append(pool.apply_async(func=process_page_bg, args=[workdir, mode, quality, i]))
 
     pool.close()
+    pool_is_working = True
 
-    for task in tasks:
-        try:
-            task.get(timeout=100)
-        except multiprocessing.TimeoutError:
-            pass
+    while pool_is_working:
+        pool_is_working = False
+
+        for task in tasks:
+            try:
+                task.get(timeout=25)
+            except multiprocessing.TimeoutError:
+                pool_is_working = True
 
     pool.join()
 

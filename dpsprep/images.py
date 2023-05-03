@@ -1,10 +1,8 @@
 from typing import Literal
 
-from PIL import Image, ImageOps
-from loguru import logger
 import djvu.decode
 import djvu.sexpr
-
+from PIL import Image, ImageOps
 
 ImageMode = Literal['rgb', 'grayscale', 'bitonal']
 

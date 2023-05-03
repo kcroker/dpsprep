@@ -10,9 +10,29 @@ Full example (although you would most likely want the mode to be "bitonal", the 
 
 Consult the [man file](./dpsprep.1.ronn) for details.
 
+To run the script via the [`poetry`](https://python-poetry.org/) virtual environment, we need:
+
+    poetry run python -m dpsprep input.djvu
+
 ## Installation
 
-The easiest way to obtain this package is to clone the repository. The tool depends on several Python libraries, which can easily be installed via [`poetry`](https://python-poetry.org/). There is a hard dependency on `djvulibre` (via `python-djvulibre`) and optional dependencies on `libtiff` and `libjpeg` for good bitonal and multitotal compression, correspondingly.
+The easiest way to obtain this package is to clone the repository. The tool depends on several Python libraries, which can easily be installed via `poetry`. There is a hard dependency on `djvulibre` (via `python-djvulibre`) and optional dependencies on `libtiff` and `libjpeg` for good bitonal and multitotal compression, correspondingly.
+
+Once inside the repository, the environment for the program can be set up as follows:
+
+    poetry env use <executable or version>
+    poetry install
+
+Now the following should work:
+
+    poetry run python -m dpsprep input.djvu
+
+The program can be installed as a Python module via:
+
+    poetry build
+    pip install [--user] dist/*.whl
+
+A convenience script that can be copied or linked to any directory in `$PATH` can be found in `bin/dpsprep`.
 
 See also the [dpsprep-git](https://aur.archlinux.org/packages/dpsprep-git) package for Arch.
 

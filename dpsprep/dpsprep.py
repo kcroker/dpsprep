@@ -1,22 +1,20 @@
-#!/usr/bin/env python
-
 import multiprocessing
 import os
 import shutil
 from time import time
 
-from loguru import logger
-from PIL import Image
 import click
 import djvu.decode
 import pdfrw
+from loguru import logger
+from PIL import Image
 
-from src.dpsprep.images import ImageMode, djvu_page_to_image
-from src.dpsprep.logging import configure_loguru, human_readable_size
-from src.dpsprep.outline import OutlineTransformVisitor
-from src.dpsprep.workdir import WorkingDirectory
-from src.dpsprep.text import djvu_pages_to_text_fpdf
-from src.dpsprep.pdf import combine_pdfs_on_fs, substitute_outline
+from .images import ImageMode, djvu_page_to_image
+from .logging import configure_loguru, human_readable_size
+from .outline import OutlineTransformVisitor
+from .pdf import combine_pdfs_on_fs, substitute_outline
+from .text import djvu_pages_to_text_fpdf
+from .workdir import WorkingDirectory
 
 
 def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: int, i: int):
@@ -161,7 +159,3 @@ def dpsprep(
     else:
         logger.info(f'Deleting the working directory {workdir.working}.')
         shutil.rmtree(workdir.working)
-
-
-if __name__ ==  '__main__':
-    dpsprep()

@@ -10,7 +10,7 @@ This tool, initially made specifically for use with Sony's Digital Paper System 
 
 ## OPTIONS
 
-* `-m`, `--mode`: Image mode. Monochrome by default.
+* `-m`, `--mode`: Image mode. Bitonal by default.
 * `-q`, `--quality` : Quality of images in output. Used only for JPEG compression, i.e. RGB and Grayscale images. Passed directly to Pillow.
 * `-p`, `--pool-size`: Size of MultiProcessing pool for handling page-by-page operations.
 * `-v`, `--verbose` : Display debug messages.

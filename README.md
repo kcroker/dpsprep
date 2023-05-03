@@ -10,15 +10,15 @@ Full example (although you would most likely want the mode to be "bitonal", the 
 
 Consult the [man file](./dpsprep.1.ronn) for details.
 
-To run the script via the [`poetry`](https://python-poetry.org/) virtual environment, we need:
-
-    poetry run python -m dpsprep input.djvu
+See the next section for different ways to run the program.
 
 ## Installation
 
-The easiest way to obtain this package is to clone the repository. The tool depends on several Python libraries, which can easily be installed via `poetry`. There is a hard dependency on `djvulibre` (via `python-djvulibre`) and optional dependencies on `libtiff` and `libjpeg` for good bitonal and multitotal compression, correspondingly.
+The easiest way to obtain this package is to clone the repository.
 
-Once inside the repository, the environment for the program can be set up as follows:
+The tool depends on several Python libraries, which can easily be installed via `poetry`. There is a hard dependency on `djvulibre` (via `python-djvulibre`) and optional dependencies on `libtiff` and `libjpeg` for good bitonal and multitotal (RGB or grayscale) compression, correspondingly.
+
+Once inside the cloned repository, the environment for the program can be set up as follows:
 
     poetry env use <executable or version>
     poetry install
@@ -32,15 +32,15 @@ The program can be installed as a Python module via:
     poetry build
     pip install [--user] dist/*.whl
 
-A convenience script that can be copied or linked to any directory in `$PATH` can be found in `bin/dpsprep`.
+A convenience script that can be copied or linked to any directory in `$PATH` can be found at [`./bin/dpsprep`](./bin/dpsprep).
 
 See also the [dpsprep-git](https://aur.archlinux.org/packages/dpsprep-git) package for Arch.
 
-Previous versions of the tool itself used to depend on third-party binaries, but this is no longer the case. The test fixtures are checked in, however regenerating them (see `./fixtures/makefile`) requires `pdflatex` (texlive, among others), `gs` (Ghostscript), `pdftotext` (Poppler) and `djvudigital` (GSDjVU). Similarly, the manfile is checked it, but building it from markdown depends on `ronn`.
+Previous versions of the tool itself used to depend on third-party binaries, but this is no longer the case. The test fixtures are checked in, however regenerating them (see [`./fixtures/makefile`](./fixtures/makefile)) requires `pdflatex` (texlive, among others), `gs` (Ghostscript), `pdftotext` (Poppler) and `djvudigital` (GSDjVU). Similarly, the man file is checked it, but building it from markdown depends on `ronn`.
 
 ## Acknowledgements
 
-* The font "invisible1.ttf" is taken from [here](https://www.angelfire.com/pr/pgpf/if.html). It is part of the text layer generation, which itself is based on [hocr-pdf](https://github.com/ocropus/hocr-tools/blob/v1.3.0/hocr-pdf).
+* The font "invisible1.ttf" is taken from [here](https://www.angelfire.com/pr/pgpf/if.html). See the `djvu_pages_to_text_fpdf` function in [`./dpsprep/text.py`](./dpsprep/text.py) for how it is used.
 
 ## Kevin's notes regarding the first version
 

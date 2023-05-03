@@ -48,7 +48,7 @@ def djvu_page_to_image(page: djvu.decode.Page, mode: ImageMode) -> Image.Image:
         'raw'
     )
 
-    # Monochrome images are read as inverted for some reason
+    # Bitonal images are read as inverted for some reason
     if mode == 'bitonal':
         return ImageOps.invert(image)
 

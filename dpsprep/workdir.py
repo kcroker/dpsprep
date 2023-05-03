@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Union
 import hashlib
 import os
 import tempfile
@@ -11,7 +12,7 @@ HASHING_BUFFER_SIZE = 64 * 1024
 
 # Based on
 # https://stackoverflow.com/posts/22058673/revisions
-def get_file_hash(path: os.PathLike | str):
+def get_file_hash(path: Union[os.PathLike, str]):
     h = hashlib.sha1()
 
     with open(path, 'rb') as file:
@@ -29,7 +30,7 @@ class WorkingDirectory:
     dest: Path
     working: Path
 
-    def __init__(self, src: os.PathLike | str, dest: os.PathLike | str | None):
+    def __init__(self, src: Union[os.PathLike, str], dest: Union[os.PathLike, str, None]):
         self.src = Path(src)
 
         if dest is None:

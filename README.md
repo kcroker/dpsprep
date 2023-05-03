@@ -16,7 +16,11 @@ See the next section for different ways to run the program.
 
 The easiest way to obtain this package is to clone the repository.
 
-The tool depends on several Python libraries, which can easily be installed via `poetry`. There is a hard dependency on `djvulibre` (via `python-djvulibre`) and optional dependencies on `libtiff` and `libjpeg` for good bitonal and multitotal (RGB or grayscale) compression, correspondingly.
+The tool depends on several Python libraries, which can easily be installed via `poetry`.
+
+The only hard prerequisite is `djvulibre`. Optional prerequisites are `libtiff` and `libjpeg` (or `libjpeg-turbo`), which are used for good bitonal and multitotal (RGB or grayscale) compression, correspondingly. The former depends on the latter, so installing `libtiff` will likely install both. For details on how they can be installed, see the GitHub Actions [workflow](./.github/workflows/test.yml) and the [dpsprep-git](https://aur.archlinux.org/packages/dpsprep-git) package for Arch Linux.
+
+Note that Windows support requires 64-bit `djvulibre`, and they only officially distribute 32-bit Windows packages. If you manage to build it yourself, then `dpsprep` will likely work on Windows.
 
 Once inside the cloned repository, the environment for the program can be set up as follows:
 
@@ -33,8 +37,6 @@ The program can be installed as a Python module via:
     pip install [--user] dist/*.whl
 
 A convenience script that can be copied or linked to any directory in `$PATH` can be found at [`./bin/dpsprep`](./bin/dpsprep).
-
-See also the [dpsprep-git](https://aur.archlinux.org/packages/dpsprep-git) package for Arch.
 
 Previous versions of the tool itself used to depend on third-party binaries, but this is no longer the case. The test fixtures are checked in, however regenerating them (see [`./fixtures/makefile`](./fixtures/makefile)) requires `pdflatex` (texlive, among others), `gs` (Ghostscript), `pdftotext` (Poppler) and `djvudigital` (GSDjVU). Similarly, the man file is checked it, but building it from markdown depends on `ronn`.
 

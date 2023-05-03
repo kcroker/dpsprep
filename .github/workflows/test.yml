@@ -1,0 +1,45 @@
+name: Run tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.9']
+        os: [ubuntu-22.04, macos-12]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install prerequisites on Ubuntu
+      if: matrix.os == 'ubuntu-22.04'
+      run: sudo apt install --yes djvulibre-bin libtiff5
+
+    - name: Install prerequisites on macOS
+      if: matrix.os == 'macos-12'
+      run: brew install djvulibre libtiff
+
+    # - name: Install prerequisites on Windows
+    #   if: matrix.os == 'windows-2022'
+    #   run: |
+    #     choco install djvu-libre
+    #     vcpkg install tiff
+
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - uses: abatilo/actions-poetry@v2
+
+    - name: Install dependencies
+      run: poetry install --with dev
+
+    - name: Lint
+      run: make lint
+
+    - name: Test
+      run: make test

@@ -2,6 +2,7 @@ import multiprocessing
 import os
 import shutil
 from time import time
+from typing import Union
 
 import click
 import djvu.decode
@@ -75,7 +76,7 @@ def process_text(workdir: WorkingDirectory):
 @click.command()
 def dpsprep(
     src: str,
-    dest: str | None,
+    dest: Union[str, None],
     mode: ImageMode,
     quality: int,
     pool_size: int,

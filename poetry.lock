@@ -432,14 +432,14 @@ files = [
 
 [[package]]
 name = "types-fpdf2"
-version = "2.6.1.10"
+version = "2.7.4.0"
 description = "Typing stubs for fpdf2"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "types-fpdf2-2.6.1.10.tar.gz", hash = "sha256:f83cecdad64d27f56d8294015781ac8b301a9ff18705ae18885f52988d622846"},
-    {file = "types_fpdf2-2.6.1.10-py3-none-any.whl", hash = "sha256:1ee85108227a5f8fcbde16cb47d4d82e73716c5aef489f327eb28f8428e1c134"},
+    {file = "types-fpdf2-2.7.4.0.tar.gz", hash = "sha256:b59504e9bb11b97e816ebe802315163db351039139f04a5fa18c02b93fb7c79c"},
+    {file = "types_fpdf2-2.7.4.0-py3-none-any.whl", hash = "sha256:0b8fdecf5460a0f47838864433f0a1eb82faa02ebfecc2b03927142cce156559"},
 ]
 
 [package.dependencies]
@@ -486,5 +486,5 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.8"
-content-hash = "9c0829f43f2f79c038f2ae3a5bf6648548b5977cf0872ed7ec1695bc477d517a"
+python-versions = "^3.9"
+content-hash = "153f9c13ec42174161d7379083fe7f1e3970c306784b89bf6470171e11e9c3ee"

@@ -1,6 +1,6 @@
 # dpsprep
 
-This tool, initially made specifically for use with Sony's Digital Paper System (DPS), is now a general-purpose DjVu to PDF converter with a focus on small output size and the ability to preserve bookmarks and text layers (e.g. ones added by OCR).
+This tool, initially made specifically for use with Sony's Digital Paper System (DPS), is now a general-purpose DjVu to PDF converter with a focus on small output size and the ability to preserve document outlines (e.g. TOC) and text layers (e.g. OCR).
 
 ## Usage
 

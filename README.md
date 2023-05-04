@@ -16,7 +16,7 @@ See the next section for different ways to run the program.
 
 The easiest way to obtain `dpsprep` is to clone the repository.
 
-The tool depends on several Python libraries, which can easily be installed via `poetry`.
+The tool depends on several Python libraries, which can easily be installed via `poetry`. A configuration for `pyenv` is also included.
 
 The only hard prerequisite is `djvulibre`. Optional prerequisites are `libtiff` and `libjpeg` (or `libjpeg-turbo`), which are used for good bitonal and multitotal (RGB or grayscale) compression, correspondingly. The former depends on the latter, so installing `libtiff` will likely install both. For details on how they can be installed, see the GitHub Actions [workflow](./.github/workflows/test.yml) and the [dpsprep-git](https://aur.archlinux.org/packages/dpsprep-git) package for Arch Linux.
 

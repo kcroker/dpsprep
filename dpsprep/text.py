@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Sequence
+from typing import Sequence, List
 
 from loguru import logger
 from fpdf import FPDF
@@ -47,33 +47,57 @@ class TextDrawVisitor(SExpressionVisitor):
         self.pdf = pdf
         self.extractor = TextExtractVisitor()
 
-    def visit_list_word(self, node: djvu.sexpr.ListExpression):
-        _, x1, y1, x2, y2, *rest = node
-        text = self.extractor.visit(node)
-
+    def draw_text(self, x1: int, x2: int, y1: int, y2: int, text: str):
         self.pdf.set_font('Invisible', size=BASE_FONT_SIZE)
         self.pdf.get_string_width(text)
 
         # Adjust font size
-        desired_width = x2.value - x1.value
+        desired_width = x2 - x1
         actual_width = self.pdf.get_string_width(text)
+
+        if actual_width == 0:
+            return
 
         self.pdf.set_font('Invisible', size=BASE_FONT_SIZE * desired_width / actual_width)
 
         page_width, page_height = self.pdf.pages[self.pdf.page].dimensions()
-        self.pdf.text(x=x1.value, y=page_height - y1.value, txt=text)
+        self.pdf.text(x=x1, y=page_height - y1, txt=text)
+
+    def get_loose_string_content(self, expressions: List[djvu.sexpr.Expression], delimiter: str):
+        return delimiter.join(
+            self.extractor.visit(child)
+            for child in expressions
+            if isinstance(child, djvu.sexpr.StringExpression)
+        )
+
+    def visit_list_word(self, node: djvu.sexpr.ListExpression):
+        _, x1, y1, x2, y2, *rest = node
+        text = self.extractor.visit(node)
+        self.draw_text(x1.value, x2.value, y1.value, y2.value, text)
 
     def visit_list_line(self, node: djvu.sexpr.ListExpression):
         _, x1, y1, x2, y2, *rest = node
 
+        text = self.get_loose_string_content(rest, ' ')
+
+        if len(text) > 0:
+            self.draw_text(x1.value, x2.value, y1.value, y2.value, text)
+
         for child in rest:
-            self.visit(child)
+            if not isinstance(child, djvu.sexpr.StringExpression):
+                self.visit(child)
 
     def visit_list_para(self, node: djvu.sexpr.ListExpression):
         _, x1, y1, x2, y2, *rest = node
 
+        text = self.get_loose_string_content(rest, '\n')
+
+        if len(text) > 0:
+            self.draw_text(x1.value, x2.value, y1.value, y2.value, text)
+
         for child in rest:
-            self.visit(child)
+            if not isinstance(child, djvu.sexpr.StringExpression):
+                self.visit(child)
 
     def visit_list_column(self, node: djvu.sexpr.ListExpression):
         _, x1, y1, x2, y2, *rest = node

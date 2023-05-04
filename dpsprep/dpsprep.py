@@ -108,9 +108,9 @@ def dpsprep(
         else:
             logger.info(f'Working directory {workdir.workdir} does not exist.')
     else:
-        workdir.create_if_necessary()
         logger.info(f'Working directory {workdir.workdir} has been created.')
 
+    workdir.create_if_necessary()
     logger.info(f'Processing {workdir.src} with {pool_size} workers.')
     document = djvu.decode.Context().new_document(
         djvu.decode.FileURI(workdir.src)

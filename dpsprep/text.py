@@ -48,6 +48,12 @@ class TextDrawVisitor(SExpressionVisitor):
         self.extractor = TextExtractVisitor()
 
     def draw_text(self, x1: int, x2: int, y1: int, y2: int, text: str):
+        page_width, page_height = self.pdf.pages[self.pdf.page].dimensions()
+
+        if page_height is None:
+            logger.warning(f'Cannot draw {repr(text)} because page height is not set.')
+            return
+
         self.pdf.set_font('Invisible', size=BASE_FONT_SIZE)
         self.pdf.get_string_width(text)
 
@@ -58,9 +64,7 @@ class TextDrawVisitor(SExpressionVisitor):
         if actual_width == 0:
             return
 
-        self.pdf.set_font('Invisible', size=BASE_FONT_SIZE * desired_width / actual_width)
-
-        page_width, page_height = self.pdf.pages[self.pdf.page].dimensions()
+        self.pdf.set_font('Invisible', size=int(BASE_FONT_SIZE * desired_width / actual_width))
         self.pdf.text(x=x1, y=page_height - y1, txt=text)
 
     def get_loose_string_content(self, expressions: List[djvu.sexpr.Expression], delimiter: str):

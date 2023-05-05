@@ -37,7 +37,7 @@ Previous versions of the tool itself used to depend on third-party binaries, but
 
 ## Acknowledgements
 
-* The font "invisible1.ttf" is taken from [here](https://www.angelfire.com/pr/pgpf/if.html). See the `djvu_pages_to_text_fpdf` function in [`./dpsprep/text.py`](./dpsprep/text.py) for how it is used.
+* The font [`invisible1.ttf`](./dpsprep/invisible.ttf) is taken from [here](https://www.angelfire.com/pr/pgpf/if.html). See the `djvu_pages_to_text_fpdf` function in [`./dpsprep/text.py`](./dpsprep/text.py) for how it is used.
 
 ## Kevin's notes regarding the first version
 

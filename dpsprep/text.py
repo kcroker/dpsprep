@@ -126,7 +126,7 @@ def djvu_pages_to_text_fpdf(pages: Sequence[djvu.decode.Page]) -> FPDF:
     pdf = FPDF(unit='pt')
     pdf.add_font(
         family='Invisible',
-        fname=Path(__file__).parent.parent / 'invisible1.ttf',
+        fname=Path(__file__).parent / 'invisible1.ttf',
         style=''
     )
 

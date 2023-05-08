@@ -1,8 +1,9 @@
 from typing import Literal
 
+from loguru import logger
+from PIL import Image, ImageOps
 import djvu.decode
 import djvu.sexpr
-from PIL import Image, ImageOps
 
 ImageMode = Literal['rgb', 'grayscale', 'bitonal']
 
@@ -26,29 +27,37 @@ pil_modes = {
 }
 
 
-def djvu_page_to_image(page: djvu.decode.Page, mode: ImageMode) -> Image.Image:
+def djvu_page_to_image(page: djvu.decode.Page, mode: ImageMode, i: int) -> Image.Image:
     page_job = page.decode(wait=True)
     width, height = page_job.size
     buffer = bytearray(3 * width * height) # RGB at most
 
     rect = (0, 0, width, height)
-    page_job.render(
-        # RENDER_COLOR is simply a default value and doesn't actually imply colors
-        mode=djvu.decode.RENDER_COLOR,
-        page_rect=rect,
-        render_rect=rect,
-        pixel_format=djvu_pixel_formats[mode],
-        buffer=buffer
-    )
 
-    image = Image.frombuffer(
-        pil_modes[mode],
-        page_job.size,
-        buffer,
-        'raw'
-    )
+    try:
+        page_job.render(
+            # RENDER_COLOR is simply a default value and doesn't actually imply colors
+            mode=djvu.decode.RENDER_COLOR,
+            page_rect=rect,
+            render_rect=rect,
+            pixel_format=djvu_pixel_formats[mode],
+            buffer=buffer
+        )
+    except djvu.decode.NotAvailable:
+        logger.warning(f'libdjvu claims that data for page {i + 1} is not available. Returning a blank page instead.')
+        image = Image.new(
+            pil_modes[mode],
+            page_job.size
+        )
+    else:
+        image = Image.frombuffer(
+            pil_modes[mode],
+            page_job.size,
+            buffer,
+            'raw'
+        )
 
-    # Bitonal images are read as inverted
+    # Bitonal images are treated as inverted
     if mode == 'bitonal':
         return ImageOps.invert(image)
 

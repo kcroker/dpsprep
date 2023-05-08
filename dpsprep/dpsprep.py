@@ -32,7 +32,7 @@ def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: int, i:
     )
     document.decoding_job.wait()
 
-    image_pdf_raw = djvu_page_to_image(document.pages[i], mode)
+    image_pdf_raw = djvu_page_to_image(document.pages[i], mode, i)
     image_pdf_raw.save(
         workdir.get_page_pdf_path(i),
         format='PDF',

@@ -4,9 +4,9 @@ This tool, initially made specifically for use with Sony's Digital Paper System 
 
 ## Usage
 
-Full example (although you would most likely want the mode to be "bitonal", the default):
+Full example:
 
-    dpsprep --pool=8 --mode=rgb --quality=50 input.djvu output.pdf
+    dpsprep --pool=8 --quality=50 input.djvu output.pdf
 
 Consult the [man file](./dpsprep.1.ronn) for details.
 

@@ -1,15 +1,14 @@
+from time import time
+from typing import List, Union
 import multiprocessing.pool
 import os
-from time import time
-from typing import Union, List
 
 import click
 import djvu.decode
 import pdfrw
 from loguru import logger
-from PIL import Image
 
-from .images import ImageMode, djvu_page_to_image
+from .images import djvu_page_to_image
 from .logging import configure_loguru, human_readable_size
 from .outline import OutlineTransformVisitor
 from .pdf import combine_pdfs_on_fs
@@ -17,7 +16,7 @@ from .text import djvu_pages_to_text_fpdf
 from .workdir import WorkingDirectory
 
 
-def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: int, i: int):
+def process_page_bg(workdir: WorkingDirectory, quality: int, i: int):
     page_number = i + 1
 
     if workdir.get_page_pdf_path(i).exists():
@@ -32,7 +31,7 @@ def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: int, i:
     )
     document.decoding_job.wait()
 
-    image_pdf_raw = djvu_page_to_image(document.pages[i], mode, i)
+    image_pdf_raw = djvu_page_to_image(document.pages[i], i)
     image_pdf_raw.save(
         workdir.get_page_pdf_path(i),
         format='PDF',
@@ -69,14 +68,12 @@ def process_text(workdir: WorkingDirectory):
 @click.option('-v', '--verbose', is_flag=True, help='Display debug messages.')
 @click.option('-p', '--pool-size', type=click.IntRange(min=0), default=4, help='Size of MultiProcessing pool for handling page-by-page operations.')
 @click.option('-q', '--quality', type=click.IntRange(min=0, max=100), default=75, help="Quality of images in output. Used only for JPEG compression, i.e. RGB and Grayscale images. Passed directly to Pillow.")
-@click.option('-m', '--mode', type=click.Choice(['bitonal', 'grayscale', 'rgb']), default='bitonal', help='Image mode.')
 @click.argument('dest', type=click.Path(exists=False, resolve_path=True), required=False)
 @click.argument('src', type=click.Path(exists=True, resolve_path=True), required=True)
 @click.command()
 def dpsprep(
     src: str,
     dest: Union[str, None],
-    mode: ImageMode,
     quality: int,
     pool_size: int,
     verbose: bool,
@@ -92,13 +89,6 @@ def dpsprep(
         return
 
     start_time = time()
-
-    if mode == 'bitonal':
-        if not hasattr(Image.core, 'libtiff_encoder'):  # type: ignore
-            logger.warning('Bitonal image compression may suffer because Pillow has been built without libtiff support.')
-    else:
-        if not hasattr(Image.core, 'libjpeg_encoder'):  # type: ignore
-            logger.warning('Multitonal image compression may suffer because Pillow has been built without libjpeg support.')
 
     if workdir.workdir.exists():
         if delete_working:
@@ -123,7 +113,7 @@ def dpsprep(
 
     for i in range(len(document.pages)):
         # Cannot pass the page object itself because it does not support serialization for IPC
-        tasks.append(pool.apply_async(func=process_page_bg, args=[workdir, mode, quality, i]))
+        tasks.append(pool.apply_async(func=process_page_bg, args=[workdir, quality, i]))
 
     pool.close()
     pool_is_working = True

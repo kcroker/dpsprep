@@ -19,19 +19,6 @@ def test_djvu_page_to_image_bitonal(image_diff: ImageDiffProtocol):
     document.decoding_job.wait()
 
     fixture = Image.open('fixtures/lipsum_01.png').convert('1')
-    result = djvu_page_to_image(document.pages[0], 'bitonal', i=0)
+    result = djvu_page_to_image(document.pages[0], i=0)
 
     assert image_diff(fixture, result, threshold=1e-2)
-
-
-def test_djvu_page_to_image_rgb(image_diff: ImageDiffProtocol):
-    document = djvu.decode.Context().new_document(
-        djvu.decode.FileURI('fixtures/lipsum_words.djvu')
-    )
-    document.decoding_job.wait()
-
-    fixture = Image.open('fixtures/lipsum_01.png').convert('RGB')
-    result = djvu_page_to_image(document.pages[0], 'rgb', i=0)
-
-    assert image_diff(fixture, result, threshold=1e-2)
-

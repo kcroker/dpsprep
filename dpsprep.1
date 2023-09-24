@@ -9,9 +9,7 @@
 This tool, initially made specifically for use with Sony\'s Digital Paper System (DPS), is now a general\-purpose DjVu to PDF converter with a focus on small output size and the ability to preserve document outlines (e\.g\. TOC) and text layers (e\.g\. OCR)\.
 .SH "OPTIONS"
 .IP "\[ci]" 4
-\fB\-m\fR, \fB\-\-mode\fR: Image mode\. Bitonal by default\.
-.IP "\[ci]" 4
-\fB\-q\fR, \fB\-\-quality\fR : Quality of images in output\. Used only for JPEG compression, i\.e\. RGB and Grayscale images\. Passed directly to Pillow\.
+\fB\-q\fR, \fB\-\-quality\fR : Quality of images in output\. Used only for JPEG compression non\-bitonal pages\. Passed directly to Pillow\.
 .IP "\[ci]" 4
 \fB\-p\fR, \fB\-\-pool\-size\fR: Size of MultiProcessing pool for handling page\-by\-page operations\.
 .IP "\[ci]" 4
@@ -33,10 +31,10 @@ dpsprep /wherever/file\.djvu
 .fi
 .IP "" 0
 .P
-Produce \fBoutput\.pdf\fR with RGB image data and reduced image quality:
+Produce \fBoutput\.pdf\fR with reduced image quality:
 .IP "" 4
 .nf
-dpsprep \-\-mode=rgb \-\-quality=30 input\.djvu output\.pdf
+dpsprep \-\-\-quality=30 input\.djvu output\.pdf
 .fi
 .IP "" 0
 .P

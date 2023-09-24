@@ -20,16 +20,18 @@ The tool depends on several Python libraries, which can easily be installed via 
 
 The only hard prerequisite is `djvulibre`. Optional prerequisites are `libtiff` and `libjpeg` (or `libjpeg-turbo`), which are used for good bitonal and multitotal (RGB or grayscale) compression, correspondingly. The former depends on the latter, so installing `libtiff` will likely install both. For details on how they can be installed, see the GitHub Actions [workflow](./.github/workflows/test.yml) and the [dpsprep-git](https://aur.archlinux.org/packages/dpsprep-git) package for Arch Linux.
 
-Note that Windows support requires 64-bit `djvulibre`, and they only officially distribute 32-bit Windows packages. If you manage to build it yourself, then `dpsprep` will likely work on Windows.
+Note that Windows support in `python-djvulibre` requires 64-bit `djvulibre`, and they only officially distribute 32-bit Windows packages. If you manage to make it work, consider opening a pull request.
 
 Once inside the cloned repository, the environment for the program can be set up by simply running `poetry install`. After than, the following should work:
 
     poetry run python -m dpsprep input.djvu
 
-The program can be installed as a Python module via:
+The program can easily be installed as a Python module via `poetry` and `pip`:
 
     poetry build
     pip install [--user] dist/*.whl
+
+If you are packaging this for some other package manager, consider using PEP-517 tools as shown in [this PKGBUILD file](https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=dpsprep-git).
 
 A convenience script that can be copied or linked to any directory in `$PATH` can be found at [`./bin/dpsprep`](./bin/dpsprep).
 

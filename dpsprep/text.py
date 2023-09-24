@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Sequence, List
+import unicodedata
 
 from loguru import logger
 from fpdf import FPDF
@@ -10,10 +11,22 @@ from .sexpr import SExpressionVisitor
 
 BASE_FONT_SIZE = 10
 
+# These break FPDF.
+# A full list of categories can be found in https://www.compart.com/en/unicode/category
+UNDRAWABLE_UNICODE_CATEGORIES = [
+    'Cc',  # Control
+    'Cf',  # Format
+    'Co',  # Private Use
+    'Cs',  # Surrogate
+    'Zl',  # Line Separator
+    'Zp',  # Paragraph Separator
+    'Zs'   # Space Separator
+]
+
 
 class TextExtractVisitor(SExpressionVisitor):
     def visit_string(self, node: djvu.sexpr.StringExpression):
-        return node.value
+        return ''.join(c for c in node.value if unicodedata.category(c) not in UNDRAWABLE_UNICODE_CATEGORIES)
 
     def visit_plain_list(self, node: djvu.sexpr.ListExpression):
         return ''
@@ -65,7 +78,11 @@ class TextDrawVisitor(SExpressionVisitor):
             return
 
         self.pdf.set_font('Invisible', size=int(BASE_FONT_SIZE * desired_width / actual_width))
-        self.pdf.text(x=x1, y=page_height - y1, txt=text)
+
+        try:
+            self.pdf.text(x=x1, y=page_height - y1, txt=text)
+        except TypeError as err:
+            logger.warning(f'FPDF refuses to draw {repr(text)}: {err}')
 
     def get_loose_string_content(self, expressions: List[djvu.sexpr.Expression], delimiter: str):
         return delimiter.join(

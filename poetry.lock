@@ -96,14 +96,14 @@ woff = ["brotli (>=1.0.1)", "brotlicffi (>=0.8.0)", "zopfli (>=0.1.4)"]
 
 [[package]]
 name = "fpdf2"
-version = "2.7.4"
+version = "2.7.5"
 description = "Simple & fast PDF generation for Python"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "fpdf2-2.7.4-py2.py3-none-any.whl", hash = "sha256:8a62411b66e6901bc576424f113ede0b033e8759a88d0af012bb7c6b0e51ed0d"},
-    {file = "fpdf2-2.7.4.tar.gz", hash = "sha256:b2b7197610a83dd6fe96c3b91a633827acc74973b4290103617d371d0d0a8ecf"},
+    {file = "fpdf2-2.7.5-py2.py3-none-any.whl", hash = "sha256:84266b0f9c0ece84e7a60b8e302c98d8082b814be58c9b222fc057a85f86dd6f"},
+    {file = "fpdf2-2.7.5.tar.gz", hash = "sha256:770392316614b4087ec78a393db1c3fc5c46bf7d2a0d673bf1ea95a6a0ba8258"},
 ]
 
 [package.dependencies]
@@ -487,4 +487,4 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "9c0829f43f2f79c038f2ae3a5bf6648548b5977cf0872ed7ec1695bc477d517a"
+content-hash = "74a84f2625f464ff7f04309eb46d1e882ea72e52afe47c08231f1655a35c8d57"

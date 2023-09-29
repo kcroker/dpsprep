@@ -2,6 +2,7 @@ from typing import Literal
 
 from loguru import logger
 from PIL import Image, ImageOps
+import PIL.features
 import djvu.decode
 import djvu.sexpr
 
@@ -35,10 +36,10 @@ def djvu_page_to_image(page: djvu.decode.Page, i: int) -> Image.Image:
     mode = 'bitonal' if page_job.type == djvu.decode.PAGE_TYPE_BITONAL else 'rgb'
 
     if mode == 'bitonal':
-        if not hasattr(Image.core, 'libtiff_encoder'):  # type: ignore
+        if not PIL.features.check_codec('libtiff'):  # type: ignore
             logger.warning('Bitonal image compression may suffer because Pillow has been built without libtiff support.')
     else:
-        if not hasattr(Image.core, 'libjpeg_encoder'):  # type: ignore
+        if not PIL.features.check_codec('jpg'):  # type: ignore
             logger.warning('Multitonal image compression may suffer because Pillow has been built without libjpeg support.')
 
     try:

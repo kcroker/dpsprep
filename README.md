@@ -37,6 +37,12 @@ A convenience script that can be copied or linked to any directory in `$PATH` ca
 
 Previous versions of the tool itself used to depend on third-party binaries, but this is no longer the case. The test fixtures are checked in, however regenerating them (see [`./fixtures/makefile`](./fixtures/makefile)) requires `pdflatex` (texlive, among others), `gs` (Ghostscript), `pdftotext` (Poppler) and `djvudigital` (GSDjVU). Similarly, the man file is checked in, but building it from markdown depends on `ronn`.
 
+## Note regarding compression
+
+We use the default compression provided by [Pillow](https://github.com/python-pillow/Pillow). For bitonal images, [the PDF generation code says](https://github.com/python-pillow/Pillow/blob/a088d54509e42e4eeed37d618b42d775c0d16ef5/src/PIL/PdfImagePlugin.py#L138C16-L138C16) that, if `libtiff` is available, `group4` compression is used.
+
+The size of the PDF files can sometimes later be additionally reduced. OCRmyPDF is an actively maintained project (as of late 2023) that also supports standalone PDF optimization, including JBIG2 compression via `jbig2enc` --- see the [relevant documentation](https://ocrmypdf.readthedocs.io/en/latest/cookbook.html#optimize-images-without-performing-ocr).
+
 ## Acknowledgements
 
 * The font [`invisible1.ttf`](./dpsprep/invisible.ttf) is taken from [here](https://www.angelfire.com/pr/pgpf/if.html). See the `djvu_pages_to_text_fpdf` function in [`./dpsprep/text.py`](./dpsprep/text.py) for how it is used.

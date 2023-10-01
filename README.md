@@ -18,9 +18,16 @@ The easiest way to obtain `dpsprep` is to clone the repository.
 
 The tool depends on several Python libraries, which can easily be installed via `poetry`. A configuration for `pyenv` is also included.
 
-The only hard prerequisite is `djvulibre`. Optional prerequisites are `libtiff` and `libjpeg` (or `libjpeg-turbo`), which are used for good bitonal and multitotal (RGB or grayscale) compression, correspondingly. The former depends on the latter, so installing `libtiff` will likely install both. For details on how they can be installed, see the GitHub Actions [workflow](./.github/workflows/test.yml) and the [dpsprep-git](https://aur.archlinux.org/packages/dpsprep-git) package for Arch Linux.
+The only hard prerequisite is `djvulibre`. Optional prerequisites are:
+* `libtiff` for bitonal image compression.
+* `libjpeg` (or `libjpeg-turbo`) for multitotal (RGB or grayscale) compression.
+* `OCRmyPDF` and `jbig2enc` for PDF optimization (see the next section).
 
-Note that Windows support in `python-djvulibre` requires 64-bit `djvulibre`, and they only officially distribute 32-bit Windows packages. If you manage to make it work, consider opening a pull request.
+`libtiff` depends on `libjpeg`, so installing `libtiff` will likely install both.
+
+For details on how these dependencies can be installed, see the GitHub Actions [workflow](./.github/workflows/test.yml) and the [dpsprep-git](https://aur.archlinux.org/packages/dpsprep-git) package for Arch Linux.
+
+Note that Windows support in `djvulibre-python` requires 64-bit `djvulibre`, and they only officially distribute 32-bit Windows packages. If you manage to make it work, consider opening a pull request.
 
 Once inside the cloned repository, the environment for the program can be set up by simply running `poetry install`. After than, the following should work:
 
@@ -39,11 +46,13 @@ Previous versions of the tool itself used to depend on third-party binaries, but
 
 ## Note regarding compression
 
-We use the default compression provided by [Pillow](https://github.com/python-pillow/Pillow). For bitonal images, [the PDF generation code says](https://github.com/python-pillow/Pillow/blob/a088d54509e42e4eeed37d618b42d775c0d16ef5/src/PIL/PdfImagePlugin.py#L138C16-L138C16) that, if `libtiff` is available, `group4` compression is used.
+We perform compression in two stages:
 
-The size of the PDF files can sometimes later be additionally reduced. OCRmyPDF is an actively maintained project (as of late 2023) that also supports standalone PDF optimization, including JBIG2 compression via `jbig2enc`. Its compression level ranges from 1 to 3; details can be found [in the project's documentation](https://ocrmypdf.readthedocs.io/en/latest/optimizer.html)).
+* The first one is the default compression provided by [Pillow](https://github.com/python-pillow/Pillow). For bitonal images, [the PDF generation code says](https://github.com/python-pillow/Pillow/blob/a088d54509e42e4eeed37d618b42d775c0d16ef5/src/PIL/PdfImagePlugin.py#L138C16-L138C16) that, if `libtiff` is available, `group4` compression is used.
 
-Please note that the compression method suggested [in the documentation](https://ocrmypdf.readthedocs.io/en/latest/cookbook.html#optimize-images-without-performing-ocr) (setting `--tesseract-timeout` to `0`) may ruin existing text layers. To perform only PDF optimization you can use the following undocumented tool instead:
+* If [OCRmyPDF](https://github.com/ocrmypdf/OCRmyPDF) is installed, its PDF optimization can be used via the flags `-O1` to `-O3` (this involves no OCR). This allows us to use advanced techniques, including JBIG2 compression via `jbig2enc`.
+
+If manually running OCRmyPDF, note that the optimization command suggested [in the documentation](https://ocrmypdf.readthedocs.io/en/latest/cookbook.html#optimize-images-without-performing-ocr) (setting `--tesseract-timeout` to `0`) may ruin existing text layers. To perform only PDF optimization you can use the following undocumented tool instead:
 
     python -m ocrmypdf.optimize <input_file> <level> <output_file>
 

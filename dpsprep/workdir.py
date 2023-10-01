@@ -57,12 +57,27 @@ class WorkingDirectory:
             logger.debug(f'Creating {repr(str(self.workdir))}.')
             self.workdir.mkdir(parents=True)
 
+        if not self.ocrmypdf_tmp_path.exists():
+            logger.debug(f'Creating {repr(str(self.ocrmypdf_tmp_path))}.')
+
     def get_page_pdf_path(self, i: int):
         return self.workdir / f'page_bg_{i + 1}.pdf'
 
     @property
     def text_pdf_path(self):
         return self.workdir / 'text.pdf'
+
+    @property
+    def ocrmypdf_tmp_path(self):
+        return self.workdir / 'ocrmypdf'
+
+    @property
+    def combined_pdf_path(self):
+        return self.workdir / 'combined.pdf'
+
+    @property
+    def optimized_pdf_path(self):
+        return self.workdir / 'optimized.pdf'
 
     def destroy(self):
         shutil.rmtree(self.workdir)

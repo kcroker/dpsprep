@@ -41,7 +41,11 @@ Previous versions of the tool itself used to depend on third-party binaries, but
 
 We use the default compression provided by [Pillow](https://github.com/python-pillow/Pillow). For bitonal images, [the PDF generation code says](https://github.com/python-pillow/Pillow/blob/a088d54509e42e4eeed37d618b42d775c0d16ef5/src/PIL/PdfImagePlugin.py#L138C16-L138C16) that, if `libtiff` is available, `group4` compression is used.
 
-The size of the PDF files can sometimes later be additionally reduced. OCRmyPDF is an actively maintained project (as of late 2023) that also supports standalone PDF optimization, including JBIG2 compression via `jbig2enc` --- see the [relevant documentation](https://ocrmypdf.readthedocs.io/en/latest/cookbook.html#optimize-images-without-performing-ocr).
+The size of the PDF files can sometimes later be additionally reduced. OCRmyPDF is an actively maintained project (as of late 2023) that also supports standalone PDF optimization, including JBIG2 compression via `jbig2enc`. Its compression level ranges from 1 to 3; details can be found [in the project's documentation](https://ocrmypdf.readthedocs.io/en/latest/optimizer.html)).
+
+Please note that the compression method suggested [in the documentation](https://ocrmypdf.readthedocs.io/en/latest/cookbook.html#optimize-images-without-performing-ocr) (setting `--tesseract-timeout` to `0`) may ruin existing text layers. To perform only PDF optimization you can use the following undocumented tool instead:
+
+    python -m ocrmypdf.optimize <input_file> <level> <output_file>
 
 ## Acknowledgements
 

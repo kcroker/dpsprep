@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "DPS" "1" "September 2023" ""
+.TH "DPS" "1" "October 2023" ""
 .SH "NAME"
 \fBdps\fR \- a DjVu to PDF converter
 .SH "SYNOPSIS"
@@ -47,10 +47,12 @@ dpsprep \-\-pool=16 input\.djvu
 .SH "NOTE REGARDING COMPRESSION"
 We use the default compression provided by Pillow\. For bitonal images, the PDF generation code says that, if \fBlibtiff\fR is available, \fBgroup4\fR compression is used\.
 .P
-The size of the PDF files can sometimes later be additionally reduced\. OCRmyPDF is an actively maintained project (as of fall of 2023) that also supports standalone PDF optimization, including JBIG2 compression via \fBjbig2enc\fR \-\- see the relevant documentation at
+The size of the PDF files can sometimes later be additionally reduced\. OCRmyPDF is an actively maintained project (as of late 2023) that also supports standalone PDF optimization, including JBIG2 compression via \fBjbig2enc\fR\. Its compression level ranges from 1 to 3; details can be found in the project\'s documentation\.
+.P
+Please note that the compression method suggested in the documentation (setting \fB\-\-tesseract\-timeout\fR to \fB0\fR) may ruin existing text layers\. To perform only PDF optimization you can use the following undocumented tool instead:
 .IP "" 4
 .nf
-https://ocrmypdf\.readthedocs\.io/en/latest/cookbook\.html#optimize\-images\-without\-performing\-ocr
+python \-m ocrmypdf\.optimize <input_file> <level> <output_file>
 .fi
 .IP "" 0
 

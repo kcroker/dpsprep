@@ -36,10 +36,10 @@ def djvu_page_to_image(page: djvu.decode.Page, i: int) -> Image.Image:
     mode = 'bitonal' if page_job.type == djvu.decode.PAGE_TYPE_BITONAL else 'rgb'
 
     if mode == 'bitonal':
-        if not PIL.features.check_codec('libtiff'):  # type: ignore
+        if not PIL.features.check_codec('libtiff'):
             logger.warning('Bitonal image compression may suffer because Pillow has been built without libtiff support.')
     else:
-        if not PIL.features.check_codec('jpg'):  # type: ignore
+        if not PIL.features.check_codec('jpg'):
             logger.warning('Multitonal image compression may suffer because Pillow has been built without libjpeg support.')
 
     try:

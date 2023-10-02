@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dpsprep"
-version = "2.0.2"
+version = "2.1.0"
 description = "A DjVu to PDF converter with a focus on small output size and the ability to preserve document outlines and text layers"
 authors = ["Kevin Arthur Schiff Croker", "Ianis Vasilev"]
 license = "GPL-3.0-or-later"
@@ -10,9 +10,10 @@ click = "^8.1.3"
 fpdf2 = "^2.7.5"
 loguru = "^0.7.0"
 pillow = "^10.0"
-python = "^3.8"
+python = "^3.9"
 pdfrw = "^0.4"
 djvulibre-python = "^0.9.0"
+ocrmypdf = {version = "^15.0.2", optional = true}
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.2.0"
@@ -21,6 +22,9 @@ pytest-image-diff = "^0.0.11"
 ruff = "^0.0.263"
 types-fpdf2 = "^2.6.1.10"
 types-pillow = "^9.5.0.2"
+
+[tool.poetry.extras]
+compress = ["ocrmypdf"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -32,6 +36,7 @@ ignore = ["E501"]
 [[tool.mypy.overrides]]
 module = [
   "djvu.*",
+  "ocrmypdf.*",
   "pdfrw.*",
   "pytest_image_diff.*"
 ]

@@ -14,4 +14,4 @@ def combine_pdfs_on_fs(workdir: WorkingDirectory, outline: pdfrw.IndirectPdfDict
         writer.addpage(page)
 
     writer.trailer.Root.Outlines = outline
-    writer.write(workdir.dest)
+    writer.write(workdir.combined_pdf_path)

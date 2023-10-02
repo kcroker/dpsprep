@@ -22,7 +22,7 @@ def process_page_bg(workdir: WorkingDirectory, quality: int, i: int):
     page_number = i + 1
 
     if workdir.get_page_pdf_path(i).exists():
-        logger.info(f'Image data from page {page_number} already processed.')
+        logger.debug(f'Image data from page {page_number} already processed.')
         return
     else:
         logger.debug(f'Processing image data from page {page_number}.')
@@ -41,7 +41,7 @@ def process_page_bg(workdir: WorkingDirectory, quality: int, i: int):
     )
 
     pdf_size = os.path.getsize(workdir.get_page_pdf_path(i))
-    logger.info(f'Image data with size {human_readable_size(pdf_size)} from page {page_number} processed in {time() - start_time:.2f}s and written to working directory.')
+    logger.debug(f'Image data with size {human_readable_size(pdf_size)} from page {page_number} processed in {time() - start_time:.2f}s and written to working directory.')
 
 
 def process_text(workdir: WorkingDirectory):
@@ -102,7 +102,7 @@ def dpsprep(
             workdir.destroy()
             logger.info(f'Removed existing working directory {workdir.workdir}.')
         else:
-            logger.info(f'Working directory {workdir.workdir} does not exist.')
+            logger.info(f'Reusing working directory {workdir.workdir}.')
     else:
         logger.info(f'Working directory {workdir.workdir} has been created.')
 
@@ -134,17 +134,18 @@ def dpsprep(
                 pool_is_working = True
 
     pool.join()
+    logger.info('Processed all pages.')
 
     outline = pdfrw.IndirectPdfDict()
 
     if len(document.outline.sexpr) > 0:
-        logger.debug('Processing metadata.')
+        logger.info('Processing metadata.')
         outline = OutlineTransformVisitor().visit(document.outline.sexpr)
         logger.info('Metadata processed.')
     else:
         logger.info('No metadata to process.')
 
-    logger.debug('Combining everything')
+    logger.info('Combining everything.')
     combine_pdfs_on_fs(workdir, outline)
     combined_size = os.path.getsize(workdir.combined_pdf_path)
     logger.info(f'Produced a combined output file with size {human_readable_size(combined_size)} in {time() - start_time:.2f}s.')
@@ -152,7 +153,7 @@ def dpsprep(
     opt_success = False
 
     if optlevel is not None:
-        logger.debug(f'Performing level {optlevel} optimization.')
+        logger.info(f'Performing level {optlevel} optimization.')
         opt_success = optimize_pdf(workdir, optlevel, quality, pool_size)
 
     if opt_success:

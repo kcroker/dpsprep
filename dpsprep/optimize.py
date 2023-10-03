@@ -43,7 +43,7 @@ def optimize_pdf(workdir: WorkingDirectory, optlevel: int, quality: int, pool_si
     try:
         # ObjectStreamMode is actually from pikepdf, but I did not want to include that as a dependency
         from ocrmypdf.optimize import ObjectStreamMode, PdfContext, optimize
-    except ImportError as err:
+    except ImportError:
         logger.warning('Cannot detect OCRmyPDF. No optimizations will be performed on the output file.')
         shutil.copy(workdir.combined_pdf_path, workdir.optimized_pdf_path)
         return False

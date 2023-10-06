@@ -107,11 +107,14 @@ def dpsprep(
         logger.info(f'Working directory {workdir.workdir} has been created.')
 
     workdir.create_if_necessary()
-    logger.info(f'Processing {workdir.src} with {pool_size} workers.')
+
     document = djvu.decode.Context().new_document(
         djvu.decode.FileURI(workdir.src)
     )
     document.decoding_job.wait()
+
+    djvu_size = os.path.getsize(workdir.src)
+    logger.info(f'Processing {workdir.src} with {len(document.pages)} pages and size {human_readable_size(djvu_size)} using {pool_size} workers.')
 
     pool = multiprocessing.Pool(processes=pool_size)
     tasks: List[multiprocessing.pool.AsyncResult] = []
@@ -148,7 +151,7 @@ def dpsprep(
     logger.info('Combining everything.')
     combine_pdfs_on_fs(workdir, outline)
     combined_size = os.path.getsize(workdir.combined_pdf_path)
-    logger.info(f'Produced a combined output file with size {human_readable_size(combined_size)} in {time() - start_time:.2f}s.')
+    logger.info(f'Produced a combined output file with size {human_readable_size(combined_size)} in {time() - start_time:.2f}s. This is {round(100 * combined_size / djvu_size, 2)}% of the DjVu source file.')
 
     opt_success = False
 
@@ -157,12 +160,11 @@ def dpsprep(
         opt_success = optimize_pdf(workdir, optlevel, quality, pool_size)
 
     if opt_success:
-        raw_size = os.path.getsize(workdir.combined_pdf_path)
         opt_size = os.path.getsize(workdir.optimized_pdf_path)
 
-        logger.info(f'The optimized file has size {human_readable_size(opt_size)}, which is {round(100 * opt_size / raw_size, 2)}% of the raw combined file.')
+        logger.info(f'The optimized file has size {human_readable_size(opt_size)}, which is {round(100 * opt_size / combined_size, 2)}% of the raw combined file and {round(100 * opt_size / djvu_size, 2)} of the DjVu source file.')
 
-        if opt_size < raw_size:
+        if opt_size < combined_size:
             logger.info('Using the optimized file.')
             shutil.copy(workdir.optimized_pdf_path, workdir.dest)
         else:

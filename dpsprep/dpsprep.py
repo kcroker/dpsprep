@@ -162,7 +162,7 @@ def dpsprep(
     if opt_success:
         opt_size = os.path.getsize(workdir.optimized_pdf_path)
 
-        logger.info(f'The optimized file has size {human_readable_size(opt_size)}, which is {round(100 * opt_size / combined_size, 2)}% of the raw combined file and {round(100 * opt_size / djvu_size, 2)} of the DjVu source file.')
+        logger.info(f'The optimized file has size {human_readable_size(opt_size)}, which is {round(100 * opt_size / combined_size, 2)}% of the raw combined file and {round(100 * opt_size / djvu_size, 2)}% of the DjVu source file.')
 
         if opt_size < combined_size:
             logger.info('Using the optimized file.')

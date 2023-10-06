@@ -1,6 +1,6 @@
 # dpsprep
 
-[![Tests](https://github.com/kcroker/dpsprep/actions/workflows/test.yml/badge.svg)](https://github.com/kcroker/dpsprep/actions/workflows/test.yml) [![AUR Package](https://img.shields.io/aur/version/dpsprep-git)](https://aur.archlinux.org/packages/dpsprep-git)
+[![Tests](https://github.com/kcroker/dpsprep/actions/workflows/test.yml/badge.svg)](https://github.com/kcroker/dpsprep/actions/workflows/test.yml) <!-- [![AUR Package](https://img.shields.io/aur/version/dpsprep-git)](https://aur.archlinux.org/packages/dpsprep-git) -->
 
 This tool, initially made specifically for use with Sony's Digital Paper System (DPS), is now a general-purpose DjVu to PDF converter with a focus on small output size and the ability to preserve document outlines (e.g. TOC) and text layers (e.g. OCR).
 
@@ -27,7 +27,7 @@ The only hard prerequisite is `djvulibre`. Optional prerequisites are:
 
 `libtiff` depends on `libjpeg`, so installing `libtiff` will likely install both.
 
-For details on how these dependencies can be installed, see the GitHub Actions [workflow](./.github/workflows/test.yml) and the [dpsprep-git](https://aur.archlinux.org/packages/dpsprep-git) package for Arch Linux.
+For details on how these dependencies can be installed, see the GitHub Actions [workflow](./.github/workflows/test.yml).<!-- and the [dpsprep-git](https://aur.archlinux.org/packages/dpsprep-git) package for Arch Linux.-->
 
 Note that Windows support in `djvulibre-python` requires 64-bit `djvulibre`, and they only officially distribute 32-bit Windows packages. If you manage to make it work, consider opening a pull request.
 
@@ -40,7 +40,7 @@ The program can easily be installed as a Python module via `poetry` and `pip`:
     poetry build
     pip install [--user] dist/*.whl
 
-If you are packaging this for some other package manager, consider using PEP-517 tools as shown in [this PKGBUILD file](https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=dpsprep-git).
+If you are packaging this for some other package manager, consider using PEP-517 tools.<!-- as shown in [this PKGBUILD file](https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=dpsprep-git).-->
 
 A convenience script that can be copied or linked to any directory in `$PATH` can be found at [`./bin/dpsprep`](./bin/dpsprep).
 

@@ -65,5 +65,6 @@ def djvu_page_to_image(page: djvu.decode.Page, i: int) -> Image.Image:
             'raw'
         )
 
-    # I have experimentally determined that we need to invert the images. -- Ianis, 2023-05-13
-    return ImageOps.invert(image)
+    # I have experimentally determined that we need to invert the black-and-white images. -- Ianis, 2023-05-13
+    # See also https://github.com/kcroker/dpsprep/issues/16
+    return ImageOps.invert(image) if mode == 'bitonal' else image

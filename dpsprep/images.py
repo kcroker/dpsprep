@@ -52,18 +52,19 @@ def djvu_page_to_image(page: djvu.decode.Page, i: int) -> Image.Image:
             buffer=buffer
         )
     except djvu.decode.NotAvailable:
-        logger.warning(f'libdjvu claims that data for page {i + 1} is not available. Returning a blank page instead.')
-        image = Image.new(
+        logger.warning(f'libdjvu claims that data for page {i + 1} is not available. Producing a blank page.')
+        return Image.new(
             pil_modes['bitonal'],
-            page_job.size
-        )
-    else:
-        image = Image.frombuffer(
-            pil_modes[mode],
             page_job.size,
-            buffer,
-            'raw'
+            1
         )
+
+    image = Image.frombuffer(
+        pil_modes[mode],
+        page_job.size,
+        buffer,
+        'raw'
+    )
 
     # I have experimentally determined that we need to invert the black-and-white images. -- Ianis, 2023-05-13
     # See also https://github.com/kcroker/dpsprep/issues/16

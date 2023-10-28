@@ -16,6 +16,8 @@ This tool, initially made specifically for use with Sony's Digital Paper System 
 * `-o`, `--overwrite`:         Overwrite destination file.
 * `-w`, `--preserve-working`:  Preserve the working directory after script termination.
 * `-d`, `--delete-working`:    Delete any existing files in the working directory prior to writing to it.
+* `-t`, `--no-text`:           Disable the generation of text layers. Implied by --ocr.
+* `--ocr`                      Perform OCR via OCRmyPDF rather than trying to convert the text layer. If this parameter has a value, it should be a JSON dictionary of options to be passed to OCRmyPDF.
 * `-O1`:                       Use the lossless PDF image optimization from OCRmyPDF (without performing OCR).
 * `-O2`:                       Use the PDF image optimization from OCRmyPDF.
 * `-O3`:                       Use the aggressive lossy PDF image optimization from OCRmyPDF.
@@ -35,3 +37,22 @@ Produce an output file using a large pool of workers:
 
     dpsprep --pool=16 input.djvu
 
+Produce an output file by disregarding the text layer and running OCRmyPDF instead:
+
+    dpsprep --ocr '{"languages": ["rus", "eng"]}' input.djvu
+
+Or simply disregard the text layer without OCR:
+
+    dpsprep --no-text input.djvu
+
+## NOTE REGARDING COMPRESSION
+
+We perform compression in two stages:
+
+* The first one is the default compression provided by Pillow. For bitonal images, the PDF generation code says that, if `libtiff` is available, `group4` compression is used.
+
+* If OCRmyPDF is installed, its PDF optimization can be used via the flags `-O1` to `-O3` (this involves no OCR). This allows us to use advanced techniques, including JBIG2 compression via `jbig2enc`.
+
+If manually running OCRmyPDF, note that the optimization command suggested in the documentation (setting `--tesseract-timeout` to `0`) may ruin existing text layers. To perform only PDF optimization you can use the following undocumented tool instead:
+
+    python -m ocrmypdf.optimize <input_file> <level> <output_file>

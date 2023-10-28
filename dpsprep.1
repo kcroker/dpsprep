@@ -21,6 +21,10 @@ This tool, initially made specifically for use with Sony\'s Digital Paper System
 .IP "\[ci]" 4
 \fB\-d\fR, \fB\-\-delete\-working\fR: Delete any existing files in the working directory prior to writing to it\.
 .IP "\[ci]" 4
+\fB\-t\fR, \fB\-\-no\-text\fR: Disable the generation of text layers\. Implied by \-\-ocr\.
+.IP "\[ci]" 4
+\fB\-\-ocr\fR Perform OCR via OCRmyPDF rather than trying to convert the text layer\. If this parameter has a value, it should be a JSON dictionary of options to be passed to OCRmyPDF\.
+.IP "\[ci]" 4
 \fB\-O1\fR: Use the lossless PDF image optimization from OCRmyPDF (without performing OCR)\.
 .IP "\[ci]" 4
 \fB\-O2\fR: Use the PDF image optimization from OCRmyPDF\.
@@ -48,6 +52,34 @@ Produce an output file using a large pool of workers:
 .IP "" 4
 .nf
 dpsprep \-\-pool=16 input\.djvu
+.fi
+.IP "" 0
+.P
+Produce an output file by disregarding the text layer and running OCRmyPDF instead:
+.IP "" 4
+.nf
+dpsprep \-\-ocr \'{"languages": ["rus", "eng"]}\' input\.djvu
+.fi
+.IP "" 0
+.P
+Or simply disregard the text layer without OCR:
+.IP "" 4
+.nf
+dpsprep \-\-no\-text input\.djvu
+.fi
+.IP "" 0
+.SH "NOTE REGARDING COMPRESSION"
+We perform compression in two stages:
+.IP "\[ci]" 4
+The first one is the default compression provided by Pillow\. For bitonal images, the PDF generation code says that, if \fBlibtiff\fR is available, \fBgroup4\fR compression is used\.
+.IP "\[ci]" 4
+If OCRmyPDF is installed, its PDF optimization can be used via the flags \fB\-O1\fR to \fB\-O3\fR (this involves no OCR)\. This allows us to use advanced techniques, including JBIG2 compression via \fBjbig2enc\fR\.
+.IP "" 0
+.P
+If manually running OCRmyPDF, note that the optimization command suggested in the documentation (setting \fB\-\-tesseract\-timeout\fR to \fB0\fR) may ruin existing text layers\. To perform only PDF optimization you can use the following undocumented tool instead:
+.IP "" 4
+.nf
+python \-m ocrmypdf\.optimize <input_file> <level> <output_file>
 .fi
 .IP "" 0
 

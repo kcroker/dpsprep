@@ -6,11 +6,19 @@ This tool, initially made specifically for use with Sony's Digital Paper System 
 
 ## Usage
 
-Full example:
+Full example (the name of the PDF is optional and inferred from the input name):
 
     dpsprep --pool=8 --quality=50 input.djvu output.pdf
 
-Consult the [man file](./dpsprep.1.ronn) for details.
+If you have [OCRmyPDF](https://github.com/ocrmypdf/OCRmyPDF) installed, you can use its PDF optimizer:
+
+    dpsprep -O3 input.djvu
+
+You can also skip translating the text layer (it is sometimes not translated well) and redo the OCR (rather than launching the `ocrmypdf` CLI, we use the API directly and accept options in JSON format):
+
+    dpsprep --ocr '{"language": ["rus", "eng"]}' input.djvu
+
+Consult the man file ([online](./dpsprep.1.ronn)) for details; there are a lot of options to consider.
 
 See the next section for different ways to run the program.
 

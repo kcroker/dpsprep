@@ -1,5 +1,7 @@
-from loguru import logger
+from typing import Any
 import shutil
+
+from loguru import logger
 
 from .workdir import WorkingDirectory
 
@@ -70,3 +72,23 @@ def optimize_pdf(workdir: WorkingDirectory, optlevel: int, quality: int, pool_si
     )
 
     return True
+
+
+def perform_ocr(workdir: WorkingDirectory, options: dict[str, Any]):
+    try:
+        from ocrmypdf import api
+    except ImportError:
+        logger.warning('Cannot detect OCRmyPDF. No OCR will be performed on the output file.')
+        shutil.copy(workdir.combined_pdf_without_text_path, workdir.combined_pdf_path)
+        return False
+
+    try:
+        api.ocr(
+            input_file=workdir.combined_pdf_without_text_path,
+            output_file=workdir.combined_pdf_path,
+            **options
+        )
+    except Exception as err:
+        logger.warning(f'OCRmyPDF failed: {err}')
+        shutil.copy(workdir.combined_pdf_without_text_path, workdir.combined_pdf_path)
+        return False

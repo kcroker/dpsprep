@@ -64,12 +64,16 @@ class WorkingDirectory:
         return self.workdir / f'page_bg_{i + 1}.pdf'
 
     @property
-    def text_pdf_path(self):
-        return self.workdir / 'text.pdf'
+    def text_layer_pdf_path(self):
+        return self.workdir / 'text_layer.pdf'
 
     @property
     def ocrmypdf_tmp_path(self):
         return self.workdir / 'ocrmypdf'
+
+    @property
+    def combined_pdf_without_text_path(self):
+        return self.workdir / 'combined_without_text.pdf'
 
     @property
     def combined_pdf_path(self):

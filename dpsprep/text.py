@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Sequence, List
+from typing import Sequence
 import unicodedata
 
 from loguru import logger
@@ -84,7 +84,7 @@ class TextDrawVisitor(SExpressionVisitor):
         except TypeError as err:
             logger.warning(f'FPDF refuses to draw {repr(text)}: {err}')
 
-    def get_loose_string_content(self, expressions: List[djvu.sexpr.Expression], delimiter: str):
+    def get_loose_string_content(self, expressions: list[djvu.sexpr.Expression], delimiter: str):
         return delimiter.join(
             self.extractor.visit(child)
             for child in expressions

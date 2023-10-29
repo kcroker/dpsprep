@@ -14,7 +14,7 @@ from .images import djvu_page_to_image
 from .logging import configure_loguru, human_readable_size
 from .ocrmypdf import optimize_pdf, perform_ocr
 from .outline import OutlineTransformVisitor
-from .pdf import combine_pdfs_on_fs_with_text, combine_pdfs_on_fs_without_text
+from .pdf import combine_pdfs_on_fs_with_text, combine_pdfs_on_fs_without_text, is_valid_pdf
 from .text import djvu_pages_to_text_fpdf
 from .workdir import WorkingDirectory
 
@@ -23,8 +23,11 @@ def process_page_bg(workdir: WorkingDirectory, quality: int, i: int):
     page_number = i + 1
 
     if workdir.get_page_pdf_path(i).exists():
-        logger.debug(f'Image data from page {page_number} already processed.')
-        return
+        if is_valid_pdf(workdir.get_page_pdf_path(i)):
+            logger.debug(f'Image data from page {page_number} already processed.')
+            return
+        else:
+            logger.debug(f'Invalid page generated for {page_number}, regenerating.')
     else:
         logger.debug(f'Processing image data from page {page_number}.')
 

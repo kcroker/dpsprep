@@ -1,6 +1,17 @@
+import pathlib
+
 import pdfrw
 
 from .workdir import WorkingDirectory
+
+
+def is_valid_pdf(path: pathlib.Path):
+    try:
+        pdfrw.PdfReader(path)
+    except pdfrw.errors.PdfParseError:
+        return False
+    else:
+        return True
 
 
 def combine_pdfs_on_fs_with_text(workdir: WorkingDirectory, outline: pdfrw.IndirectPdfDict):

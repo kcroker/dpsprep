@@ -14,7 +14,7 @@ from .images import djvu_page_to_image
 from .logging import configure_loguru, human_readable_size
 from .ocrmypdf import optimize_pdf, perform_ocr
 from .outline import OutlineTransformVisitor
-from .pdf import combine_pdfs_on_fs_with_text, combine_pdfs_on_fs_without_text
+from .pdf import combine_pdfs_on_fs_with_text, combine_pdfs_on_fs_without_text, is_valid_pdf
 from .text import djvu_pages_to_text_fpdf
 from .workdir import WorkingDirectory
 
@@ -23,8 +23,11 @@ def process_page_bg(workdir: WorkingDirectory, quality: int, i: int):
     page_number = i + 1
 
     if workdir.get_page_pdf_path(i).exists():
-        logger.debug(f'Image data from page {page_number} already processed.')
-        return
+        if is_valid_pdf(workdir.get_page_pdf_path(i)):
+            logger.debug(f'Image data from page {page_number} already processed.')
+            return
+        else:
+            logger.debug(f'Invalid page generated for {page_number}, regenerating.')
     else:
         logger.debug(f'Processing image data from page {page_number}.')
 
@@ -101,15 +104,15 @@ def dpsprep(
         try:
             ocr_options = json.loads(ocr)
         except ValueError:
-            raise SystemError(f'The OCR options {repr(ocr)} are not valid JSON.')
+            raise SystemExit(f'The OCR options {repr(ocr)} are not valid JSON.')
         else:
             if not isinstance(ocr_options, dict):
-                raise SystemError(f'The OCR options {repr(ocr)} are not a JSON dictionary.')
+                raise SystemExit(f'The OCR options {repr(ocr)} are not a JSON dictionary.')
 
         no_text = True
 
     if not overwrite and workdir.dest.exists():
-        raise SystemError(f'File {workdir.dest} already exists.')
+        raise SystemExit(f'File {workdir.dest} already exists.')
 
     start_time = time()
 

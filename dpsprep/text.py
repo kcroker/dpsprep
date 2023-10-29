@@ -43,13 +43,9 @@ class TextExtractVisitor(SExpressionVisitor):
         _, x1, y1, x2, y2, *rest = node
         return '\n'.join(self.visit(child) or '' for child in rest)
 
-    def visit_list_column(self, node: djvu.sexpr.ListExpression):
-        _, x1, y1, x2, y2, *rest = node
-        return '\n'.join(self.visit(child) or '' for child in rest)
-
-    def visit_list_page(self, node: djvu.sexpr.ListExpression):
-        _, x1, y1, x2, y2, *rest = node
-        return '\n'.join(self.visit(child) or '' for child in rest)
+    visit_list_column = visit_list_para
+    visit_list_region = visit_list_para
+    visit_list_page = visit_list_para
 
 
 class TextDrawVisitor(SExpressionVisitor):
@@ -126,11 +122,8 @@ class TextDrawVisitor(SExpressionVisitor):
         for child in rest:
             self.visit(child)
 
-    def visit_list_page(self, node: djvu.sexpr.ListExpression):
-        _, x1, y1, x2, y2, *rest = node
-
-        for child in rest:
-            self.visit(child)
+    visit_list_page = visit_list_column
+    visit_list_region = visit_list_column
 
 
 # We do not need any visible fonts. Actually we could use some of the default PDF type 1 fonts,

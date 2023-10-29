@@ -104,15 +104,15 @@ def dpsprep(
         try:
             ocr_options = json.loads(ocr)
         except ValueError:
-            raise SystemError(f'The OCR options {repr(ocr)} are not valid JSON.')
+            raise SystemExit(f'The OCR options {repr(ocr)} are not valid JSON.')
         else:
             if not isinstance(ocr_options, dict):
-                raise SystemError(f'The OCR options {repr(ocr)} are not a JSON dictionary.')
+                raise SystemExit(f'The OCR options {repr(ocr)} are not a JSON dictionary.')
 
         no_text = True
 
     if not overwrite and workdir.dest.exists():
-        raise SystemError(f'File {workdir.dest} already exists.')
+        raise SystemExit(f'File {workdir.dest} already exists.')
 
     start_time = time()
 

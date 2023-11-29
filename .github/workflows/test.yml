@@ -1,13 +1,13 @@
 name: Run tests
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   test:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.8']
+        python-version: ['3.9']
         os: [ubuntu-22.04, macos-12]
 
     runs-on: ${{ matrix.os }}
@@ -17,7 +17,9 @@ jobs:
 
     - name: Install prerequisites on Ubuntu
       if: matrix.os == 'ubuntu-22.04'
-      run: sudo apt install --yes djvulibre-bin libtiff5
+      run: |
+        sudo apt update
+        sudo apt install --yes djvulibre-bin
 
     - name: Install prerequisites on macOS
       if: matrix.os == 'macos-12'

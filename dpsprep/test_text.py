@@ -1,6 +1,7 @@
 import string
 
 import djvu.decode
+import pytest
 
 from .text import TextExtractVisitor
 
@@ -39,3 +40,21 @@ def test_extract_djvu_page_text_lines():
         source_pdf_text = file.read()
 
     assert remove_whitespace(djvu_text) == remove_whitespace(source_pdf_text)
+
+
+def test_invalid_utf8():
+    document = djvu.decode.Context().new_document(
+        djvu.decode.FileURI('fixtures/lipsum_words_invalid.djvu')
+    )
+    document.decoding_job.wait()
+
+    djvu_page = document.pages[0]
+    djvu_page.get_info()
+    first_word_sexpr = djvu_page.text.sexpr[5][5]
+
+    # djvulibre cannot decode the first word
+    with pytest.raises(UnicodeDecodeError):
+        first_word_sexpr.value
+
+    first_word = TextExtractVisitor().visit(first_word_sexpr)
+    assert first_word == ''

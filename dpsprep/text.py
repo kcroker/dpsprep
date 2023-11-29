@@ -26,7 +26,13 @@ UNDRAWABLE_UNICODE_CATEGORIES = [
 
 class TextExtractVisitor(SExpressionVisitor):
     def visit_string(self, node: djvu.sexpr.StringExpression):
-        return ''.join(c for c in node.value if unicodedata.category(c) not in UNDRAWABLE_UNICODE_CATEGORIES)
+        try:
+            string = node.value  # This getter is not static - it does UTF-8 conversion and fails for some DjVu files
+        except ValueError as err:
+            logger.warning(f'Could not decode {repr(node)}: {err}')
+            return ''
+        else:
+            return ''.join(c for c in node.value if unicodedata.category(c) not in UNDRAWABLE_UNICODE_CATEGORIES)
 
     def visit_plain_list(self, node: djvu.sexpr.ListExpression):
         return ''

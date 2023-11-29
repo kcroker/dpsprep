@@ -19,3 +19,9 @@ all: lipsum_01.txt lipsum_01.png lipsum_lines.djvu lipsum_words.djvu
 %_lines.djvu: %.pdf
 	djvudigital --lines $*.pdf
 	mv $*.djvu $*_lines.djvu
+
+%_invalid.djvu: %.djvu
+	cp $*.djvu $*_invalid.djvu
+	djvused $*_invalid.djvu -e 'output-all' | \
+		sed "s/Lorem/\\270/g" | \
+		djvused $*_invalid.djvu -f /dev/stdin -s

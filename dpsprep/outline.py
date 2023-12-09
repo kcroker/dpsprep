@@ -1,3 +1,4 @@
+from loguru import logger
 from pdfrw import PdfName, PdfDict, IndirectPdfDict
 import djvu.sexpr
 
@@ -10,7 +11,12 @@ class OutlineTransformVisitor(SExpressionVisitor):
     def visit_plain_list(self, node: djvu.sexpr.StringExpression, parent: IndirectPdfDict):
         title, page, *rest = node
         # I have experimentally determined that we need to translate page indices. -- Ianis, 2023-05-03
-        page_number = int(page.value[1:]) - 1
+        try:
+            page_number = int(page.value[1:]) - 1
+        except ValueError:
+            # As far as I understand, python-djvulibre doesn't support Djvu's page titles. -- Ianis, 2023-12-09
+            logger.warning(f'Could not determine page number from the page title {page.value}.')
+            return
 
         bookmark = IndirectPdfDict(
             Parent = parent,

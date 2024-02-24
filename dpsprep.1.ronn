@@ -39,7 +39,7 @@ Produce an output file using a large pool of workers:
 
 Produce an output file by disregarding the text layer and running OCRmyPDF instead:
 
-    dpsprep --ocr '{"languages": ["rus", "eng"]}' input.djvu
+    dpsprep --ocr '{"language": ["rus", "eng"]}' input.djvu
 
 Or simply disregard the text layer without OCR:
 

@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "DPS" "1" "October 2023" ""
+.TH "DPS" "1" "January 2024" ""
 .SH "NAME"
 \fBdps\fR \- a DjVu to PDF converter
 .SH "SYNOPSIS"
@@ -58,7 +58,7 @@ dpsprep \-\-pool=16 input\.djvu
 Produce an output file by disregarding the text layer and running OCRmyPDF instead:
 .IP "" 4
 .nf
-dpsprep \-\-ocr \'{"languages": ["rus", "eng"]}\' input\.djvu
+dpsprep \-\-ocr \'{"language": ["rus", "eng"]}\' input\.djvu
 .fi
 .IP "" 0
 .P

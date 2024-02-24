@@ -82,7 +82,7 @@ class TextDrawVisitor(SExpressionVisitor):
         self.pdf.set_font('Invisible', size=int(BASE_FONT_SIZE * desired_width / actual_width))
 
         try:
-            self.pdf.text(x=x1, y=page_height - y1, txt=text)
+            self.pdf.text(x=x1, y=page_height - y1, text=text)
         except TypeError as err:
             logger.warning(f'FPDF refuses to draw {repr(text)}: {err}')
 

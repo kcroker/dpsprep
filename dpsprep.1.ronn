@@ -17,7 +17,8 @@ This tool, initially made specifically for use with Sony's Digital Paper System 
 * `-w`, `--preserve-working`:  Preserve the working directory after script termination.
 * `-d`, `--delete-working`:    Delete any existing files in the working directory prior to writing to it.
 * `-t`, `--no-text`:           Disable the generation of text layers. Implied by --ocr.
-* `--ocr`                      Perform OCR via OCRmyPDF rather than trying to convert the text layer. If this parameter has a value, it should be a JSON dictionary of options to be passed to OCRmyPDF.
+* `--ocr`:                     Perform OCR via OCRmyPDF rather than trying to convert the text layer. If this parameter has a value, it should be a JSON dictionary of options to be passed to OCRmyPDF.
+* `--toc-pg-offset`:           Configure the page offset to be applied when translating outline/toc. This is to work with different djvu page numbering (starting from page 0 or page 1).
 * `-O1`:                       Use the lossless PDF image optimization from OCRmyPDF (without performing OCR).
 * `-O2`:                       Use the PDF image optimization from OCRmyPDF.
 * `-O3`:                       Use the aggressive lossy PDF image optimization from OCRmyPDF.

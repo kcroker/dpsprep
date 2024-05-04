@@ -79,9 +79,10 @@ def process_text(workdir: WorkingDirectory):
 @click.option('-p', '--pool-size', type=click.IntRange(min=0), default=4, help='Size of MultiProcessing pool for handling page-by-page operations.')
 @click.option('-q', '--quality', type=click.IntRange(min=0, max=100), default=75, help="Quality of images in output. Used only for JPEG compression, i.e. RGB and Grayscale images. Passed directly to Pillow and to OCRmyPDF's optimizer.")
 @click.option('--ocr', type=str, is_flag=False, flag_value='{}', help='Perform OCR via OCRmyPDF rather than trying to convert the text layer. If this parameter has a value, it should be a JSON dictionary of options to be passed to OCRmyPDF.')
+@click.option('--toc-pg-offset', type=int, default=-1, help='The page offset to be applied when translating outline/toc.')
 @click.argument('dest', type=click.Path(exists=False, resolve_path=True), required=False)
 @click.argument('src', type=click.Path(exists=True, resolve_path=True), required=True)
-@click.command()
+@click.command(context_settings={'show_default': True})
 def dpsprep(
     src: str,
     dest: Union[str, None],
@@ -94,6 +95,7 @@ def dpsprep(
     no_text: bool,
     optlevel: Union[int, None],
     ocr: Union[str, None],
+    toc_pg_offset: int,
 ):
     configure_loguru(verbose)
     workdir = WorkingDirectory(src, dest)
@@ -165,7 +167,7 @@ def dpsprep(
 
     if len(document.outline.sexpr) > 0:
         logger.info('Processing metadata.')
-        outline = OutlineTransformVisitor().visit(document.outline.sexpr)
+        outline = OutlineTransformVisitor(toc_pg_offset, len(document.pages)).visit(document.outline.sexpr)
         logger.info('Metadata processed.')
     else:
         logger.info('No metadata to process.')

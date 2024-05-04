@@ -18,6 +18,10 @@ You can also skip translating the text layer (it is sometimes not translated wel
 
     dpsprep --ocr '{"language": ["rus", "eng"]}' input.djvu
 
+You can also configure how the outline/toc page numbers in the djvu is translated to page numbers in pdf. Sometimes, their numbering convention is not consistent. For example, when converting djvu whose page numbers are one page ahead of the pdf:
+
+    dpsprep --toc-pg-offset=-1 input.djvu
+
 Consult the man file ([online](./dpsprep.1.ronn)) for details; there are a lot of options to consider.
 
 See the next section for different ways to run the program.

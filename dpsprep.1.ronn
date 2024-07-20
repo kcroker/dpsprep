@@ -17,6 +17,7 @@ This tool, initially made specifically for use with Sony's Digital Paper System 
 * `-w`, `--preserve-working`:  Preserve the working directory after script termination.
 * `-d`, `--delete-working`:    Delete any existing files in the working directory prior to writing to it.
 * `-t`, `--no-text`:           Disable the generation of text layers. Implied by --ocr.
+* `-m`, `--mode`:              Image mode. The default is to ask libdjvu for the image mode of every page. It sometimes makes sense to force bitonal images since they compress well.
 * `--ocr`                      Perform OCR via OCRmyPDF rather than trying to convert the text layer. If this parameter has a value, it should be a JSON dictionary of options to be passed to OCRmyPDF.
 * `-O1`:                       Use the lossless PDF image optimization from OCRmyPDF (without performing OCR).
 * `-O2`:                       Use the PDF image optimization from OCRmyPDF.
@@ -36,6 +37,10 @@ Produce `output.pdf` with reduced image quality and aggressive PDF image optimiz
 Produce an output file using a large pool of workers:
 
     dpsprep --pool=16 input.djvu
+
+Force bitonal images:
+
+    dpsprep --mode bitonal input.djvu
 
 Produce an output file by disregarding the text layer and running OCRmyPDF instead:
 

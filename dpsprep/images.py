@@ -7,11 +7,12 @@ import djvu.decode
 import djvu.sexpr
 
 
-ImageMode = Literal['rgb', 'bitonal']
+ImageMode = Literal['rgb', 'grayscale', 'bitonal', 'infer']
 
 
 djvu_pixel_formats = {
     'rgb': djvu.decode.PixelFormatRgb(byte_order='RGB'),
+    'grayscale': djvu.decode.PixelFormatGrey(),
     'bitonal': djvu.decode.PixelFormatPackedBits('>'),
 }
 
@@ -23,17 +24,20 @@ for pixel_format in djvu_pixel_formats.values():
 
 pil_modes = {
     'rgb': 'RGB',
+    'grayscale': 'L',
     'bitonal': '1',
 }
 
 
-def djvu_page_to_image(page: djvu.decode.Page, i: int) -> Image.Image:
+def djvu_page_to_image(page: djvu.decode.Page, mode: ImageMode, i: int) -> Image.Image:
     page_job = page.decode(wait=True)
     width, height = page_job.size
     buffer = bytearray(3 * width * height) # RGB at most
 
     rect = (0, 0, width, height)
-    mode = 'bitonal' if page_job.type == djvu.decode.PAGE_TYPE_BITONAL else 'rgb'
+
+    if mode == 'infer':
+        mode = 'bitonal' if page_job.type == djvu.decode.PAGE_TYPE_BITONAL else 'rgb'
 
     if mode == 'bitonal':
         if not PIL.features.check_codec('libtiff'):

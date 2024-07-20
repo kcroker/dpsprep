@@ -10,7 +10,7 @@ import djvu.decode
 import pdfrw
 from loguru import logger
 
-from .images import djvu_page_to_image
+from .images import ImageMode, djvu_page_to_image
 from .logging import configure_loguru, human_readable_size
 from .ocrmypdf import optimize_pdf, perform_ocr
 from .outline import OutlineTransformVisitor
@@ -19,7 +19,7 @@ from .text import djvu_pages_to_text_fpdf
 from .workdir import WorkingDirectory
 
 
-def process_page_bg(workdir: WorkingDirectory, quality: int, i: int):
+def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: int, i: int):
     page_number = i + 1
 
     if workdir.get_page_pdf_path(i).exists():
@@ -37,7 +37,7 @@ def process_page_bg(workdir: WorkingDirectory, quality: int, i: int):
     )
     document.decoding_job.wait()
 
-    image_pdf_raw = djvu_page_to_image(document.pages[i], i)
+    image_pdf_raw = djvu_page_to_image(document.pages[i], mode, i)
     image_pdf_raw.save(
         workdir.get_page_pdf_path(i),
         format='PDF',
@@ -78,6 +78,7 @@ def process_text(workdir: WorkingDirectory):
 @click.option('-O3', 'optlevel', flag_value=3, help='Use the aggressive lossy PDF image optimization from OCRmyPDF.')
 @click.option('-p', '--pool-size', type=click.IntRange(min=0), default=4, help='Size of MultiProcessing pool for handling page-by-page operations.')
 @click.option('-q', '--quality', type=click.IntRange(min=0, max=100), default=75, help="Quality of images in output. Used only for JPEG compression, i.e. RGB and Grayscale images. Passed directly to Pillow and to OCRmyPDF's optimizer.")
+@click.option('-m', '--mode', type=click.Choice(['infer', 'bitonal', 'grayscale', 'rgb']), default='infer', help='Image mode. The default is to ask libdjvu for the image mode of every page. It sometimes makes sense to force bitonal images since they compress well.')
 @click.option('--ocr', type=str, is_flag=False, flag_value='{}', help='Perform OCR via OCRmyPDF rather than trying to convert the text layer. If this parameter has a value, it should be a JSON dictionary of options to be passed to OCRmyPDF.')
 @click.argument('dest', type=click.Path(exists=False, resolve_path=True), required=False)
 @click.argument('src', type=click.Path(exists=True, resolve_path=True), required=True)
@@ -92,6 +93,7 @@ def dpsprep(
     delete_working: bool,
     preserve_working: bool,
     no_text: bool,
+    mode: ImageMode,
     optlevel: Union[int, None],
     ocr: Union[str, None],
 ):
@@ -144,7 +146,7 @@ def dpsprep(
 
     for i in range(len(document.pages)):
         # Cannot pass the page object itself because it does not support serialization for IPC
-        tasks.append(pool.apply_async(func=process_page_bg, args=[workdir, quality, i]))
+        tasks.append(pool.apply_async(func=process_page_bg, args=[workdir, mode, quality, i]))
 
     pool.close()
     pool_is_working = True

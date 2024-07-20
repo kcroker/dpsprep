@@ -19,6 +19,6 @@ def test_djvu_page_to_image_bitonal(image_diff: ImageDiffProtocol):
     document.decoding_job.wait()
 
     fixture = Image.open('fixtures/lipsum_01.png').convert('1')
-    result = djvu_page_to_image(document.pages[0], i=0)
+    result = djvu_page_to_image(document.pages[0], mode='infer', i=0)
 
     assert image_diff(fixture, result, threshold=1e-2)

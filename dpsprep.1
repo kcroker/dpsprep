@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "DPS" "1" "January 2024" ""
+.TH "DPS" "1" "July 2024" ""
 .SH "NAME"
 \fBdps\fR \- a DjVu to PDF converter
 .SH "SYNOPSIS"
@@ -22,6 +22,8 @@ This tool, initially made specifically for use with Sony\'s Digital Paper System
 \fB\-d\fR, \fB\-\-delete\-working\fR: Delete any existing files in the working directory prior to writing to it\.
 .IP "\[ci]" 4
 \fB\-t\fR, \fB\-\-no\-text\fR: Disable the generation of text layers\. Implied by \-\-ocr\.
+.IP "\[ci]" 4
+\fB\-m\fR, \fB\-\-mode\fR: Image mode\. The default is to ask libdjvu for the image mode of every page\. It sometimes makes sense to force bitonal images since they compress well\.
 .IP "\[ci]" 4
 \fB\-\-ocr\fR Perform OCR via OCRmyPDF rather than trying to convert the text layer\. If this parameter has a value, it should be a JSON dictionary of options to be passed to OCRmyPDF\.
 .IP "\[ci]" 4
@@ -52,6 +54,13 @@ Produce an output file using a large pool of workers:
 .IP "" 4
 .nf
 dpsprep \-\-pool=16 input\.djvu
+.fi
+.IP "" 0
+.P
+Force bitonal images:
+.IP "" 4
+.nf
+dpsprep \-\-mode bitonal input\.djvu
 .fi
 .IP "" 0
 .P

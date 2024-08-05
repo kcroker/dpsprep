@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Sequence
+from collections.abc import Sequence, Iterable
 import unicodedata
 
 from loguru import logger
@@ -11,41 +11,55 @@ from .sexpr import SExpressionVisitor
 
 BASE_FONT_SIZE = 10
 
-# These break FPDF.
-# A full list of categories can be found in https://www.compart.com/en/unicode/category
-UNDRAWABLE_UNICODE_CATEGORIES = [
-    'Cc',  # Control
-    'Cf',  # Format
-    'Co',  # Private Use
-    'Cs',  # Surrogate
-    'Zl',  # Line Separator
-    'Zp',  # Paragraph Separator
-    'Zs'   # Space Separator
-]
-
 
 class TextExtractVisitor(SExpressionVisitor):
-    def visit_string(self, node: djvu.sexpr.StringExpression):
+    def iter_chars(self, string: str) -> Iterable[str]:
+        for char in string:
+            code = unicodedata.category(char)
+
+            # Line Separator (Zl) | Space Separator (Zs)
+            if code == 'Zl' or code == 'Zs':
+                yield ' '
+
+            # Paragraph Separator (Zp)
+            elif code == 'Zp':
+                yield '\n'
+
+             # Control (Cc)
+            elif code == 'Cc':
+                if char == '\t' or char == '\n':
+                    yield char
+
+            # These break FPDF.
+            # A full list of categories can be found in https://www.compart.com/en/unicode/category
+            # Format (Cf) | Private Use (Co) | Surrogate 'Cs':
+            elif code == 'Cf' or code == 'Co' or code == 'Cs':
+                pass
+
+            else:
+                yield char
+
+    def visit_string(self, node: djvu.sexpr.StringExpression) -> str:
         try:
             string = node.value  # This getter is not static - it does UTF-8 conversion and fails for some DjVu files
         except ValueError as err:
             logger.warning(f'Could not decode {repr(node)}: {err}')
             return ''
         else:
-            return ''.join(c for c in string if unicodedata.category(c) not in UNDRAWABLE_UNICODE_CATEGORIES)
+            return ''.join(self.iter_chars(string))
 
-    def visit_plain_list(self, node: djvu.sexpr.ListExpression):
+    def visit_plain_list(self, node: djvu.sexpr.ListExpression) -> str:
         return ''
 
-    def visit_list_word(self, node: djvu.sexpr.ListExpression):
+    def visit_list_word(self, node: djvu.sexpr.ListExpression) -> str:
         _, x1, y1, x2, y2, content, *rest = node
         return self.visit(content)
 
-    def visit_list_line(self, node: djvu.sexpr.ListExpression):
+    def visit_list_line(self, node: djvu.sexpr.ListExpression) -> str:
         _, x1, y1, x2, y2, *rest = node
         return ' '.join(self.visit(child) or '' for child in rest)
 
-    def visit_list_para(self, node: djvu.sexpr.ListExpression):
+    def visit_list_para(self, node: djvu.sexpr.ListExpression) -> str:
         _, x1, y1, x2, y2, *rest = node
         return '\n'.join(self.visit(child) or '' for child in rest)
 
@@ -58,7 +72,7 @@ class TextDrawVisitor(SExpressionVisitor):
     pdf: FPDF
     extractor: TextExtractVisitor
 
-    def __init__(self, pdf: FPDF):
+    def __init__(self, pdf: FPDF) -> None:
         self.pdf = pdf
         self.extractor = TextExtractVisitor()
 

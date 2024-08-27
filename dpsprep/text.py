@@ -10,6 +10,7 @@ from .sexpr import SExpressionVisitor
 
 
 BASE_FONT_SIZE = 10
+TAB_SIZE = 4
 
 
 class TextExtractVisitor(SExpressionVisitor):
@@ -27,8 +28,10 @@ class TextExtractVisitor(SExpressionVisitor):
 
              # Control (Cc)
             elif code == 'Cc':
-                if char == '\t' or char == '\n':
-                    yield char
+                if char == '\t':
+                    yield ' ' * TAB_SIZE
+                elif char == '\n':
+                    yield ' '
 
             # These break FPDF.
             # A full list of categories can be found in https://www.compart.com/en/unicode/category

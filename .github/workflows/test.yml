@@ -38,7 +38,7 @@ jobs:
     - uses: abatilo/actions-poetry@v2
 
     - name: Install dependencies
-      run: poetry install --with dev
+      run: poetry install --all-extras --with dev
 
     - name: Lint
       run: make lint

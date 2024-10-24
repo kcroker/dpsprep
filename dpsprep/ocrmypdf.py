@@ -1,3 +1,4 @@
+import argparse
 import shutil
 from typing import Any
 
@@ -11,7 +12,7 @@ from .workdir import WorkingDirectory
 # https://github.com/ocrmypdf/OCRmyPDF/blob/fb006ef39f7f8842dec1976bebe4bcd5ca2e8df8/src/ocrmypdf/optimize.py#L724
 
 
-class OptimizeOptions:
+class OptimizeOptions(argparse.Namespace):
     """Emulate ocrmypdf's options."""
 
     input_file: str
@@ -45,6 +46,7 @@ def optimize_pdf(workdir: WorkingDirectory, optlevel: int, quality: int, pool_si
     try:
         # ObjectStreamMode is actually from pikepdf, but I did not want to include that as a dependency
         from ocrmypdf.optimize import ObjectStreamMode, PdfContext, optimize
+        from ocrmypdf.pdfinfo import PdfInfo
     except ImportError:
         loguru.logger.warning('Cannot detect OCRmyPDF. No optimizations will be performed on the output file.')
         shutil.copy(workdir.combined_pdf_path, workdir.optimized_pdf_path)
@@ -58,7 +60,8 @@ def optimize_pdf(workdir: WorkingDirectory, optlevel: int, quality: int, pool_si
         png_quality=quality,
     )
 
-    context = PdfContext(options, workdir.ocrmypdf_tmp_path, workdir.combined_pdf_path, None, None)
+    info = PdfInfo(workdir.combined_pdf_path)
+    context = PdfContext(options, workdir.ocrmypdf_tmp_path, workdir.combined_pdf_path, info, None)
 
     optimize(
         workdir.combined_pdf_path,

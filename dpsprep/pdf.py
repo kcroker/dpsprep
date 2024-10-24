@@ -5,7 +5,7 @@ import pdfrw
 from .workdir import WorkingDirectory
 
 
-def is_valid_pdf(path: pathlib.Path):
+def is_valid_pdf(path: pathlib.Path) -> bool:
     try:
         pdfrw.PdfReader(path)
     except pdfrw.errors.PdfParseError:
@@ -14,7 +14,7 @@ def is_valid_pdf(path: pathlib.Path):
         return True
 
 
-def combine_pdfs_on_fs_with_text(workdir: WorkingDirectory, outline: pdfrw.IndirectPdfDict):
+def combine_pdfs_on_fs_with_text(workdir: WorkingDirectory, outline: pdfrw.IndirectPdfDict) -> None:
     text_pdf = pdfrw.PdfReader(workdir.text_layer_pdf_path)
     writer = pdfrw.PdfWriter()
 
@@ -28,7 +28,7 @@ def combine_pdfs_on_fs_with_text(workdir: WorkingDirectory, outline: pdfrw.Indir
     writer.write(workdir.combined_pdf_path)
 
 
-def combine_pdfs_on_fs_without_text(workdir: WorkingDirectory, outline: pdfrw.IndirectPdfDict, max_page: int):
+def combine_pdfs_on_fs_without_text(workdir: WorkingDirectory, outline: pdfrw.IndirectPdfDict, max_page: int) -> None:
     writer = pdfrw.PdfWriter()
 
     for i in range(max_page):

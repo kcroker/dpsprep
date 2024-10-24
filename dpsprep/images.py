@@ -1,11 +1,10 @@
 from typing import Literal
 
-from loguru import logger
-from PIL import Image, ImageOps
-import PIL.features
 import djvu.decode
 import djvu.sexpr
-
+import loguru
+import PIL.features
+from PIL import Image, ImageOps
 
 ImageMode = Literal['rgb', 'grayscale', 'bitonal', 'infer']
 
@@ -41,10 +40,9 @@ def djvu_page_to_image(page: djvu.decode.Page, mode: ImageMode, i: int) -> Image
 
     if mode == 'bitonal':
         if not PIL.features.check_codec('libtiff'):
-            logger.warning('Bitonal image compression may suffer because Pillow has been built without libtiff support.')
-    else:
-        if not PIL.features.check_codec('jpg'):
-            logger.warning('Multitonal image compression may suffer because Pillow has been built without libjpeg support.')
+            loguru.logger.warning('Bitonal image compression may suffer because Pillow has been built without libtiff support.')
+    elif not PIL.features.check_codec('jpg'):
+        loguru.logger.warning('Multitonal image compression may suffer because Pillow has been built without libjpeg support.')
 
     try:
         page_job.render(
@@ -53,21 +51,21 @@ def djvu_page_to_image(page: djvu.decode.Page, mode: ImageMode, i: int) -> Image
             page_rect=rect,
             render_rect=rect,
             pixel_format=djvu_pixel_formats[mode],
-            buffer=buffer
+            buffer=buffer,
         )
     except djvu.decode.NotAvailable:
-        logger.warning(f'libdjvu claims that data for page {i + 1} is not available. Producing a blank page.')
+        loguru.logger.warning(f'libdjvu claims that data for page {i + 1} is not available. Producing a blank page.')
         return Image.new(
             pil_modes['bitonal'],
             page_job.size,
-            1
+            1,
         )
 
     image = Image.frombuffer(
         pil_modes[mode],
         page_job.size,
         buffer,
-        'raw'
+        'raw',
     )
 
     # I have experimentally determined that we need to invert the black-and-white images. -- Ianis, 2023-05-13

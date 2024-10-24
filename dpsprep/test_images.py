@@ -1,8 +1,8 @@
 from typing import Protocol
 
-from pytest_image_diff.plugin import DiffCompareResult
-from PIL import Image
 import djvu.decode
+from PIL import Image
+from pytest_image_diff.plugin import DiffCompareResult
 
 from .images import djvu_page_to_image
 
@@ -12,9 +12,9 @@ class ImageDiffProtocol(Protocol):
         ...
 
 
-def test_djvu_page_to_image_bitonal(image_diff: ImageDiffProtocol):
+def test_djvu_page_to_image_bitonal(image_diff: ImageDiffProtocol) -> None:
     document = djvu.decode.Context().new_document(
-        djvu.decode.FileURI('fixtures/lipsum_words.djvu')
+        djvu.decode.FileURI('fixtures/lipsum_words.djvu'),
     )
     document.decoding_job.wait()
 

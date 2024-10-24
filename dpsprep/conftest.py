@@ -1,7 +1,7 @@
-from pytest import Session
+import loguru
+import pytest
 
-from .logging import configure_loguru
 
-
-def pytest_sessionstart(session: Session):
-    configure_loguru(verbose=True)
+@pytest.fixture(autouse=True)
+def disable_loguru() -> None:
+    loguru.logger.remove()

@@ -54,13 +54,11 @@ class TextExtractVisitor(SExpressionVisitor):
     def visit_plain_list(self, node: djvu.sexpr.ListExpression) -> str:
         return ''
 
-    def visit_list_char(self, node: djvu.sexpr.ListExpression) -> str:
-        _, x1, y1, x2, y2, content, *rest = node
-        return self.visit(content)
-
     def visit_list_word(self, node: djvu.sexpr.ListExpression) -> str:
         _, x1, y1, x2, y2, content, *rest = node
         return self.visit(content)
+
+    visit_list_char = visit_list_word
 
     def visit_list_line(self, node: djvu.sexpr.ListExpression) -> str:
         _, x1, y1, x2, y2, *rest = node
@@ -118,6 +116,8 @@ class TextDrawVisitor(SExpressionVisitor):
         _, x1, y1, x2, y2, *rest = node
         text = self.extractor.visit(node)
         self.draw_text(x1.value, x2.value, y1.value, y2.value, text)
+
+    visit_list_char = visit_list_word
 
     def visit_list_line(self, node: djvu.sexpr.ListExpression):
         _, x1, y1, x2, y2, *rest = node

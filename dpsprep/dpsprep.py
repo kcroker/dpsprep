@@ -1,14 +1,13 @@
-from time import time
-from typing import Union
 import json
 import multiprocessing.pool
-import os.path
 import shutil
+from time import time
+from typing import Union
 
 import click
 import djvu.decode
+import loguru
 import pdfrw
-from loguru import logger
 
 from .images import ImageMode, djvu_page_to_image
 from .logging import configure_loguru, human_readable_size
@@ -19,21 +18,20 @@ from .text import djvu_pages_to_text_fpdf
 from .workdir import WorkingDirectory
 
 
-def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: int, i: int):
+def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: int, i: int) -> None:
     page_number = i + 1
 
     if workdir.get_page_pdf_path(i).exists():
         if is_valid_pdf(workdir.get_page_pdf_path(i)):
-            logger.debug(f'Image data from page {page_number} already processed.')
+            loguru.logger.debug(f'Image data from page {page_number} already processed.')
             return
-        else:
-            logger.debug(f'Invalid page generated for {page_number}, regenerating.')
+        loguru.logger.debug(f'Invalid page generated for {page_number}, regenerating.')
     else:
-        logger.debug(f'Processing image data from page {page_number}.')
+        loguru.logger.debug(f'Processing image data from page {page_number}.')
 
     start_time = time()
     document = djvu.decode.Context().new_document(
-        djvu.decode.FileURI(workdir.src)
+        djvu.decode.FileURI(workdir.src),
     )
     document.decoding_job.wait()
 
@@ -41,31 +39,30 @@ def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: int, i:
     image_pdf_raw.save(
         workdir.get_page_pdf_path(i),
         format='PDF',
-        quality=quality
+        quality=quality,
     )
 
-    pdf_size = os.path.getsize(workdir.get_page_pdf_path(i))
-    logger.debug(f'Image data with size {human_readable_size(pdf_size)} from page {page_number} processed in {time() - start_time:.2f}s and written to working directory.')
+    pdf_size = workdir.get_page_pdf_path(i).stat().st_size
+    loguru.logger.debug(f'Image data with size {human_readable_size(pdf_size)} from page {page_number} processed in {time() - start_time:.2f}s and written to working directory.')
 
 
-def process_text(workdir: WorkingDirectory):
+def process_text(workdir: WorkingDirectory) -> None:
     if workdir.text_layer_pdf_path.exists():
-        logger.info('Text data already processed.')
+        loguru.logger.info('Text data already processed.')
         return
-    else:
-        logger.debug('Processing text data.')
+    loguru.logger.debug('Processing text data.')
 
     start_time = time()
     document = djvu.decode.Context().new_document(
-        djvu.decode.FileURI(workdir.src)
+        djvu.decode.FileURI(workdir.src),
     )
     document.decoding_job.wait()
 
     fpdf = djvu_pages_to_text_fpdf(document.pages)
-    fpdf.output(workdir.text_layer_pdf_path)
+    fpdf.output(str(workdir.text_layer_pdf_path))
 
-    pdf_size = os.path.getsize(workdir.text_layer_pdf_path)
-    logger.info(f'Text data with size {human_readable_size(pdf_size) } processed in {time() - start_time:.2f}s and written to working directory')
+    pdf_size = workdir.text_layer_pdf_path.stat().st_size
+    loguru.logger.info(f'Text data with size {human_readable_size(pdf_size) } processed in {time() - start_time:.2f}s and written to working directory')
 
 
 @click.option('-d', '--delete-working', is_flag=True, help='Delete any existing files in the working directory prior to writing to it.')
@@ -83,21 +80,22 @@ def process_text(workdir: WorkingDirectory):
 @click.argument('dest', type=click.Path(exists=False, resolve_path=True), required=False)
 @click.argument('src', type=click.Path(exists=True, resolve_path=True), required=True)
 @click.command()
-def dpsprep(
+def dpsprep(  # noqa: C901, PLR0912, PLR0913, PLR0915
     src: str,
     dest: Union[str, None],
     quality: int,
     pool_size: int,
+    mode: ImageMode,
+    optlevel: Union[int, None],
+    ocr: Union[str, None],
+    *,
     verbose: bool,
     overwrite: bool,
     delete_working: bool,
     preserve_working: bool,
     no_text: bool,
-    mode: ImageMode,
-    optlevel: Union[int, None],
-    ocr: Union[str, None],
-):
-    configure_loguru(verbose)
+) -> None:
+    configure_loguru(verbose=verbose)
     workdir = WorkingDirectory(src, dest)
 
     if ocr is None:
@@ -105,41 +103,44 @@ def dpsprep(
     else:
         try:
             ocr_options = json.loads(ocr)
-        except ValueError:
-            raise SystemExit(f'The OCR options {repr(ocr)} are not valid JSON.')
+        except ValueError as err:
+            msg = f'The OCR options {ocr!r} are not valid JSON.'
+            raise SystemExit(msg) from err
         else:
             if not isinstance(ocr_options, dict):
-                raise SystemExit(f'The OCR options {repr(ocr)} are not a JSON dictionary.')
+                msg = f'The OCR options {ocr!r} are not a JSON dictionary.'
+                raise SystemExit(msg)
 
         no_text = True
 
     if not overwrite and workdir.dest.exists():
-        raise SystemExit(f'File {workdir.dest} already exists.')
+        msg = f'File {workdir.dest} already exists.'
+        raise SystemExit(msg)
 
     start_time = time()
 
     if workdir.workdir.exists():
         if delete_working:
-            logger.debug(f'Removing existing working directory {workdir.workdir}.')
+            loguru.logger.debug(f'Removing existing working directory {workdir.workdir}.')
             workdir.destroy()
-            logger.info(f'Removed existing working directory {workdir.workdir}.')
+            loguru.logger.info(f'Removed existing working directory {workdir.workdir}.')
         else:
-            logger.info(f'Reusing working directory {workdir.workdir}.')
+            loguru.logger.info(f'Reusing working directory {workdir.workdir}.')
     else:
-        logger.info(f'Working directory {workdir.workdir} has been created.')
+        loguru.logger.info(f'Working directory {workdir.workdir} has been created.')
 
     workdir.create_if_necessary()
 
     document = djvu.decode.Context().new_document(
-        djvu.decode.FileURI(workdir.src)
+        djvu.decode.FileURI(workdir.src),
     )
     document.decoding_job.wait()
 
-    djvu_size = os.path.getsize(workdir.src)
-    logger.info(f'Processing {workdir.src} with {len(document.pages)} pages and size {human_readable_size(djvu_size)} using {pool_size} workers.')
+    djvu_size = workdir.src.stat().st_size
+    loguru.logger.info(f'Processing {workdir.src} with {len(document.pages)} pages and size {human_readable_size(djvu_size)} using {pool_size} workers.')
 
     pool = multiprocessing.Pool(processes=pool_size)
-    tasks: list[multiprocessing.pool.AsyncResult] = []
+    tasks = list[multiprocessing.pool.AsyncResult]()
 
     if not no_text:
         tasks.append(pool.apply_async(func=process_text, args=[workdir]))
@@ -157,60 +158,60 @@ def dpsprep(
         for task in tasks:
             try:
                 task.get(timeout=25)
-            except multiprocessing.TimeoutError:
+            except multiprocessing.TimeoutError:  # noqa: PERF203
                 pool_is_working = True
 
     pool.join()
-    logger.info('Processed all pages.')
+    loguru.logger.info('Processed all pages.')
 
     outline = pdfrw.IndirectPdfDict()
 
     if len(document.outline.sexpr) > 0:
-        logger.info('Processing metadata.')
+        loguru.logger.info('Processing metadata.')
         outline = OutlineTransformVisitor().visit(document.outline.sexpr)
-        logger.info('Metadata processed.')
+        loguru.logger.info('Metadata processed.')
     else:
-        logger.info('No metadata to process.')
+        loguru.logger.info('No metadata to process.')
 
-    logger.info('Combining everything.')
+    loguru.logger.info('Combining everything.')
 
     if no_text:
         combine_pdfs_on_fs_without_text(workdir, outline, len(document.pages))
 
         if ocr_options is None:
-            logger.info('Skipping the text layer.')
+            loguru.logger.info('Skipping the text layer.')
             shutil.copy(workdir.combined_pdf_without_text_path, workdir.combined_pdf_path)
         else:
-            logger.info('Performing OCR.')
+            loguru.logger.info('Performing OCR.')
             perform_ocr(workdir, ocr_options)
     else:
         combine_pdfs_on_fs_with_text(workdir, outline)
 
-    combined_size = os.path.getsize(workdir.combined_pdf_path)
-    logger.info(f'Produced a combined output file with size {human_readable_size(combined_size)} in {time() - start_time:.2f}s. This is {round(100 * combined_size / djvu_size, 2)}% of the DjVu source file.')
+    combined_size = workdir.combined_pdf_path.stat().st_size
+    loguru.logger.info(f'Produced a combined output file with size {human_readable_size(combined_size)} in {time() - start_time:.2f}s. This is {round(100 * combined_size / djvu_size, 2)}% of the DjVu source file.')
 
     opt_success = False
 
     if optlevel is not None:
-        logger.info(f'Performing level {optlevel} optimization.')
+        loguru.logger.info(f'Performing level {optlevel} optimization.')
         opt_success = optimize_pdf(workdir, optlevel, quality, pool_size)
 
     if opt_success:
-        opt_size = os.path.getsize(workdir.optimized_pdf_path)
+        opt_size = workdir.optimized_pdf_path.stat().st_size
 
-        logger.info(f'The optimized file has size {human_readable_size(opt_size)}, which is {round(100 * opt_size / combined_size, 2)}% of the raw combined file and {round(100 * opt_size / djvu_size, 2)}% of the DjVu source file.')
+        loguru.logger.info(f'The optimized file has size {human_readable_size(opt_size)}, which is {round(100 * opt_size / combined_size, 2)}% of the raw combined file and {round(100 * opt_size / djvu_size, 2)}% of the DjVu source file.')
 
         if opt_size < combined_size:
-            logger.info('Using the optimized file.')
+            loguru.logger.info('Using the optimized file.')
             shutil.copy(workdir.optimized_pdf_path, workdir.dest)
         else:
-            logger.info('Using the raw combined file.')
+            loguru.logger.info('Using the raw combined file.')
             shutil.copy(workdir.combined_pdf_path, workdir.dest)
     else:
         shutil.copy(workdir.combined_pdf_path, workdir.dest)
 
     if preserve_working:
-        logger.info(f'Working directory {workdir.workdir} will be preserved.')
+        loguru.logger.info(f'Working directory {workdir.workdir} will be preserved.')
     else:
-        logger.info(f'Deleting the working directory {workdir.workdir}.')
+        loguru.logger.info(f'Deleting the working directory {workdir.workdir}.')
         workdir.destroy()

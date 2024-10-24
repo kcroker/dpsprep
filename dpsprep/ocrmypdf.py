@@ -1,7 +1,7 @@
-from typing import Any
 import shutil
+from typing import Any
 
-from loguru import logger
+import loguru
 
 from .workdir import WorkingDirectory
 
@@ -26,8 +26,8 @@ class OptimizeOptions:
     progress_bar: bool
 
     def __init__(
-        self, input_file, jobs, optimize_, jpeg_quality, png_quality
-    ):
+        self, input_file: str, jobs: int, optimize_: int, jpeg_quality: int, png_quality: int,
+    ) -> None:
         self.input_file = input_file
         self.jobs = jobs
         self.optimize = optimize_
@@ -41,44 +41,44 @@ class OptimizeOptions:
         self.progress_bar = False
 
 
-def optimize_pdf(workdir: WorkingDirectory, optlevel: int, quality: int, pool_size: int):
+def optimize_pdf(workdir: WorkingDirectory, optlevel: int, quality: int, pool_size: int) -> bool:
     try:
         # ObjectStreamMode is actually from pikepdf, but I did not want to include that as a dependency
         from ocrmypdf.optimize import ObjectStreamMode, PdfContext, optimize
     except ImportError:
-        logger.warning('Cannot detect OCRmyPDF. No optimizations will be performed on the output file.')
+        loguru.logger.warning('Cannot detect OCRmyPDF. No optimizations will be performed on the output file.')
         shutil.copy(workdir.combined_pdf_path, workdir.optimized_pdf_path)
         return False
 
     options = OptimizeOptions(
-        input_file=workdir.combined_pdf_path,
+        input_file=str(workdir.combined_pdf_path),
         jobs=pool_size,  # These correspond to CPU cores rather than threads, but it seems better to use the available pool size parameter
         optimize_=optlevel,
         jpeg_quality=quality,
-        png_quality=quality
+        png_quality=quality,
     )
 
-    context = PdfContext(options, workdir.ocrmypdf_tmp_path, workdir.combined_pdf_path, None, None) # type: ignore
+    context = PdfContext(options, workdir.ocrmypdf_tmp_path, workdir.combined_pdf_path, None, None)
 
     optimize(
         workdir.combined_pdf_path,
         workdir.optimized_pdf_path,
         context,
-        dict(
-            compress_streams=True,
-            preserve_pdfa=True,
-            object_stream_mode=ObjectStreamMode.generate,
-        ),
+        {
+            'compress_streams': True,
+            'preserve_pdfa': True,
+            'object_stream_mode': ObjectStreamMode.generate,
+        },
     )
 
     return True
 
 
-def perform_ocr(workdir: WorkingDirectory, options: dict[str, Any]):
+def perform_ocr(workdir: WorkingDirectory, options: dict[str, Any]) -> bool:
     try:
         from ocrmypdf import api
     except ImportError:
-        logger.warning('Cannot detect OCRmyPDF. No OCR will be performed on the output file.')
+        loguru.logger.warning('Cannot detect OCRmyPDF. No OCR will be performed on the output file.')
         shutil.copy(workdir.combined_pdf_without_text_path, workdir.combined_pdf_path)
         return False
 
@@ -86,9 +86,11 @@ def perform_ocr(workdir: WorkingDirectory, options: dict[str, Any]):
         api.ocr(
             input_file=workdir.combined_pdf_without_text_path,
             output_file=workdir.combined_pdf_path,
-            **options
+            **options,
         )
-    except Exception as err:
-        logger.warning(f'OCRmyPDF failed: {err}')
+    except Exception as err:  # noqa: BLE001
+        loguru.logger.warning(f'OCRmyPDF failed: {err}')
         shutil.copy(workdir.combined_pdf_without_text_path, workdir.combined_pdf_path)
         return False
+    else:
+        return True

@@ -28,7 +28,7 @@ The easiest way to obtain `dpsprep` is to clone the repository.
 
 The tool depends on several Python libraries, which can easily be installed via `poetry`. A configuration for `pyenv` is also included.
 
-The only hard prerequisite is `djvulibre`. Optional prerequisites are:
+The only hard prerequisite is `djvulibre` (e.g. `djvulibre` on Arch, `libdjvulibre-dev` on Ubuntu, etc.). Optional prerequisites are:
 * `libtiff` for bitonal image compression.
 * `libjpeg` (or `libjpeg-turbo`) for multitotal (RGB or grayscale) compression.
 * `OCRmyPDF` and `jbig2enc` for PDF optimization (see the next section).

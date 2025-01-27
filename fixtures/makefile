@@ -10,7 +10,7 @@ all: lipsum_01.txt lipsum_01.png lipsum_lines.djvu lipsum_words.djvu
 	pdftotext -l 1 -layout $*.pdf $*_01.txt
 
 %_01.png: %.pdf
-	gs -sDEVICE=png16m -r300 -dLastPage=1 -o $*_01.png $*.pdf
+	gs -sDEVICE=pngmono -r300 -dLastPage=1 -o $*_01.png $*.pdf
 
 %_words.djvu: %.pdf
 	djvudigital --words $*.pdf

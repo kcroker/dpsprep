@@ -1045,20 +1045,20 @@ testing = ["argcomplete", "attrs (>=19.2.0)", "hypothesis (>=3.56)", "mock", "no
 
 [[package]]
 name = "pytest-image-diff"
-version = "0.0.11"
+version = "0.0.14"
 description = ""
 optional = false
-python-versions = ">=3.6, <4"
+python-versions = "<4,>=3.6"
 files = [
-    {file = "pytest-image-diff-0.0.11.tar.gz", hash = "sha256:50443ee1ad3cb5fa2d0b6cfc2d21a70eff8666a4d447e1f55e3e73f7b94413d9"},
-    {file = "pytest_image_diff-0.0.11-py2.py3-none-any.whl", hash = "sha256:370d3164cae1f834ff6fd9f8da2fefb96a8e34542a14d6988b8f73a9c1b2afb5"},
+    {file = "pytest_image_diff-0.0.14-py2.py3-none-any.whl", hash = "sha256:106642ab02c7be579aed7085f5ca670108ad43cfaff0980690383185a2fb5ad4"},
+    {file = "pytest_image_diff-0.0.14.tar.gz", hash = "sha256:2405dba60c8009c93a7cafc15976cc8f2b1b8f33ffe8126e35d72a6d22e19850"},
 ]
 
 [package.dependencies]
 diffimg = "*"
 imgdiff = "*"
 pytest = "*"
-typing-extensions = "*"
+typing_extensions = "*"
 
 [package.extras]
 splinter = ["pytest-splinter (>=2.1.0)"]
@@ -1314,4 +1314,4 @@ compress = ["ocrmypdf"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "7d167f71525ebe28c116d561217c8a7c1e45020050e78aba839fa3b4bb37500f"
+content-hash = "7bf513c785ef4edbe38e2111da7893a4d8d090bd56485e9b9e3dca47ce683766"

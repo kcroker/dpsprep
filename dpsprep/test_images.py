@@ -18,7 +18,8 @@ def test_djvu_page_to_image_bitonal(image_diff: ImageDiffProtocol) -> None:
     )
     document.decoding_job.wait()
 
-    fixture = Image.open('fixtures/lipsum_01.png').convert('1')
+    fixture = Image.open('fixtures/lipsum_01.png')
     result = djvu_page_to_image(document.pages[0], mode='infer', i=0)
 
-    assert image_diff(fixture, result, threshold=1e-2)
+    # pytest_image_diff (as of v0.0.14) wants to convert monochrome images to LA mode and fails, so we do it manually
+    assert image_diff(fixture.convert('LA'), result.convert('LA'), threshold=1e-2)

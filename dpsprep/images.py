@@ -1,4 +1,5 @@
-from typing import Literal
+import pathlib
+from typing import Literal, Union
 
 import djvu.decode
 import djvu.sexpr
@@ -71,3 +72,25 @@ def djvu_page_to_image(page: djvu.decode.Page, mode: ImageMode, i: int) -> Image
     # I have experimentally determined that we need to invert the black-and-white images. -- Ianis, 2023-05-13
     # See also https://github.com/kcroker/dpsprep/issues/16
     return ImageOps.invert(image) if mode == 'bitonal' else image
+
+
+def failsafe_save_image(image: Image.Image, target: pathlib.Path, quality: Union[int, None], page_number: int) -> None:
+    if quality is not None:
+        if image.mode in pil_modes['bitonal'] and PIL.features.check_codec('libtiff'):
+            loguru.logger.warning('Pillow uses TIFF for encoding bitonal PDF images. The encoder does not support a "quality" setting. If the conversion fails, please try again without specifying quality.')
+
+        try:
+            image.save(
+                target,
+                format='PDF',
+                quality=quality,
+            )
+        except ValueError:
+            loguru.logger.warning(f'Failed to encode page {page_number}. Trying again without setting quality.')
+        else:
+            return
+
+    image.save(
+        target,
+        format='PDF'
+    )

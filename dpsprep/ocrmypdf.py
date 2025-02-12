@@ -1,6 +1,6 @@
 import argparse
 import shutil
-from typing import Any
+from typing import Any, Union
 
 import loguru
 
@@ -34,15 +34,15 @@ class OptimizeOptions(argparse.Namespace):
         self.optimize = optimize_
         self.jpeg_quality = jpeg_quality
         self.png_quality = png_quality
-        self.jbig2_page_group_size = 0
+        self.jbig2_page_group_size = 0  # When 0, this should be adjusted inside OCRmyPDF's "optimize" function
         self.jbig2_lossy = False
-        self.jbig2_threshold = 0.85 # This seems to be the default
+        self.jbig2_threshold = 0.85  # This seems to be the default
         # Changing the two verbosity options seems to have no effect in this concrete case
         self.quiet = True
         self.progress_bar = False
 
 
-def optimize_pdf(workdir: WorkingDirectory, optlevel: int, quality: int, pool_size: int) -> bool:
+def optimize_pdf(workdir: WorkingDirectory, optlevel: int, quality: Union[int, None], pool_size: int) -> bool:
     try:
         # ObjectStreamMode is actually from pikepdf, but I did not want to include that as a dependency
         from ocrmypdf.optimize import ObjectStreamMode, PdfContext, optimize
@@ -56,8 +56,9 @@ def optimize_pdf(workdir: WorkingDirectory, optlevel: int, quality: int, pool_si
         input_file=str(workdir.combined_pdf_path),
         jobs=pool_size,  # These correspond to CPU cores rather than threads, but it seems better to use the available pool size parameter
         optimize_=optlevel,
-        jpeg_quality=quality,
-        png_quality=quality,
+        # When 0, these should be adjusted inside OCRmyPDF's "optimize" function
+        jpeg_quality=quality or 0,
+        png_quality=quality or 0
     )
 
     info = PdfInfo(workdir.combined_pdf_path)

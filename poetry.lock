@@ -322,12 +322,12 @@ Pillow = ">=4.3"
 
 [[package]]
 name = "djvulibre-python"
-version = "0.9.1"
+version = "0.9.3"
 description = "Python support for the DjVu image format"
 optional = false
 python-versions = "*"
 files = [
-    {file = "djvulibre_python-0.9.1.tar.gz", hash = "sha256:a060b076382cb5d13eb8f4eaff4f6200b8cce4ebe7527a66686e0e1cf3b54ba5"},
+    {file = "djvulibre_python-0.9.3.tar.gz", hash = "sha256:efe3c816b40b2bf5fda81cced2b44e57e86dfe608cd89e5acfd3596191ed5248"},
 ]
 
 [package.extras]
@@ -1314,4 +1314,4 @@ compress = ["ocrmypdf"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "7bf513c785ef4edbe38e2111da7893a4d8d090bd56485e9b9e3dca47ce683766"
+content-hash = "65f7b7da43202b0eb423e9d1319ecfa91d6abfe1d4c86f7f4767281a8db96b9e"

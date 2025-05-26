@@ -10,6 +10,7 @@ from .sexpr import SExpressionVisitor
 class OutlineTransformVisitor(SExpressionVisitor[PdfDict]):
     def visit_plain_list(self, node: djvu.sexpr.StringExpression, parent: IndirectPdfDict) -> PdfDict:
         title, page, *rest = node
+
         # I have experimentally determined that we need to translate page indices. -- Ianis, 2023-05-03
         try:
             page_number = int(page.value[1:]) - 1
@@ -18,9 +19,15 @@ class OutlineTransformVisitor(SExpressionVisitor[PdfDict]):
             loguru.logger.warning(f'Could not determine page number from the page title {page.value}.')
             return None
 
+        try:
+            title_text = title.value
+        except UnicodeDecodeError:
+            loguru.logger.warning(f'Could not decode page title {title!r}; leaving it in escaped form.')
+            title_text = str(title)
+
         bookmark = IndirectPdfDict(
             Parent = parent,
-            Title = title.value,
+            Title = title_text,
             A = PdfDict(
                 D = [page_number, PdfName.Fit],
                 S = PdfName.GoTo,

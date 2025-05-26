@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dpsprep"
-version = "2.2.13"
+version = "2.2.14"
 description = "A DjVu to PDF converter with a focus on small output size and the ability to preserve document outlines and text layers"
 authors = ["Kevin Arthur Schiff Croker", "Ianis Vasilev"]
 license = "GPL-3.0-or-later"
@@ -8,7 +8,7 @@ license = "GPL-3.0-or-later"
 [tool.poetry.dependencies]
 python = "^3.9"
 click = "^8.1.8"
-djvulibre-python = "^0.9.0"
+djvulibre-python = "^0.9.3"
 fpdf2 = "^2.8.2"
 loguru = "^0.7.2"
 ocrmypdf = {version = "^15.4.4", optional = true}

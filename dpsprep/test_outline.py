@@ -67,3 +67,19 @@ def test_outline_with_page_titles() -> None:
     bookmarks = visitor.visit(src)
     empty_pdf_dict = IndirectPdfDict()
     assert bookmarks == empty_pdf_dict
+
+
+def test_outline_with_invalid_unicode() -> None:
+    src = sexpr.ListExpression([
+        sexpr.SymbolExpression(sexpr.Symbol('bookmarks')),
+        sexpr.ListExpression([
+            sexpr.StringExpression(b'\2470'),
+            sexpr.StringExpression(b'#1'),
+        ]),
+    ])
+
+    visitor = OutlineTransformVisitor()
+    bookmarks = visitor.visit(src)
+    assert bookmarks is not None
+    assert bookmarks.Count == 1
+    assert bookmarks.First.Title == '"\\2470"'

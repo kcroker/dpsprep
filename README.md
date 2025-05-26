@@ -28,7 +28,11 @@ The easiest way to obtain `dpsprep` is to clone the repository.
 
 The tool depends on several Python libraries, which can easily be installed via `poetry`. A configuration for `pyenv` is also included.
 
-The only hard prerequisite is `djvulibre` (e.g. `djvulibre` on Arch, `libdjvulibre-dev` on Ubuntu, etc.). Optional prerequisites are:
+The only hard prerequisite is `djvulibre` (e.g. `djvulibre` on Arch, `libdjvulibre-dev` on Ubuntu, etc.). We use the Python bindings from the package [`djvulibre-python`](https://github.com/FriedrichFroebel/python-djvulibre) (not to be confused with the unmaintained [`python-djvulibre`](https://github.com/jwilk-archive/python-djvulibre); see [this pull request](https://github.com/kcroker/dpsprep/pull/10)). A few people have reported installation problems; see [this possible solution](https://github.com/kcroker/dpsprep/issues/38) and [this sample Dockerfile](https://github.com/kcroker/dpsprep/pull/37).
+
+Note that Windows support in `djvulibre-python` requires 64-bit `djvulibre`, and they only officially distribute 32-bit Windows packages. If you manage to make it work, consider opening a pull request.
+
+Optional prerequisites are:
 * `libtiff` for bitonal image compression.
 * `libjpeg` (or `libjpeg-turbo`) for multitotal (RGB or grayscale) compression.
 * `OCRmyPDF` and `jbig2enc` for PDF optimization (see the next section).
@@ -36,8 +40,6 @@ The only hard prerequisite is `djvulibre` (e.g. `djvulibre` on Arch, `libdjvulib
 `libtiff` depends on `libjpeg`, so installing `libtiff` will likely install both.
 
 For details on how these dependencies can be installed, see the GitHub Actions [workflow](./.github/workflows/test.yml) and the [dpsprep-git](https://aur.archlinux.org/packages/dpsprep-git) package for Arch Linux.
-
-Note that Windows support in `djvulibre-python` requires 64-bit `djvulibre`, and they only officially distribute 32-bit Windows packages. If you manage to make it work, consider opening a pull request.
 
 Once inside the cloned repository, the environment for the program can be set up by simply running `poetry install`. After than, the following should work:
 

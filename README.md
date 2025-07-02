@@ -45,10 +45,10 @@ Once inside the cloned repository, the environment for the program can be set up
 
     poetry run python -m dpsprep input.djvu
 
-The program can easily be installed as a Python module via `poetry` and `pip`:
+The program can then easily be installed locally via `poetry` and [`pipx`](https://pipx.pypa.io/en/stable/):
 
     poetry build
-    pip install [--user] dist/*.whl
+    pipx install --include-deps dist/*.whl
 
 If you are packaging this for some other package manager, consider using PEP-517 tools as shown in [this PKGBUILD file](https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=dpsprep-git).
 

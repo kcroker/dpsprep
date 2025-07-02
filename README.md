@@ -50,6 +50,10 @@ The program can then easily be installed locally via `poetry` and [`pipx`](https
     poetry build
     pipx install --include-deps dist/*.whl
 
+If you want `dpsprep` to be able to use `ocrmypdf` from `pipx`'s isolated environment, you must [inject](https://fig.io/manual/pipx/inject) it explicitly via
+
+    pipx inject dpsprep ocrmypdf
+
 If you are packaging this for some other package manager, consider using PEP-517 tools as shown in [this PKGBUILD file](https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=dpsprep-git).
 
 A convenience script that can be copied or linked to any directory in `$PATH` can be found at [`./bin/dpsprep`](./bin/dpsprep).

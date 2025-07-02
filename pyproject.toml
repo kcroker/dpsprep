@@ -9,18 +9,18 @@ license = "GPL-3.0-or-later"
 python = "^3.9"
 click = "^8.1.8"
 djvulibre-python = "^0.9.3"
-fpdf2 = "^2.8.2"
-loguru = "^0.7.2"
+fpdf2 = "^2.8.3"
+loguru = "^0.7.3"
 ocrmypdf = {version = "^15.4.4", optional = true}
 pdfrw = "^0.4"
-pillow = "^11.1.0"
+pillow = "^11.3.0"
 
 [tool.poetry.group.dev.dependencies]
-mypy = "^1.14.1"
+mypy = "^1.16.1"
 pytest = "^7.4.4"
 pytest-image-diff = "^0.0.14"
-ruff = "^0.9.3"
-types-fpdf2 = "^2.8.2.20241223"
+ruff = "^0.12.1"
+types-fpdf2 = "^2.8.3.20250516"
 types-pillow = "^10.2.0.20240822"
 
 [tool.poetry.extras]
@@ -42,6 +42,7 @@ ignore = [
   "D1", "D203", "D213",
   "E501",
   "FA100",
+  "PLC0415",
   "PLR2004",
   "PTH123",
   "Q000",

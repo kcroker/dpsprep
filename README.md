@@ -101,3 +101,33 @@ http://askubuntu.com/questions/46233/converting-djvu-to-pdf (OCR text transfer)
 
 By implementing the procedure of user pyrocrasty for extracting the outline, and putting it into the PDF generated above:
 http://superuser.com/questions/801893/converting-djvu-to-pdf-and-preserving-table-of-contents-how-is-it-possible (bookmark transfer)
+
+## Using Docker
+
+Build the Docker image:
+
+```bash
+docker build -t dpsprep .
+```
+
+Run the container with a volume mount to process files:
+
+```bash
+docker run --rm -u $(id -u):$(id -g) -v $(pwd):/files dpsprep input.djvu output.pdf
+```
+
+To use specific options:
+
+```bash
+docker run --rm -u $(id -u):$(id -g) -v $(pwd):/files dpsprep --pool=8 --quality=50 input.djvu output.pdf
+```
+
+### Add as alias
+
+Put the following line into `~/.bashrc` or `~/.zshrc`:
+
+```bash
+alias dpsprep='docker run --rm -u $(id -u):$(id -g) -v $(pwd):/files dpsprep'
+```
+
+This will allow you to run the command as `dpsprep` without needing to specify the Docker command each time.

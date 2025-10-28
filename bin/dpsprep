@@ -2,5 +2,4 @@
 
 from dpsprep import dpsprep
 
-if __name__ ==  '__main__':
-    dpsprep()
+dpsprep()

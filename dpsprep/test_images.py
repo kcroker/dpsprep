@@ -21,5 +21,6 @@ def test_djvu_page_to_image_bitonal(image_diff: ImageDiffProtocol) -> None:
     fixture = Image.open('fixtures/lipsum_01.png')
     result = djvu_page_to_image(document.pages[0], mode='infer', i=0)
 
-    # pytest_image_diff (as of v0.0.14) wants to convert monochrome images to LA mode and fails, so we do it manually
-    assert image_diff(fixture.convert('LA'), result.convert('LA'), threshold=1e-2)
+    # pytest_image_diff (as of v0.0.14) wants to convert monochrome images to transparent grayscale (LA) mode and fails.
+    # With Pillow 12, if we do it manually, the diff fails. Luckily, it doesn't fail with RGBA mode.
+    assert image_diff(fixture.convert('RGBA'), result.convert('RGBA'), threshold=1e-2)

@@ -1,37 +1,49 @@
-[tool.poetry]
+[project]
 name = "dpsprep"
 version = "2.2.15"
 description = "A DjVu to PDF converter with a focus on small output size and the ability to preserve document outlines and text layers"
-authors = ["Kevin Arthur Schiff Croker", "Ianis Vasilev"]
+requires-python = ">=3.9,<4.0"
+authors = [
+  { "name" = "Kevin Arthur Schiff Croker" },
+  { "name" = "Ianis Vasilev", "email" = "<ianis@ivasilev.net>" }
+]
 license = "GPL-3.0-or-later"
+dependencies = [
+  "click (>=8.1.8)",
+  "djvulibre-python (>=0.9.3)",
+  "fpdf2 (>=2.8.3)",
+  "loguru (>=0.7.3)",
+  "pdfrw (>=0.4)",
+  "pillow (>=11.3.0)"
+]
 
-[tool.poetry.dependencies]
-python = "^3.9"
-click = "^8.1.8"
-djvulibre-python = "^0.9.3"
-fpdf2 = "^2.8.3"
-loguru = "^0.7.3"
-ocrmypdf = {version = "^15.4.4", optional = true}
-pdfrw = "^0.4"
-pillow = "^11.3.0"
+[project.urls]
+Repository = "https://github.com/kcroker/dpsprep.git"
 
-[tool.poetry.group.dev.dependencies]
-mypy = "^1.16.1"
-pytest = "^7.4.4"
-pytest-image-diff = "^0.0.14"
-ruff = "^0.12.1"
-types-fpdf2 = "^2.8.3.20250516"
-types-pillow = "^10.2.0.20240822"
-
-[tool.poetry.extras]
-compress = ["ocrmypdf"]
-
-[tool.poetry.scripts]
+[project.scripts]
 dpsprep = "dpsprep:dpsprep"
+
+[dependency-groups]
+dev = [
+  "mypy (>=1.16.1)",
+  "pytest (>=7.4.4)",
+  "pytest-image-diff (>=0.0.14)",
+  "ruff (>=0.12.1)",
+  "types-fpdf2 (>=2.8.3.20250516)",
+  "types-pillow (>=10.2.0.20240822)",
+]
+
+[optional-dependencies]
+compress = [
+  "ocrmypdf (>=15.4.4)"
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+addopts = "--capture tee-sys"
 
 [tool.ruff]
 target-version = "py39"
@@ -57,6 +69,9 @@ inline-quotes = "single"
 
 [tool.ruff.lint.per-file-ignores]
 "test_*.py" = ["S101"]
+
+[tool.mypy]
+packages = ["dpsprep"]
 
 [[tool.mypy.overrides]]
 module = [

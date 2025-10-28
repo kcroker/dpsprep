@@ -3,7 +3,6 @@ import os
 import pathlib
 import shutil
 import tempfile
-from typing import Union
 
 import loguru
 
@@ -12,7 +11,7 @@ HASHING_BUFFER_SIZE = 64 * 1024
 
 # Based on
 # https://stackoverflow.com/posts/22058673/revisions
-def get_file_hash(path: Union[os.PathLike, str]) -> str:
+def get_file_hash(path: os.PathLike | str) -> str:
     h = hashlib.sha1()
 
     with open(path, 'rb') as file:
@@ -30,7 +29,7 @@ class WorkingDirectory:
     dest: pathlib.Path
     workdir: pathlib.Path
 
-    def __init__(self, src: Union[os.PathLike, str], dest: Union[os.PathLike, str, None]) -> None:
+    def __init__(self, src: os.PathLike | str, dest: os.PathLike | str | None) -> None:
         self.src = pathlib.Path(src)
 
         if dest is None:

@@ -1,6 +1,6 @@
 import argparse
 import shutil
-from typing import Any, Union
+from typing import Any
 
 import loguru
 
@@ -42,7 +42,7 @@ class OptimizeOptions(argparse.Namespace):
         self.progress_bar = False
 
 
-def optimize_pdf(workdir: WorkingDirectory, optlevel: int, quality: Union[int, None], pool_size: int) -> bool:
+def optimize_pdf(workdir: WorkingDirectory, optlevel: int, quality: int | None, pool_size: int) -> bool:
     try:
         # ObjectStreamMode is actually from pikepdf, but I did not want to include that as a dependency
         from ocrmypdf.optimize import ObjectStreamMode, PdfContext, optimize

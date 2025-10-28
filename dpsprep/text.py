@@ -1,7 +1,6 @@
 import unicodedata
 from collections.abc import Iterable, Sequence
 from pathlib import Path
-from typing import Union
 
 import djvu.sexpr
 import loguru
@@ -54,7 +53,7 @@ class TextExtractVisitor(SExpressionVisitor[str]):
     def visit_plain_list(self, node: djvu.sexpr.ListExpression) -> str:  # noqa: ARG002
         return ''
 
-    def visit_list_word(self, node: djvu.sexpr.ListExpression) -> Union[str, None]:
+    def visit_list_word(self, node: djvu.sexpr.ListExpression) -> str | None:
         _, x1, y1, x2, y2, content, *rest = node
         return self.visit(content)
 

@@ -2,7 +2,6 @@ import json
 import multiprocessing.pool
 import shutil
 from time import time
-from typing import Union
 
 import click
 import djvu.decode
@@ -18,7 +17,7 @@ from .text import djvu_pages_to_text_fpdf
 from .workdir import WorkingDirectory
 
 
-def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: Union[int, None], i: int) -> None:
+def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: int | None, i: int) -> None:
     page_number = i + 1
 
     if workdir.get_page_pdf_path(i).exists():
@@ -84,12 +83,12 @@ def process_text(workdir: WorkingDirectory) -> None:
 @click.command()
 def dpsprep(  # noqa: C901, PLR0912, PLR0913, PLR0915
     src: str,
-    dest: Union[str, None],
-    quality: Union[int, None],
+    dest: str | None,
+    quality: int | None,
     pool_size: int,
     mode: ImageMode,
-    optlevel: Union[int, None],
-    ocr: Union[str, None],
+    optlevel: int | None,
+    ocr: str | None,
     *,
     verbose: bool,
     overwrite: bool,

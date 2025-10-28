@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar, Union
+from typing import Generic, TypeVar
 
 import djvu.sexpr
 import loguru
@@ -8,7 +8,7 @@ R = TypeVar('R')
 
 
 class SExpressionVisitor(Generic[R]):
-    def visit_list(self, node: djvu.sexpr.ListExpression, **kwargs: T) -> Union[R, None]:
+    def visit_list(self, node: djvu.sexpr.ListExpression, **kwargs: T) -> R | None:
         if len(node) > 0 and isinstance(node[0], djvu.sexpr.SymbolExpression):
             method = getattr(self, f'visit_list_{node[0]}', None)
             if method is None:
@@ -20,11 +20,11 @@ class SExpressionVisitor(Generic[R]):
         loguru.logger.warning("Don't know how to visit a plain ListExpression.")
         return None
 
-    def visit_other(self, node: djvu.sexpr.Expression, **kwargs: T) -> Union[R, None]:  # noqa: ARG002
+    def visit_other(self, node: djvu.sexpr.Expression, **kwargs: T) -> R | None:  # noqa: ARG002
         loguru.logger.warning(f"Don't know how to visit S-expression type {type(node)!r}.")
         return None
 
-    def visit(self, node: djvu.sexpr.Expression, **kwargs: T) -> Union[R, None]:
+    def visit(self, node: djvu.sexpr.Expression, **kwargs: T) -> R | None:
         if isinstance(node, djvu.sexpr.IntExpression):
             if hasattr(self, 'visit_int'):
                 return self.visit_int(node, **kwargs)

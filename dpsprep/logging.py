@@ -1,7 +1,6 @@
 import os
 import sys
 from types import TracebackType
-from typing import Union
 
 import loguru
 
@@ -35,9 +34,9 @@ class SilencePrint:
 
     def __exit__(
         self,
-        exc_type: Union[type[BaseException], None],
-        exc_value: Union[BaseException, None],
-        traceback: Union[TracebackType, None]
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None
      ) -> None:
         sys.stdout.close()
         sys.stdout = cached_stdout

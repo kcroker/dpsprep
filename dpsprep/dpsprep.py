@@ -17,7 +17,8 @@ from .text import djvu_pages_to_text_fpdf
 from .workdir import WorkingDirectory
 
 
-def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: int | None, i: int) -> None:
+def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: int | None, i: int, *, verbose: bool) -> None:
+    configure_loguru(verbose=verbose)
     page_number = i + 1
 
     if workdir.get_page_pdf_path(i).exists():
@@ -47,10 +48,13 @@ def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: int | N
     loguru.logger.debug(f'Image data with size {human_readable_size(pdf_size)} from page {page_number} processed in {time() - start_time:.2f}s and written to working directory.')
 
 
-def process_text(workdir: WorkingDirectory) -> None:
+def process_text(workdir: WorkingDirectory, *, verbose: bool) -> None:
+    configure_loguru(verbose=verbose)
+
     if workdir.text_layer_pdf_path.exists():
         loguru.logger.info('Text data already processed.')
         return
+
     loguru.logger.debug('Processing text data.')
 
     start_time = time()
@@ -144,11 +148,11 @@ def dpsprep(  # noqa: C901, PLR0912, PLR0913, PLR0915
     tasks = list[multiprocessing.pool.AsyncResult]()
 
     if not no_text:
-        tasks.append(pool.apply_async(func=process_text, args=[workdir]))
+        tasks.append(pool.apply_async(func=process_text, args=[workdir], kwds={'verbose': verbose}))
 
     for i in range(len(document.pages)):
         # Cannot pass the page object itself because it does not support serialization for IPC
-        tasks.append(pool.apply_async(func=process_page_bg, args=[workdir, mode, quality, i]))
+        tasks.append(pool.apply_async(func=process_page_bg, args=[workdir, mode, quality, i], kwds={'verbose': verbose}))
 
     pool.close()
     pool_is_working = True

@@ -1,11 +1,11 @@
 .PHONY: lint test
 
 lint:
-	poetry run ruff check
-	poetry run mypy
+	uv run ruff check
+	uv run mypy
 
 test:
-	poetry run pytest
+	uv run pytest
 
 dpsprep.1: dpsprep.1.ronn
 	ronn --roff dpsprep.1.ronn

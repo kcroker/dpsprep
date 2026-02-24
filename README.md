@@ -1,6 +1,6 @@
 # dpsprep
 
-[![Tests](https://github.com/kcroker/dpsprep/actions/workflows/test.yml/badge.svg)](https://github.com/kcroker/dpsprep/actions/workflows/test.yml) [![AUR Package](https://img.shields.io/aur/version/dpsprep-git)](https://aur.archlinux.org/packages/dpsprep-git)
+[![Tests](https://github.com/kcroker/dpsprep/actions/workflows/test.yml/badge.svg)](https://github.com/kcroker/dpsprep/actions/workflows/test.yml) [![AUR Package](https://img.shields.io/aur/version/dpsprep)](https://aur.archlinux.org/packages/dpsprep)
 
 This tool, initially made specifically for use with Sony's Digital Paper System (DPS), is now a general-purpose DjVu to PDF converter with a focus on small output size and the ability to preserve document outlines (e.g. TOC) and text layers (e.g. OCR).
 
@@ -24,13 +24,22 @@ See the next section for different ways to run the program.
 
 ## Installation
 
-The easiest way to obtain `dpsprep` is to clone the repository.
+The easiest way to use `dpsprep` is via [`uv`](https://docs.astral.sh/uv/):
 
-The tool depends on several Python libraries, which can easily be installed via `poetry`. A configuration for `pyenv` is also included.
+    uvx --from git+https://github.com/v--/dpsprep dpsprep [OPTIONS] SRC [DEST]
 
-The only hard prerequisite is `djvulibre` (e.g. `djvulibre` on Arch, `libdjvulibre-dev` on Ubuntu, etc.). We use the Python bindings from the package [`djvulibre-python`](https://github.com/FriedrichFroebel/python-djvulibre) (not to be confused with the unmaintained [`python-djvulibre`](https://github.com/jwilk-archive/python-djvulibre); see [this pull request](https://github.com/kcroker/dpsprep/pull/10)). A few people have reported installation problems; see [this possible solution](https://github.com/kcroker/dpsprep/issues/38) and [this sample Dockerfile](https://github.com/kcroker/dpsprep/pull/37).
+While `uvx` provides an implicit way to run this program, a proper installation is often more desirable. This can be done again via `uv` after cloning the repository
 
-Note that Windows support in `djvulibre-python` requires 64-bit `djvulibre`, and they only officially distribute 32-bit Windows packages. If you manage to make it work, consider opening a pull request.
+> [!NOTE]
+> Previous versions used [`pyenv`](https://github.com/pyenv/pyenv) for managing Python versions and [`poetry`](https://python-poetry.org/) for managing dependencies and building. Since then the project migrated to `uv`, which subsumes both and provides other niceties.
+
+The only hard prerequisite is `djvulibre` (e.g. `djvulibre` on Arch, `libdjvulibre-dev` on Ubuntu, etc.). We use the Python bindings from the package [`djvulibre-python`](https://github.com/FriedrichFroebel/python-djvulibre) (not to be confused with the unmaintained [`python-djvulibre`](https://github.com/jwilk-archive/python-djvulibre); see [this pull request](https://github.com/kcroker/dpsprep/pull/10)).
+
+> [!TIP]
+> A few people have reported installation problems; see [this possible solution](https://github.com/kcroker/dpsprep/issues/38) and [this sample Dockerfile](https://github.com/kcroker/dpsprep/pull/37).
+
+> [!NOTE]
+> Note that Windows support in `djvulibre-python` requires 64-bit `djvulibre`, and they only officially distribute 32-bit Windows packages. If you manage to make it work, consider opening a pull request.
 
 Optional prerequisites are:
 * `libtiff` for bitonal image compression.
@@ -39,24 +48,28 @@ Optional prerequisites are:
 
 `libtiff` depends on `libjpeg`, so installing `libtiff` will likely install both.
 
-For details on how these dependencies can be installed, see the GitHub Actions [workflow](./.github/workflows/test.yml) and the [dpsprep-git](https://aur.archlinux.org/packages/dpsprep-git) package for Arch Linux.
+For details on how these dependencies can be installed, see the GitHub Actions [workflow](./.github/workflows/test.yml) and the [dpsprep](https://aur.archlinux.org/packages/dpsprep) package for Arch Linux.
 
-Once inside the cloned repository, the environment for the program can be set up by simply running `poetry install`. After than, the following should work:
+Once inside the cloned repository, the environment for the program can be set up by simply running `uv sync --all-extras`. After than, the following should work:
 
-    poetry run python -m dpsprep input.djvu
+    uv run dpsprep [OPTIONS] SRC [DEST]
 
-The program can then easily be installed locally via `poetry` and [`pipx`](https://pipx.pypa.io/en/stable/):
+The program can then easily be built and installed locally via [`pipx`](https://pipx.pypa.io/en/stable/):
 
-    poetry build
+    uv build --wheel
     pipx install --include-deps dist/*.whl
+
+This will install the `dpsprep` Python module, as well as an eponymous [executable](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#creating-executable-scripts). The executable can be copied elsewhere.
+
+> [!TIP]
+> The build can fail if the [`uv_build`](https://docs.astral.sh/uv/concepts/build-backend/) Python package is not installed. Make sure not only the `uv` binary, but also the corresponding Python package is available. For example, in the Arch repositories, these are distinct packages, `uv` and `python-uv`. Alternatively, try to install the [`uv-build`](https://pypi.org/project/uv-build/) PyPI package (`python-uv-build` in Arch) explicitly in this case.
 
 If you want `dpsprep` to be able to use `ocrmypdf` from `pipx`'s isolated environment, you must [inject](https://fig.io/manual/pipx/inject) it explicitly via
 
     pipx inject dpsprep ocrmypdf
 
-If you are packaging this for some other package manager, consider using PEP-517 tools as shown in [this PKGBUILD file](https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=dpsprep-git).
-
-A convenience script that can be copied or linked to any directory in `$PATH` can be found at [`./bin/dpsprep`](./bin/dpsprep).
+> [!TIP]
+> If you are packaging this for some other package manager, consider using PEP-517 tools as shown in [this PKGBUILD file](https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=dpsprep).
 
 Previous versions of the tool itself used to depend on third-party binaries, but this is no longer the case. The test fixtures are checked in, however regenerating them (see [`./fixtures/makefile`](./fixtures/makefile)) requires `pdflatex` (texlive, among others), `gs` (Ghostscript), `pdftotext` (Poppler), `djvudigital` (GSDjVU) and `djvused` (DjVuLibre). Similarly, the man file is checked in, but building it from markdown depends on `ronn`.
 
@@ -74,7 +87,8 @@ If manually running OCRmyPDF, note that the optimization command suggested [in t
 
 ## Acknowledgements
 
-* The font [`invisible1.ttf`](./dpsprep/invisible.ttf) is taken from [here](https://www.angelfire.com/pr/pgpf/if.html). See the `djvu_pages_to_text_fpdf` function in [`./dpsprep/text.py`](./dpsprep/text.py) for how it is used.
+> [!NOTE]
+> The font [`invisible1.ttf`](./dpsprep/invisible.ttf) is taken from [here](https://www.angelfire.com/pr/pgpf/if.html). See the `djvu_pages_to_text_fpdf` function in [`./dpsprep/text.py`](./dpsprep/text.py) for how it is used.
 
 ## Kevin's notes regarding the first version
 

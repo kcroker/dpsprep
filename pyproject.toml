@@ -9,12 +9,12 @@ authors = [
 ]
 license = "GPL-3.0-or-later"
 dependencies = [
-  "click (>=8.3.0)",
+  "click (>=8.3.1)",
   "djvulibre-python (>=0.9.3)",
-  "fpdf2 (>=2.8.4)",
+  "fpdf2 (>=2.8.6)",
   "loguru (>=0.7.3)",
   "pdfrw (>=0.4)",
-  "pillow (>=12.0.0)"
+  "pillow (>=12.1.1)"
 ]
 
 [project.urls]
@@ -25,11 +25,11 @@ dpsprep = "dpsprep:dpsprep"
 
 [dependency-groups]
 dev = [
-  "mypy (>=1.18.2)",
-  "pytest (>=8.4.2)",
+  "mypy (>=1.19.1)",
+  "pytest (>=9.0.2)",
   "pytest-image-diff (>=0.0.14)",
-  "ruff (>=0.14.2)",
-  "types-fpdf2 (>=2.8.4.20250822)",
+  "ruff (>=0.15.2)",
+  "types-fpdf2 (>=2.8.4.20260221)",
   "types-pillow (>=10.2.0.20240822)",
 ]
 

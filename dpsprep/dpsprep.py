@@ -159,7 +159,7 @@ def dpsprep(  # noqa: C901, PLR0912, PLR0913, PLR0915
         for task in tasks:
             try:
                 task.get(timeout=25)
-            except multiprocessing.TimeoutError:  # noqa: PERF203
+            except multiprocessing.TimeoutError:
                 pool_is_working = True
 
     pool.join()
@@ -179,12 +179,16 @@ def dpsprep(  # noqa: C901, PLR0912, PLR0913, PLR0915
     if no_text:
         combine_pdfs_on_fs_without_text(workdir, outline, len(document.pages))
 
-        if ocr_options is None:
-            loguru.logger.info('Skipping the text layer.')
-            shutil.copy(workdir.combined_pdf_without_text_path, workdir.combined_pdf_path)
-        else:
+        ocr_success = False
+
+        if ocr_options:
             loguru.logger.info('Performing OCR.')
-            perform_ocr(workdir, ocr_options)
+            ocr_success = perform_ocr(workdir, ocr_options)
+        else:
+            loguru.logger.info('Skipping the text layer.')
+
+        if not ocr_success:
+            shutil.copy(workdir.combined_pdf_without_text_path, workdir.combined_pdf_path)
     else:
         combine_pdfs_on_fs_with_text(workdir, outline)
 

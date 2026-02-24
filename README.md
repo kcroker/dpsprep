@@ -26,7 +26,7 @@ See the next section for different ways to run the program.
 
 The easiest way to use `dpsprep` is via [`uv`](https://docs.astral.sh/uv/):
 
-    uvx --from git+https://github.com/v--/dpsprep dpsprep [OPTIONS] SRC [DEST]
+    uvx --from git+https://github.com/kcroker/dpsprep dpsprep [OPTIONS] SRC [DEST]
 
 While `uvx` provides an implicit way to run this program, a proper installation is often more desirable. This can be done again via `uv` after cloning the repository
 

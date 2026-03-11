@@ -24,14 +24,15 @@ See the next section for different ways to run the program.
 
 ## Installation
 
-The easiest way to use `dpsprep` is via [`uv`](https://docs.astral.sh/uv/):
+### Automated
 
-    uvx --from git+https://github.com/kcroker/dpsprep dpsprep [OPTIONS] SRC [DEST]
+The easiest way to install a `dpsprep` executable for the current user is via [`uv`](https://docs.astral.sh/uv/):
 
-While `uvx` provides an implicit way to run this program, a proper installation is often more desirable. This can be done again via `uv` after cloning the repository
+    uv tool install dpsprep --from git+https://github.com/kcroker/dpsprep
 
-> [!NOTE]
-> Previous versions used [`pyenv`](https://github.com/pyenv/pyenv) for managing Python versions and [`poetry`](https://python-poetry.org/) for managing dependencies and building. Since then the project migrated to `uv`, which subsumes both and provides other niceties.
+For better compression (see below), the `compress` extra must be specified:
+
+    uv tool install dpsprep --from git+https://github.com/kcroker/dpsprep[compress]
 
 The only hard prerequisite is `djvulibre` (e.g. `djvulibre` on Arch, `libdjvulibre-dev` on Ubuntu, etc.). We use the Python bindings from the package [`djvulibre-python`](https://github.com/FriedrichFroebel/python-djvulibre) (not to be confused with the unmaintained [`python-djvulibre`](https://github.com/jwilk-archive/python-djvulibre); see [this pull request](https://github.com/kcroker/dpsprep/pull/10)).
 
@@ -50,16 +51,19 @@ Optional prerequisites are:
 
 For details on how these dependencies can be installed, see the GitHub Actions [workflow](./.github/workflows/test.yml) and the [dpsprep](https://aur.archlinux.org/packages/dpsprep) package for Arch Linux.
 
-Once inside the cloned repository, the environment for the program can be set up by simply running `uv sync --all-extras`. After than, the following should work:
+### Manual
+
+Setting up the project in is again done via `uv`. Once inside the cloned repository, the environment for the program can be set up by simply running `uv sync --all-extras`. After than, the following should work:
 
     uv run dpsprep [OPTIONS] SRC [DEST]
 
-The program can then easily be built and installed locally via [`pipx`](https://pipx.pypa.io/en/stable/):
+> [!NOTE]
+> Previous versions used [`pyenv`](https://github.com/pyenv/pyenv) for managing Python versions and [`poetry`](https://python-poetry.org/) for managing dependencies and building. Since then the project migrated to `uv`, which subsumes both and provides other niceties.
+
+You can also build and install the project, for example via [`pipx`](https://pipx.pypa.io/en/stable/):
 
     uv build --wheel
     pipx install --include-deps dist/*.whl
-
-This will install the `dpsprep` Python module, as well as an eponymous [executable](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#creating-executable-scripts). The executable can be copied elsewhere.
 
 > [!TIP]
 > The build can fail if the [`uv_build`](https://docs.astral.sh/uv/concepts/build-backend/) Python package is not installed. Make sure not only the `uv` binary, but also the corresponding Python package is available. For example, in the Arch repositories, these are distinct packages, `uv` and `python-uv`. Alternatively, try to install the [`uv-build`](https://pypi.org/project/uv-build/) PyPI package (`python-uv-build` in Arch) explicitly in this case.
@@ -71,7 +75,8 @@ If you want `dpsprep` to be able to use `ocrmypdf` from `pipx`'s isolated enviro
 > [!TIP]
 > If you are packaging this for some other package manager, consider using PEP-517 tools as shown in [this PKGBUILD file](https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=dpsprep).
 
-Previous versions of the tool itself used to depend on third-party binaries, but this is no longer the case. The test fixtures are checked in, however regenerating them (see [`./fixtures/makefile`](./fixtures/makefile)) requires `pdflatex` (texlive, among others), `gs` (Ghostscript), `pdftotext` (Poppler), `djvudigital` (GSDjVU) and `djvused` (DjVuLibre). Similarly, the man file is checked in, but building it from markdown depends on `ronn`.
+> [!NOTE]
+> Previous versions of the tool itself used to depend on third-party binaries, but this is no longer the case. The test fixtures are checked in, however regenerating them (see [`./fixtures/makefile`](./fixtures/makefile)) requires `pdflatex` (texlive, among others), `gs` (Ghostscript), `pdftotext` (Poppler), `djvudigital` (GSDjVU) and `djvused` (DjVuLibre). Similarly, the man file is checked in, but building it from markdown depends on `ronn`.
 
 ## Note regarding compression
 

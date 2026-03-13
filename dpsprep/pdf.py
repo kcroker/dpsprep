@@ -18,11 +18,14 @@ def combine_pdfs_on_fs_with_text(workdir: WorkingDirectory, outline: pdfrw.Indir
     text_pdf = pdfrw.PdfReader(workdir.text_layer_pdf_path)
     writer = pdfrw.PdfWriter()
 
-    for i, page in enumerate(text_pdf.pages):
-        merger = pdfrw.PageMerge(page)
+    for i, text_page in enumerate(text_pdf.pages):
+        # We take the one-page text PDF and add the image layer on top
+        # Even if the font was not invisible, it would be hidden visually (but not during search or text highlight)
         image_pdf = pdfrw.PdfReader(workdir.get_page_pdf_path(i))
-        merger.add(image_pdf.pages[0]).render()
-        writer.addpage(page)
+        image_page = image_pdf.pages[0]
+        merger = pdfrw.PageMerge(text_page)
+        merger.add(image_page).render()
+        writer.addpage(text_page)
 
     writer.trailer.Root.Outlines = outline
     writer.write(workdir.combined_pdf_path)
@@ -33,7 +36,8 @@ def combine_pdfs_on_fs_without_text(workdir: WorkingDirectory, outline: pdfrw.In
 
     for i in range(max_page):
         image_pdf = pdfrw.PdfReader(workdir.get_page_pdf_path(i))
-        writer.addpage(image_pdf.pages[0])
+        image_page = image_pdf.pages[0]
+        writer.addpage(image_page)
 
     writer.trailer.Root.Outlines = outline
     writer.write(workdir.combined_pdf_without_text_path)

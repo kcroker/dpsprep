@@ -26,13 +26,17 @@ See the next section for different ways to run the program.
 
 ### Automated
 
-The easiest way to install a `dpsprep` executable for the current user is via [`uv`](https://docs.astral.sh/uv/):
+An easy way to install a `dpsprep` executable for the current user is via [`uv`](https://docs.astral.sh/uv/):
 
     uv tool install dpsprep --from git+https://github.com/kcroker/dpsprep
 
 For better compression (see below), the `compress` extra must be specified:
 
     uv tool install dpsprep --from git+https://github.com/kcroker/dpsprep[compress]
+
+Sometimes a particular feature branch need to be tested. For installing a fixed revision (i.e. common/branch/tag), the following should work (if `extra-name` is needed, use `dpsprep@rev[extra-name]`):
+
+    uv tool install dpsprep --from git+https://github.com/kcroker/dpsprep@rev
 
 The only hard prerequisite is `djvulibre` (e.g. `djvulibre` on Arch, `libdjvulibre-dev` on Ubuntu, etc.). We use the Python bindings from the package [`djvulibre-python`](https://github.com/FriedrichFroebel/python-djvulibre) (not to be confused with the unmaintained [`python-djvulibre`](https://github.com/jwilk-archive/python-djvulibre); see [this pull request](https://github.com/kcroker/dpsprep/pull/10)).
 
@@ -76,9 +80,11 @@ If you want `dpsprep` to be able to use `ocrmypdf` from `pipx`'s isolated enviro
 > If you are packaging this for some other package manager, consider using PEP-517 tools as shown in [this PKGBUILD file](https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=dpsprep).
 
 > [!NOTE]
-> Previous versions of the tool itself used to depend on third-party binaries, but this is no longer the case. The test fixtures are checked in, however regenerating them (see [`./fixtures/makefile`](./fixtures/makefile)) requires `pdflatex` (texlive, among others), `gs` (Ghostscript), `pdftotext` (Poppler), `djvudigital` (GSDjVU) and `djvused` (DjVuLibre). Similarly, the man file is checked in, but building it from markdown depends on `ronn`.
+> Previous versions of the tool itself used to depend on third-party binaries, but this is no longer the case. The test fixtures are checked in, however regenerating them (see [`./fixtures/Makefile`](./fixtures/Makefile)) requires `pdflatex` (texlive, among others), `gs` (Ghostscript), `oxipng` (oxipng), `pdftotext` (Poppler), `djvudigital` (GSDjVU) and `djvused` (DjVuLibre). Similarly, the man file is checked in, but building it from markdown depends on `ronn`.
 
-## Note regarding compression
+## Details
+
+### Compression
 
 We perform compression in two stages:
 
@@ -90,10 +96,23 @@ If manually running OCRmyPDF, note that the optimization command suggested [in t
 
     python -m ocrmypdf.optimize <input_file> <level> <output_file>
 
-## Acknowledgements
+### Text layer
 
-> [!NOTE]
-> The font [`invisible1.ttf`](./dpsprep/invisible.ttf) is taken from [here](https://www.angelfire.com/pr/pgpf/if.html). See the `djvu_pages_to_text_fpdf` function in [`./dpsprep/text.py`](./dpsprep/text.py) for how it is used.
+The visible contents of a DjVu file are well-compressed images (see [here](http://yann.lecun.com/ex/djvu/index.html)). But a DjVu file also contains a "text layer" stored as metadata attached to invisible rectangular blocks. PDF does not support such constructs, so we do a little hack.
+
+We render each page as an image and put it as a background in the PDF. We then use a font, [`invisible1.ttf`](./dpsprep/invisible.ttf), taken from [here](https://www.angelfire.com/pr/pgpf/if.html), to "draw" text. Every time we draw a block of text, we rescale the font so that the width of the text matches that of the corresponding DjVu block.
+
+The following screenshot displays the result of converting a DjVu document:
+
+![Image](./screenshots/lipsum_with_image.png)
+
+The following screenshot displays the same document without the background image and with the invisible font replaced by Times New Roman:
+
+![Image](./screenshots/lipsum_with_text.png)
+
+Since the image is actually drawn on top of the text, there is no harm in using an actual visible font, possibly rendered using a transparent "color". Still, when searching and selecting text, the scrambled letters from the second image would be highlighted. With the invisible font, there are no visible glyphs to highlight, so an illusory "block" containing the text is highlighted instead.
+
+See [`./dpsprep/text.py`](./dpsprep/text.py) for the implementation.
 
 ## Kevin's notes regarding the first version
 

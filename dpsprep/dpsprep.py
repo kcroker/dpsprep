@@ -8,7 +8,7 @@ import djvu.decode
 import loguru
 import pdfrw
 
-from .images import ImageMode, djvu_page_to_image, failsafe_save_image
+from .images import ImageMode, failsafe_save_djvu_page, process_djvu_page
 from .logging import configure_loguru, human_readable_size
 from .ocrmypdf import optimize_pdf, perform_ocr
 from .outline import OutlineTransformVisitor
@@ -35,10 +35,10 @@ def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: int | N
     )
     document.decoding_job.wait()
 
-    image_pdf_raw = djvu_page_to_image(document.pages[i], mode, i)
+    page_bg = process_djvu_page(document.pages[i], mode, i)
 
-    failsafe_save_image(
-        image_pdf_raw,
+    failsafe_save_djvu_page(
+        page_bg,
         workdir.get_page_pdf_path(i),
         quality,
         page_number

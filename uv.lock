@@ -268,15 +268,6 @@ wheels = [
 ]
 
 [[package]]
-name = "diffimg"
-version = "0.3.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pillow" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/e6/21/cc36f7de1c9af6f890798e013f21f9fc09490eb39f58864be6a1e9da14d4/diffimg-0.3.0.tar.gz", hash = "sha256:5f9bfc5417430729205b70e68f22bade19fed43d963daa7fb45d9447d0a01a24", size = 4310, upload-time = "2021-01-02T18:37:27.11Z" }
-
-[[package]]
 name = "djvulibre-python"
 version = "0.9.3"
 source = { registry = "https://pypi.org/simple" }
@@ -304,7 +295,6 @@ compress = [
 dev = [
     { name = "mypy" },
     { name = "pytest" },
-    { name = "pytest-image-diff" },
     { name = "ruff" },
     { name = "types-fpdf2" },
     { name = "types-pillow" },
@@ -326,7 +316,6 @@ provides-extras = ["compress"]
 dev = [
     { name = "mypy", specifier = ">=1.19.1" },
     { name = "pytest", specifier = ">=9.0.2" },
-    { name = "pytest-image-diff", specifier = ">=0.0.14" },
     { name = "ruff", specifier = ">=0.15.2" },
     { name = "types-fpdf2", specifier = ">=2.8.4.20260221" },
     { name = "types-pillow", specifier = ">=10.2.0.20240822" },
@@ -406,18 +395,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/8e/97/ca44c467131b93fda82d2a2f21b738c8bcf63b5259e3b8250e928b8dd52a/img2pdf-0.6.3.tar.gz", hash = "sha256:219518020f5bd242bdc46493941ea3f756f664c2e86f2454721e74353f58cd95", size = 120350, upload-time = "2025-11-05T20:51:57.558Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/4d/dc/91e3a4a11c25ae183bd5a71b84ecb298db76405ff70013f76b10877bdfe3/img2pdf-0.6.3-py3-none-any.whl", hash = "sha256:44d12d235752edd17c43c04ff39952cdc5dd4c6aba90569c4902bd445085266b", size = 49701, upload-time = "2025-11-05T20:51:55.469Z" },
-]
-
-[[package]]
-name = "imgdiff"
-version = "1.8.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pillow" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/f0/a3/dafd8c9b51673f520fd4d6288bb167287af494821a5d60503bd6bb09c642/imgdiff-1.8.0.tar.gz", hash = "sha256:ee8d6da71fe74ca27cc1086a133e91028a7dea7690c09d37077dcda0150f4677", size = 1351317, upload-time = "2024-10-09T12:26:25.743Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/9f/11/82887197b4de962726a9fd83832a1ef3190e41c68c42474e72f61d173852/imgdiff-1.8.0-py3-none-any.whl", hash = "sha256:10b351e52d6fe2c8ecd586d3cf655445afa2fb0fea3aa40ac84776c8a58310f9", size = 10358, upload-time = "2024-10-09T12:26:21.076Z" },
 ]
 
 [[package]]
@@ -1105,21 +1082,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/d1/db/7ef3487e0fb0049ddb5ce41d3a49c235bf9ad299b6a25d5780a89f19230f/pytest-9.0.2.tar.gz", hash = "sha256:75186651a92bd89611d1d9fc20f0b4345fd827c41ccd5c299a868a05d70edf11", size = 1568901, upload-time = "2025-12-06T21:30:51.014Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/3b/ab/b3226f0bd7cdcf710fbede2b3548584366da3b19b5021e74f5bde2a8fa3f/pytest-9.0.2-py3-none-any.whl", hash = "sha256:711ffd45bf766d5264d487b917733b453d917afd2b0ad65223959f59089f875b", size = 374801, upload-time = "2025-12-06T21:30:49.154Z" },
-]
-
-[[package]]
-name = "pytest-image-diff"
-version = "0.0.14"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "diffimg" },
-    { name = "imgdiff" },
-    { name = "pytest" },
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/be/75/64a17eb4b43d01437387e463a2c3083fe27d169174d9fade0cc52f18bfe1/pytest_image_diff-0.0.14.tar.gz", hash = "sha256:2405dba60c8009c93a7cafc15976cc8f2b1b8f33ffe8126e35d72a6d22e19850", size = 11596, upload-time = "2024-12-31T09:08:24.458Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/40/7d/be27575980da987cc7af4d7e9f27f2bc141a8e002a7e6809e16e71c13a1a/pytest_image_diff-0.0.14-py2.py3-none-any.whl", hash = "sha256:106642ab02c7be579aed7085f5ca670108ad43cfaff0980690383185a2fb5ad4", size = 10859, upload-time = "2024-12-31T09:08:23.321Z" },
 ]
 
 [[package]]

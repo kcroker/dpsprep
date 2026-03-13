@@ -80,7 +80,7 @@ If you want `dpsprep` to be able to use `ocrmypdf` from `pipx`'s isolated enviro
 > If you are packaging this for some other package manager, consider using PEP-517 tools as shown in [this PKGBUILD file](https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=dpsprep).
 
 > [!NOTE]
-> Previous versions of the tool itself used to depend on third-party binaries, but this is no longer the case. The test fixtures are checked in, however regenerating them (see [`./fixtures/makefile`](./fixtures/makefile)) requires `pdflatex` (texlive, among others), `gs` (Ghostscript), `pdftotext` (Poppler), `djvudigital` (GSDjVU) and `djvused` (DjVuLibre). Similarly, the man file is checked in, but building it from markdown depends on `ronn`.
+> Previous versions of the tool itself used to depend on third-party binaries, but this is no longer the case. The test fixtures are checked in, however regenerating them (see [`./fixtures/Makefile`](./fixtures/Makefile)) requires `pdflatex` (texlive, among others), `gs` (Ghostscript), `oxipng` (oxipng), `pdftotext` (Poppler), `djvudigital` (GSDjVU) and `djvused` (DjVuLibre). Similarly, the man file is checked in, but building it from markdown depends on `ronn`.
 
 ## Details
 
@@ -110,7 +110,7 @@ The following screenshot displays the same document without the background image
 
 ![Image](./screenshots/lipsum_with_text.png)
 
-Since the image is actually drawn on top of the text, there is no harm in using an actual visible font, possibly rendered using a transparent "color". Still, when searching and selecting text, the scrambled letters from the second image would be highlighted. With the invisible font, there are no visible glyphs to highlight, so an illusory "block" containing the text is drawn on top of the image.
+Since the image is actually drawn on top of the text, there is no harm in using an actual visible font, possibly rendered using a transparent "color". Still, when searching and selecting text, the scrambled letters from the second image would be highlighted. With the invisible font, there are no visible glyphs to highlight, so an illusory "block" containing the text is highlighted instead.
 
 See [`./dpsprep/text.py`](./dpsprep/text.py) for the implementation.
 

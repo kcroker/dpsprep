@@ -33,7 +33,6 @@ dpsprep = "dpsprep:dpsprep"
 dev = [
   "mypy (>=1.19.1)",
   "pytest (>=9.0.2)",
-  "pytest-image-diff (>=0.0.14)",
   "ruff (>=0.15.2)",
   "types-fpdf2 (>=2.8.4.20260221)",
   "types-pillow (>=10.2.0.20240822)",

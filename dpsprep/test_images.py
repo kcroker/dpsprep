@@ -1,18 +1,23 @@
-from typing import Protocol
-
 import djvu.decode
-from PIL import Image
-from pytest_image_diff.plugin import DiffCompareResult
+from PIL import Image, ImageChops, ImageStat
 
 from .images import process_djvu_page
 
 
-class ImageDiffProtocol(Protocol):
-    def __call__(self, a: Image.Image, b: Image.Image, threshold: float = 1e-3) -> DiffCompareResult:
-        ...
+# A simple score function for Pillow images.
+# We previously used the pytest-image-diff module, which used the diffimg module.
+# It turned out that diffimg uses a similar approach, so we dropped the dependency in favor of a few-liner.
+def calculate_image_diff_score(a: Image.Image, b: Image.Image) -> float:
+    assert a.size == b.size, 'We only support diffing images with identical sizes'
+    assert a.mode == b.mode, 'We only support diffing images with the same mode'
+
+    diff = ImageChops.difference(a, b)
+    stat = ImageStat.Stat(diff)
+    return max(stat.rms) / 256  # The ImageStat module uses 256 bins
 
 
-def test_process_djvu_page_bitonal(image_diff: ImageDiffProtocol) -> None:
+
+def test_process_djvu_page_bitonal() -> None:
     document = djvu.decode.Context().new_document(
         djvu.decode.FileURI('fixtures/lipsum_words.djvu'),
     )
@@ -25,6 +30,4 @@ def test_process_djvu_page_bitonal(image_diff: ImageDiffProtocol) -> None:
     page_decode_job.wait()
     assert result.resolution == page_decode_job.dpi
 
-    # pytest_image_diff (as of v0.0.14) wants to convert monochrome images to transparent grayscale (LA) mode and fails.
-    # With Pillow 12, if we do it manually, the diff fails. Luckily, it doesn't fail with RGBA mode.
-    assert image_diff(fixture.convert('RGBA'), result.pil_image.convert('RGBA'), threshold=1e-2)
+    assert calculate_image_diff_score(fixture, result.pil_image) < 0.05

@@ -19,12 +19,13 @@ def combine_pdfs_on_fs_with_text(workdir: WorkingDirectory, outline: pdfrw.Indir
     writer = pdfrw.PdfWriter()
 
     for i, text_page in enumerate(text_pdf.pages):
-        # We take the one-page image PDF and add the rescaled text layer on top
+        # We take the one-page text PDF and add the image layer on top
+        # Even if the font was not invisible, it would be hidden visually (but not during search or text highlight)
         image_pdf = pdfrw.PdfReader(workdir.get_page_pdf_path(i))
         image_page = image_pdf.pages[0]
-        merger = pdfrw.PageMerge(image_page)
-        merger.add(text_page).render()
-        writer.addpage(image_page)
+        merger = pdfrw.PageMerge(text_page)
+        merger.add(image_page).render()
+        writer.addpage(text_page)
 
     writer.trailer.Root.Outlines = outline
     writer.write(workdir.combined_pdf_path)

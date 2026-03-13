@@ -74,10 +74,12 @@ class TextExtractVisitor(SExpressionVisitor[str]):
 
 class TextDrawVisitor(SExpressionVisitor):
     pdf: FPDF
+    dpi: int
     extractor: TextExtractVisitor
 
-    def __init__(self, pdf: FPDF) -> None:
+    def __init__(self, pdf: FPDF, dpi: int) -> None:
         self.pdf = pdf
+        self.dpi = dpi
         self.extractor = TextExtractVisitor()
 
     def draw_text(self, x1: int, x2: int, y1: int, y2: int, text: str) -> None:  # noqa: ARG002
@@ -88,10 +90,9 @@ class TextDrawVisitor(SExpressionVisitor):
             return
 
         self.pdf.set_font('Invisible', size=BASE_FONT_SIZE)
-        self.pdf.get_string_width(text)
 
         # Adjust font size
-        desired_width = x2 - x1
+        desired_width = (x2 - x1) / self.dpi
         actual_width = self.pdf.get_string_width(text)
 
         if actual_width == 0:
@@ -100,7 +101,7 @@ class TextDrawVisitor(SExpressionVisitor):
         self.pdf.set_font('Invisible', size=int(BASE_FONT_SIZE * desired_width / actual_width))
 
         try:
-            self.pdf.text(x=x1, y=page_height - y1, text=text)
+            self.pdf.text(x=x1 / self.dpi, y=page_height / 72 - y1 / self.dpi, text=text)
         except TypeError as err:
             loguru.logger.warning(f'FPDF refuses to draw {text!r}: {err}')
 
@@ -165,7 +166,7 @@ class TextDrawVisitor(SExpressionVisitor):
 # It is small (12kb) and contains (invisible) Latin, Cyrillic and Greek characters.
 # After encoding Chinese characters, however, Evince still handles them correctly.
 def djvu_pages_to_text_fpdf(pages: Sequence[djvu.decode.Page]) -> FPDF:
-    pdf = FPDF(unit='pt')
+    pdf = FPDF(unit='in')
     pdf.add_font(
         family='Invisible',
         fname=Path(__file__).parent / 'invisible1.ttf',
@@ -174,9 +175,9 @@ def djvu_pages_to_text_fpdf(pages: Sequence[djvu.decode.Page]) -> FPDF:
 
     for i, page in enumerate(pages):
         page_job = page.decode(wait=True)
-        pdf.add_page(format=page_job.size)
+        pdf.add_page(format=(page_job.width / page_job.dpi, page_job.height / page_job.dpi))
         loguru.logger.debug(f'Processing text for page {i + 1}.')
-        visitor = TextDrawVisitor(pdf)
+        visitor = TextDrawVisitor(pdf, page_job.dpi)
         visitor.visit(page.text.sexpr)
 
     return pdf

@@ -34,6 +34,10 @@ For better compression (see below), the `compress` extra must be specified:
 
     uv tool install dpsprep --from git+https://github.com/kcroker/dpsprep[compress]
 
+Sometimes a particular feature branch need to be tested. For installing a fixed revision (i.e. common/branch/tag), the following should work (if `extra-name` is needed, use `dpsprep@rev[extra-name]`):
+
+    uv tool install dpsprep --from git+https://github.com/kcroker/dpsprep@rev
+
 The only hard prerequisite is `djvulibre` (e.g. `djvulibre` on Arch, `libdjvulibre-dev` on Ubuntu, etc.). We use the Python bindings from the package [`djvulibre-python`](https://github.com/FriedrichFroebel/python-djvulibre) (not to be confused with the unmaintained [`python-djvulibre`](https://github.com/jwilk-archive/python-djvulibre); see [this pull request](https://github.com/kcroker/dpsprep/pull/10)).
 
 > [!TIP]

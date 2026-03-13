@@ -1,13 +1,18 @@
-## v2.4.2 (2025-02-24)
+## v2.5.0 (2026-03-13)
+
+* Account for DjVu file resolution
+* Simplify image diffing and regenerate better-quality fixtures
+
+## v2.4.2 (2026-02-24)
 
 * Fix issue where only the main process has its logger configured
 
-## v2.4.1 (2025-02-24)
+## v2.4.1 (2026-02-24)
 
 * Fix compatibility issues with the new OCRmyPDF API
 * Remove support for Python 3.10
 
-## v2.4.0 (2025-02-24)
+## v2.4.0 (2026-02-24)
 
 * Migrate to `uv` from `pyenv` + `poetry`
 * Update dependencies

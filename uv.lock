@@ -275,7 +275,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/ac/b9/90f437786f185d101
 
 [[package]]
 name = "dpsprep"
-version = "2.4.2"
+version = "2.5.0"
 source = { editable = "." }
 dependencies = [
     { name = "click" },

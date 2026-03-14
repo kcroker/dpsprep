@@ -84,7 +84,7 @@ def process_djvu_page(page: djvu.decode.Page, mode: ImageMode, i: int) -> Proces
     )
 
 
-def failsafe_save_djvu_page(page_bg: ProcessedPageBackground, target: pathlib.Path, quality: int | None, page_number: int) -> None:
+def failsafe_save_djvu_page(page_bg: ProcessedPageBackground, target: pathlib.Path, quality: int | None, dpi: int | None, page_number: int) -> None:
     if quality is not None:
         if page_bg.pil_image.mode in pil_modes['bitonal'] and PIL.features.check_codec('libtiff'):
             loguru.logger.warning('Pillow uses TIFF for encoding bitonal PDF images. The encoder does not support a "quality" setting. If the conversion fails, please try again without specifying quality.')
@@ -94,7 +94,7 @@ def failsafe_save_djvu_page(page_bg: ProcessedPageBackground, target: pathlib.Pa
                 target,
                 format='PDF',
                 quality=quality,
-                resolution=page_bg.resolution
+                resolution=dpi or page_bg.resolution
             )
         except ValueError:
             loguru.logger.warning(f'Failed to encode page {page_number}. Trying again without setting quality.')
@@ -104,5 +104,5 @@ def failsafe_save_djvu_page(page_bg: ProcessedPageBackground, target: pathlib.Pa
     page_bg.pil_image.save(
         target,
         format='PDF',
-        resolution=page_bg.resolution
+        resolution=dpi or page_bg.resolution
     )

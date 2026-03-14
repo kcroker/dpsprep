@@ -1,39 +1,43 @@
-.\" generated with Ronn-NG/v0.9.1
-.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "DPS" "1" "July 2024" ""
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1
+.TH "DPS" "1" "March 2026" ""
 .SH "NAME"
 \fBdps\fR \- a DjVu to PDF converter
 .SH "SYNOPSIS"
 \fBdpsprep\fR \fIoptions\fR src [dest]
 .SH "DESCRIPTION"
-This tool, initially made specifically for use with Sony\'s Digital Paper System (DPS), is now a general\-purpose DjVu to PDF converter with a focus on small output size and the ability to preserve document outlines (e\.g\. TOC) and text layers (e\.g\. OCR)\.
+This tool, initially made specifically for use with Sony's Digital Paper System (DPS), is now a general\-purpose DjVu to PDF converter with a focus on small output size and the ability to preserve document outlines (e\.g\. TOC) and text layers (e\.g\. OCR)\.
 .SH "OPTIONS"
-.IP "\[ci]" 4
-\fB\-q\fR, \fB\-\-quality\fR: Quality of images in output\. Used only for JPEG compression, i\.e\. RGB and Grayscale images\. Passed directly to Pillow and to OCRmyPDF\'s optimizer\.
-.IP "\[ci]" 4
-\fB\-p\fR, \fB\-\-pool\-size\fR: Size of MultiProcessing pool for handling page\-by\-page operations\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
+\fB\-q\fR, \fB\-\-quality\fR: Quality of images in output\. Used only for JPEG compression, i\.e\. RGB and Grayscale images\. Passed directly to Pillow and to OCRmyPDF's optimizer\.
+.IP "\(bu" 4
 \fB\-v\fR, \fB\-\-verbose\fR: Display debug messages\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-o\fR, \fB\-\-overwrite\fR: Overwrite destination file\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-w\fR, \fB\-\-preserve\-working\fR: Preserve the working directory after script termination\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-d\fR, \fB\-\-delete\-working\fR: Delete any existing files in the working directory prior to writing to it\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-t\fR, \fB\-\-no\-text\fR: Disable the generation of text layers\. Implied by \-\-ocr\.
-.IP "\[ci]" 4
-\fB\-m\fR, \fB\-\-mode\fR: Image mode\. The default is to ask libdjvu for the image mode of every page\. It sometimes makes sense to force bitonal images since they compress well\.
-.IP "\[ci]" 4
-\fB\-\-ocr\fR Perform OCR via OCRmyPDF rather than trying to convert the text layer\. If this parameter has a value, it should be a JSON dictionary of options to be passed to OCRmyPDF\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
+\fB\-p\fR, \fB\-\-pool\-size\fR \fIint\fR: Size of MultiProcessing pool for handling page\-by\-page operations\.
+.IP "\(bu" 4
+\fB\-m\fR, \fB\-\-mode\fR \fIinfer|bitonal|grayscale|rgb\fR: Override the image modes encoded in the DjVu file for individual pages\. It sometimes makes sense to force bitonal images since they compress well\.
+.IP "\(bu" 4
+\fB\-\-dpi\fR \fIint\fR: Override DPI values encoded in the DjVu file for individual pages\.
+.IP "\(bu" 4
+\fB\-\-ocr\fR \fIJSON\fR: Perform OCR via OCRmyPDF rather than trying to convert the text layer\. If this parameter has a value, it should be a JSON dictionary of options to be passed to OCRmyPDF\.
+.IP "\(bu" 4
 \fB\-O1\fR: Use the lossless PDF image optimization from OCRmyPDF (without performing OCR)\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-O2\fR: Use the PDF image optimization from OCRmyPDF\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-O3\fR: Use the aggressive lossy PDF image optimization from OCRmyPDF\.
-.IP "\[ci]" 4
-\fB\-\-help\fR: Show this message and exit\.
+.IP "\(bu" 4
+\fB\-\-help\fR: Show help message and exit\.
+.IP "\(bu" 4
+\fB\-\-version\fR: Show the version and exit\.
 .IP "" 0
 .SH "EXAMPLES"
 Produce \fBfile\.pdf\fR in the current directory:
@@ -67,7 +71,7 @@ dpsprep \-\-mode bitonal input\.djvu
 Produce an output file by disregarding the text layer and running OCRmyPDF instead:
 .IP "" 4
 .nf
-dpsprep \-\-ocr \'{"language": ["rus", "eng"]}\' input\.djvu
+dpsprep \-\-ocr '{"language": ["rus", "eng"]}' input\.djvu
 .fi
 .IP "" 0
 .P
@@ -79,9 +83,9 @@ dpsprep \-\-no\-text input\.djvu
 .IP "" 0
 .SH "NOTE REGARDING COMPRESSION"
 We perform compression in two stages:
-.IP "\[ci]" 4
+.IP "\(bu" 4
 The first one is the default compression provided by Pillow\. For bitonal images, the PDF generation code says that, if \fBlibtiff\fR is available, \fBgroup4\fR compression is used\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 If OCRmyPDF is installed, its PDF optimization can be used via the flags \fB\-O1\fR to \fB\-O3\fR (this involves no OCR)\. This allows us to use advanced techniques, including JBIG2 compression via \fBjbig2enc\fR\.
 .IP "" 0
 .P

@@ -10,19 +10,21 @@ This tool, initially made specifically for use with Sony's Digital Paper System 
 
 ## OPTIONS
 
-* `-q`, `--quality`:           Quality of images in output. Used only for JPEG compression, i.e. RGB and Grayscale images. Passed directly to Pillow and to OCRmyPDF's optimizer.
-* `-p`, `--pool-size`:         Size of MultiProcessing pool for handling page-by-page operations.
-* `-v`, `--verbose`:           Display debug messages.
-* `-o`, `--overwrite`:         Overwrite destination file.
-* `-w`, `--preserve-working`:  Preserve the working directory after script termination.
-* `-d`, `--delete-working`:    Delete any existing files in the working directory prior to writing to it.
-* `-t`, `--no-text`:           Disable the generation of text layers. Implied by --ocr.
-* `-m`, `--mode`:              Image mode. The default is to ask libdjvu for the image mode of every page. It sometimes makes sense to force bitonal images since they compress well.
-* `--ocr`                      Perform OCR via OCRmyPDF rather than trying to convert the text layer. If this parameter has a value, it should be a JSON dictionary of options to be passed to OCRmyPDF.
-* `-O1`:                       Use the lossless PDF image optimization from OCRmyPDF (without performing OCR).
-* `-O2`:                       Use the PDF image optimization from OCRmyPDF.
-* `-O3`:                       Use the aggressive lossy PDF image optimization from OCRmyPDF.
-* `--help`:                    Show this message and exit.
+* `-q`, `--quality`:                            Quality of images in output. Used only for JPEG compression, i.e. RGB and Grayscale images. Passed directly to Pillow and to OCRmyPDF's optimizer.
+* `-v`, `--verbose`:                            Display debug messages.
+* `-o`, `--overwrite`:                          Overwrite destination file.
+* `-w`, `--preserve-working`:                   Preserve the working directory after script termination.
+* `-d`, `--delete-working`:                     Delete any existing files in the working directory prior to writing to it.
+* `-t`, `--no-text`:                            Disable the generation of text layers. Implied by --ocr.
+* `-p`, `--pool-size` <int>:                    Size of MultiProcessing pool for handling page-by-page operations.
+* `-m`, `--mode` <infer|bitonal|grayscale|rgb>: Override the image modes encoded in the DjVu file for individual pages. It sometimes makes sense to force bitonal images since they compress well.
+* `--dpi` <int>:                                Override DPI values encoded in the DjVu file for individual pages.
+* `--ocr` <JSON>:                               Perform OCR via OCRmyPDF rather than trying to convert the text layer. If this parameter has a value, it should be a JSON dictionary of options to be passed to OCRmyPDF.
+* `-O1`:                                        Use the lossless PDF image optimization from OCRmyPDF (without performing OCR).
+* `-O2`:                                        Use the PDF image optimization from OCRmyPDF.
+* `-O3`:                                        Use the aggressive lossy PDF image optimization from OCRmyPDF.
+* `--help`:                                     Show help message and exit.
+* `--version`:                                  Show the version and exit.
 
 ## EXAMPLES
 

@@ -102,6 +102,9 @@ The visible contents of a DjVu file are well-compressed images (see [here](http:
 
 We render each page as an image and put it as a background in the PDF. We then use a font, [`invisible1.ttf`](./dpsprep/invisible.ttf), taken from [here](https://www.angelfire.com/pr/pgpf/if.html), to "draw" text. Every time we draw a block of text, we rescale the font so that the width of the text matches that of the corresponding DjVu block.
 
+> [!NOTE]
+> The font is small (12kb) and contains (invisible) Latin, Cyrillic and Greek characters. Even Chinese characters seem to be working correctly, at least with [Evince](https://gitlab.gnome.org/GNOME/evince).
+
 The following screenshot displays the result of converting a DjVu document:
 
 ![Image](./screenshots/lipsum_with_image.png)

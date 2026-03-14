@@ -1,3 +1,7 @@
+## v2.5.1 (2026-03-14)
+
+* Allow manually configuring PDF page resolution (DPI)
+
 ## v2.5.0 (2026-03-13)
 
 * Account for DjVu file resolution

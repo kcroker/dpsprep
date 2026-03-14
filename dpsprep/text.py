@@ -159,13 +159,7 @@ class TextDrawVisitor(SExpressionVisitor):
     visit_list_region = visit_list_column
 
 
-# We do not need any visible fonts. Actually we could use some of the default PDF type 1 fonts,
-# but then non-latin script would get all messed up. Using a true-type font, even one that doesn't
-# support esoteric characters, would still let us encode the text correctly.
-# The font embedded here is taken from https://www.angelfire.com/pr/pgpf/if.html.
-# It is small (12kb) and contains (invisible) Latin, Cyrillic and Greek characters.
-# After encoding Chinese characters, however, Evince still handles them correctly.
-def djvu_pages_to_text_fpdf(pages: Sequence[djvu.decode.Page]) -> FPDF:
+def djvu_pages_to_text_fpdf(pages: Sequence[djvu.decode.Page], dpi: int | None) -> FPDF:
     pdf = FPDF(unit='in')
     pdf.add_font(
         family='Invisible',
@@ -175,9 +169,10 @@ def djvu_pages_to_text_fpdf(pages: Sequence[djvu.decode.Page]) -> FPDF:
 
     for i, page in enumerate(pages):
         page_job = page.decode(wait=True)
-        pdf.add_page(format=(page_job.width / page_job.dpi, page_job.height / page_job.dpi))
+        page_dpi = dpi or page_job.dpi
+        pdf.add_page(format=(page_job.width / page_dpi, page_job.height / page_dpi))
         loguru.logger.debug(f'Processing text for page {i + 1}.')
-        visitor = TextDrawVisitor(pdf, page_job.dpi)
+        visitor = TextDrawVisitor(pdf, page_dpi)
         visitor.visit(page.text.sexpr)
 
     return pdf

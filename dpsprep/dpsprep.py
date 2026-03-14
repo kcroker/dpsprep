@@ -17,7 +17,7 @@ from .text import djvu_pages_to_text_fpdf
 from .workdir import WorkingDirectory
 
 
-def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: int | None, i: int, *, verbose: bool) -> None:
+def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: int | None, dpi: int | None, i: int, *, verbose: bool) -> None:  # noqa: PLR0913
     configure_loguru(verbose=verbose)
     page_number = i + 1
 
@@ -41,14 +41,15 @@ def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: int | N
         page_bg,
         workdir.get_page_pdf_path(i),
         quality,
-        page_number
+        dpi,
+        page_number,
     )
 
     pdf_size = workdir.get_page_pdf_path(i).stat().st_size
     loguru.logger.debug(f'Image data with size {human_readable_size(pdf_size)} from page {page_number} processed in {time() - start_time:.2f}s and written to working directory.')
 
 
-def process_text(workdir: WorkingDirectory, *, verbose: bool) -> None:
+def process_text(workdir: WorkingDirectory, dpi: int | None, *, verbose: bool) -> None:
     configure_loguru(verbose=verbose)
 
     if workdir.text_layer_pdf_path.exists():
@@ -63,7 +64,7 @@ def process_text(workdir: WorkingDirectory, *, verbose: bool) -> None:
     )
     document.decoding_job.wait()
 
-    fpdf = djvu_pages_to_text_fpdf(document.pages)
+    fpdf = djvu_pages_to_text_fpdf(document.pages, dpi)
     fpdf.output(str(workdir.text_layer_pdf_path))
 
     pdf_size = workdir.text_layer_pdf_path.stat().st_size
@@ -80,8 +81,10 @@ def process_text(workdir: WorkingDirectory, *, verbose: bool) -> None:
 @click.option('-O3', 'optlevel', flag_value=3, help='Use the aggressive lossy PDF image optimization from OCRmyPDF.')
 @click.option('-p', '--pool-size', type=click.IntRange(min=0), default=4, help='Size of MultiProcessing pool for handling page-by-page operations.')
 @click.option('-q', '--quality', type=click.IntRange(min=0, max=100), help="Quality of images in output. Used only for JPEG compression, i.e. RGB and Grayscale images. Passed directly to Pillow and to OCRmyPDF's optimizer.")
-@click.option('-m', '--mode', type=click.Choice(['infer', 'bitonal', 'grayscale', 'rgb']), default='infer', help='Image mode. The default is to ask libdjvu for the image mode of every page. It sometimes makes sense to force bitonal images since they compress well.')
+@click.option('-m', '--mode', type=click.Choice(['infer', 'bitonal', 'grayscale', 'rgb']), default='infer', help='Override the image modes encoded in the DjVu file for individual pages. It sometimes makes sense to force bitonal images since they compress well.')
+@click.option('--dpi', type=click.IntRange(min=1), help='Override DPI values encoded in the DjVu file for individual pages.')
 @click.option('--ocr', type=str, is_flag=False, flag_value='{}', help='Perform OCR via OCRmyPDF rather than trying to convert the text layer. If this parameter has a value, it should be a JSON dictionary of options to be passed to OCRmyPDF.')
+@click.version_option()
 @click.argument('dest', type=click.Path(exists=False, resolve_path=True), required=False)
 @click.argument('src', type=click.Path(exists=True, resolve_path=True), required=True)
 @click.command()
@@ -89,6 +92,7 @@ def dpsprep(  # noqa: C901, PLR0912, PLR0913, PLR0915
     src: str,
     dest: str | None,
     quality: int | None,
+    dpi: int | None,
     pool_size: int,
     mode: ImageMode,
     optlevel: int | None,
@@ -152,7 +156,7 @@ def dpsprep(  # noqa: C901, PLR0912, PLR0913, PLR0915
 
     for i in range(len(document.pages)):
         # Cannot pass the page object itself because it does not support serialization for IPC
-        tasks.append(pool.apply_async(func=process_page_bg, args=[workdir, mode, quality, i], kwds={'verbose': verbose}))
+        tasks.append(pool.apply_async(func=process_page_bg, args=[workdir, mode, quality, dpi, i], kwds={'verbose': verbose}))
 
     pool.close()
     pool_is_working = True

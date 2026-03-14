@@ -159,7 +159,7 @@ class TextDrawVisitor(SExpressionVisitor):
     visit_list_region = visit_list_column
 
 
-def djvu_pages_to_text_fpdf(pages: Sequence[djvu.decode.Page]) -> FPDF:
+def djvu_pages_to_text_fpdf(pages: Sequence[djvu.decode.Page], dpi: int | None) -> FPDF:
     pdf = FPDF(unit='in')
     pdf.add_font(
         family='Invisible',
@@ -169,9 +169,10 @@ def djvu_pages_to_text_fpdf(pages: Sequence[djvu.decode.Page]) -> FPDF:
 
     for i, page in enumerate(pages):
         page_job = page.decode(wait=True)
-        pdf.add_page(format=(page_job.width / page_job.dpi, page_job.height / page_job.dpi))
+        page_dpi = dpi or page_job.dpi
+        pdf.add_page(format=(page_job.width / page_dpi, page_job.height / page_dpi))
         loguru.logger.debug(f'Processing text for page {i + 1}.')
-        visitor = TextDrawVisitor(pdf, page_job.dpi)
+        visitor = TextDrawVisitor(pdf, page_dpi)
         visitor.visit(page.text.sexpr)
 
     return pdf

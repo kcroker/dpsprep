@@ -21,14 +21,14 @@ class TextExtractVisitor(SExpressionVisitor[str]):
             code = unicodedata.category(char)
 
             # Line Separator (Zl) | Space Separator (Zs)
-            if code in ('Zl', 'Zs'):
+            if code in {'Zl', 'Zs'}:
                 yield ' '
 
             # Paragraph Separator (Zp)
             elif code == 'Zp':
                 yield '\n'
 
-            # Control (Cc)  # noqa: ERA001
+            # Control (Cc)
             elif code == 'Cc':
                 if char == '\t':
                     yield ' ' * TAB_SIZE
@@ -38,7 +38,7 @@ class TextExtractVisitor(SExpressionVisitor[str]):
             # These break FPDF.
             # A full list of categories can be found in https://www.compart.com/en/unicode/category
             # Format (Cf) | Private Use (Co) | Surrogate 'Cs':
-            elif code in ('Cf', 'Co', 'Cs'):
+            elif code in {'Cf', 'Co', 'Cs'}:
                 pass
 
             else:

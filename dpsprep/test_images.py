@@ -16,7 +16,6 @@ def calculate_image_diff_score(a: Image.Image, b: Image.Image) -> float:
     return max(stat.rms) / 256  # The ImageStat module uses 256 bins
 
 
-
 def test_process_djvu_page_bitonal() -> None:
     document = djvu.decode.Context().new_document(
         djvu.decode.FileURI('fixtures/lipsum_words.djvu'),

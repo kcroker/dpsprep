@@ -2,7 +2,6 @@ import pathlib
 from typing import Literal, NamedTuple
 
 import djvu.decode
-import djvu.sexpr
 import loguru
 import PIL.features
 from PIL import Image, ImageOps
@@ -38,7 +37,7 @@ class ProcessedPageBackground(NamedTuple):
 def process_djvu_page(page: djvu.decode.Page, mode: ImageMode, i: int) -> ProcessedPageBackground:
     page_job = page.decode(wait=True)
     width, height = page_job.size
-    buffer = bytearray(3 * width * height) # RGB at most
+    buffer = bytearray(3 * width * height)  # RGB at most
 
     rect = (0, 0, width, height)
 

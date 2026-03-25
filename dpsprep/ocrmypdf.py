@@ -27,7 +27,8 @@ def optimize_pdf(workdir: WorkingDirectory, optlevel: int, quality: int | None, 
     options = OcrOptions(
         input_file=workdir.combined_pdf_without_text_path,
         output_file=workdir.combined_pdf_path,
-        jobs=pool_size,  # These correspond to CPU cores rather than threads, but it seems better to use the available pool size parameter
+        # Jobs correspond to CPU cores rather than threads, but it seems better to use the available pool size parameter
+        jobs=pool_size,
         optimize=optlevel,
         # When 0, these should be adjusted inside OCRmyPDF's "optimize" function
         jpg_quality=quality or 0,
@@ -64,7 +65,7 @@ def perform_ocr(workdir: WorkingDirectory, options: dict[str, Any]) -> bool:
             output_file=workdir.combined_pdf_path,
             **options,
         )
-    except Exception as err:  # noqa: BLE001
+    except Exception as err:
         loguru.logger.warning(f'OCRmyPDF failed: {err}')
         shutil.copy(workdir.combined_pdf_without_text_path, workdir.combined_pdf_path)
         return False

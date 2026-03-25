@@ -1,3 +1,13 @@
+## v2.5.3 (2026-03-25)
+
+* Fix broken workflow without text layer translation
+* Shorter names for temporary directories
+* Code maintenance
+
+## v2.5.2 (2026-03-25)
+
+* Relax dependency versions
+
 ## v2.5.1 (2026-03-14)
 
 * Allow manually configuring PDF page resolution (DPI)

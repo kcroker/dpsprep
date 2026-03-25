@@ -4,6 +4,7 @@ from types import TracebackType
 
 import loguru
 
+
 cached_stdout = sys.stdout
 
 
@@ -17,6 +18,7 @@ def configure_loguru(*, verbose: bool) -> None:
 
 
 def human_readable_size(size: int) -> str:
+    # ruff: disable[PLR2004]
     if size < 1024:
       return f'{size} bytes'
 
@@ -24,6 +26,7 @@ def human_readable_size(size: int) -> str:
       return f'{size / 1024:.02f} KiB'
 
     return f'{size / 1024 ** 2:.02f} MiB'
+    # ruff: enable[PLR2004]
 
 
 # img2pdf abuses debug logging by using print
@@ -36,7 +39,7 @@ class SilencePrint:
         self,
         exc_type: type[BaseException] | None,
         exc_value: BaseException | None,
-        traceback: TracebackType | None
+        traceback: TracebackType | None,
      ) -> None:
         sys.stdout.close()
         sys.stdout = cached_stdout

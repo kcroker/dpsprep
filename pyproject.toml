@@ -60,24 +60,20 @@ line-length = 120
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-  "A005",
-  "COM812",
   "D1", "D203", "D213",
   "E501",
-  "FA100",
-  "PLC0415",
-  "PLR2004",
   "PTH123",
-  "Q000",
-  "RUF059",
-  "S324"
 ]
+
+[tool.ruff.lint.isort]
+lines-after-imports = 2
 
 [tool.ruff.lint.flake8-quotes]
 inline-quotes = "single"
+multiline-quotes = "single"
 
 [tool.ruff.lint.per-file-ignores]
-"test_*.py" = ["S101"]
+"test_*.py" = ["S101", "PLR2004"]
 
 # mypy
 [tool.mypy]

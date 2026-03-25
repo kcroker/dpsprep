@@ -4,6 +4,8 @@
 #   https://github.com/ocrmypdf/OCRmyPDF/blob/fb006ef39f7f8842dec1976bebe4bcd5ca2e8df8/src/ocrmypdf/optimize.py#L724
 # with some simplifications for OCRmyPDF 17
 
+# ruff: noqa: PLC0415
+
 import shutil
 from typing import Any
 
@@ -29,7 +31,7 @@ def optimize_pdf(workdir: WorkingDirectory, optlevel: int, quality: int | None, 
         optimize=optlevel,
         # When 0, these should be adjusted inside OCRmyPDF's "optimize" function
         jpg_quality=quality or 0,
-        png_quality=quality or 0
+        png_quality=quality or 0,
     )
 
     info = PdfInfo(workdir.combined_pdf_path)

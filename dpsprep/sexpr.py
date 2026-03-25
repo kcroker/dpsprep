@@ -3,6 +3,7 @@ from typing import Generic, TypeVar
 import djvu.sexpr
 import loguru
 
+
 T = TypeVar('T')
 R = TypeVar('R')
 

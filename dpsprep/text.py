@@ -1,3 +1,5 @@
+# ruff: noqa: RUF059
+
 import unicodedata
 from collections.abc import Iterable, Sequence
 from pathlib import Path
@@ -7,6 +9,7 @@ import loguru
 from fpdf import FPDF
 
 from .sexpr import SExpressionVisitor
+
 
 BASE_FONT_SIZE = 10
 TAB_SIZE = 4

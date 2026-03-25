@@ -7,6 +7,7 @@ import loguru
 import PIL.features
 from PIL import Image, ImageOps
 
+
 ImageMode = Literal['rgb', 'grayscale', 'bitonal', 'infer']
 
 
@@ -73,14 +74,14 @@ def process_djvu_page(page: djvu.decode.Page, mode: ImageMode, i: int) -> Proces
         pil_modes[mode],
         page_job.size,
         buffer,
-        'raw'
+        'raw',
     )
 
     return ProcessedPageBackground(
         # I have experimentally determined that we need to invert the black-and-white images. -- Ianis, 2023-05-13
         # See also https://github.com/kcroker/dpsprep/issues/16
         ImageOps.invert(image) if mode == 'bitonal' else image,
-        page_job.dpi
+        page_job.dpi,
     )
 
 
@@ -94,7 +95,7 @@ def failsafe_save_djvu_page(page_bg: ProcessedPageBackground, target: pathlib.Pa
                 target,
                 format='PDF',
                 quality=quality,
-                resolution=dpi or page_bg.resolution
+                resolution=dpi or page_bg.resolution,
             )
         except ValueError:
             loguru.logger.warning(f'Failed to encode page {page_number}. Trying again without setting quality.')
@@ -104,5 +105,5 @@ def failsafe_save_djvu_page(page_bg: ProcessedPageBackground, target: pathlib.Pa
     page_bg.pil_image.save(
         target,
         format='PDF',
-        resolution=dpi or page_bg.resolution
+        resolution=dpi or page_bg.resolution,
     )

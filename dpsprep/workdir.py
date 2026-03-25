@@ -6,6 +6,7 @@ import tempfile
 
 import loguru
 
+
 HASHING_BUFFER_SIZE = 64 * 1024
 
 

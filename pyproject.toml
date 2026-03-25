@@ -42,12 +42,18 @@ dev = [
 requires = ["uv_build (>=0.10, <1)"]
 build-backend = "uv_build"
 
+# uv
+[tool.uv]
+resolution = "lowest-direct"
+
 [tool.uv.build-backend]
 module-root = ""  # uv-build expects the code to be in src/dpsprep, but I did not want to move it when migrating to uv
 
+# pytest
 [tool.pytest.ini_options]
 addopts = "--capture tee-sys"
 
+# ruff
 [tool.ruff]
 line-length = 120
 
@@ -73,6 +79,7 @@ inline-quotes = "single"
 [tool.ruff.lint.per-file-ignores]
 "test_*.py" = ["S101"]
 
+# mypy
 [tool.mypy]
 packages = ["dpsprep"]
 

@@ -1,6 +1,6 @@
 [project]
 name = "dpsprep"
-version = "2.5.1"
+version = "2.5.2"
 description = "A DjVu to PDF converter with a focus on small output size and the ability to preserve document outlines and text layers"
 requires-python = ">=3.11, <4.0"
 authors = [
@@ -9,12 +9,12 @@ authors = [
 ]
 license = "GPL-3.0-or-later"
 dependencies = [
-  "click (>=8.3.1)",
+  "click (>=8)",
   "djvulibre-python (>=0.9.3)",
-  "fpdf2 (>=2.8.6)",
-  "loguru (>=0.7.3)",
+  "fpdf2 (>=2.8)",
+  "loguru (>=0.7)",
   "pdfrw (>=0.4)",
-  "pillow (>=12.1.1)"
+  "pillow (>=12)"
 ]
 
 [project.urls]
@@ -23,7 +23,7 @@ Changelog = "https://github.com/kcroker/dpsprep/blob/master/CHANGELOG.md"
 
 [project.optional-dependencies]
 compress = [
-  "ocrmypdf (>=17.3.0)"
+  "ocrmypdf (>=17)"
 ]
 
 [project.scripts]
@@ -31,15 +31,15 @@ dpsprep = "dpsprep:dpsprep"
 
 [dependency-groups]
 dev = [
-  "mypy (>=1.19.1)",
-  "pytest (>=9.0.2)",
-  "ruff (>=0.15.2)",
-  "types-fpdf2 (>=2.8.4.20260221)",
-  "types-pillow (>=10.2.0.20240822)",
+  "mypy (>=1.19)",
+  "pytest (>=9)",
+  "ruff (>=0.15)",
+  "types-fpdf2 (>=2.8.4.20260322)"
 ]
 
 [build-system]
-requires = ["uv_build (>=0.10.5, <0.11.0)"]
+# uv build complains if no upper bound is set, but it updates its minor versions often, so we put a major version just to shut it up
+requires = ["uv_build (>=0.10, <1)"]
 build-backend = "uv_build"
 
 [tool.uv.build-backend]

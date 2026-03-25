@@ -10,10 +10,8 @@ import loguru
 HASHING_BUFFER_SIZE = 64 * 1024
 
 
-# Based on
-# https://stackoverflow.com/posts/22058673/revisions
 def get_file_hash(path: os.PathLike | str) -> str:
-    h = hashlib.sha1()
+    h = hashlib.blake2b(digest_size=4)
 
     with open(path, 'rb') as file:
         data = file.read(HASHING_BUFFER_SIZE)

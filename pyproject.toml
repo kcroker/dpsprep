@@ -42,37 +42,40 @@ dev = [
 requires = ["uv_build (>=0.10, <1)"]
 build-backend = "uv_build"
 
+# uv
+[tool.uv]
+resolution = "lowest-direct"
+
 [tool.uv.build-backend]
 module-root = ""  # uv-build expects the code to be in src/dpsprep, but I did not want to move it when migrating to uv
 
+# pytest
 [tool.pytest.ini_options]
 addopts = "--capture tee-sys"
 
+# ruff
 [tool.ruff]
 line-length = 120
 
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-  "A005",
-  "COM812",
   "D1", "D203", "D213",
   "E501",
-  "FA100",
-  "PLC0415",
-  "PLR2004",
   "PTH123",
-  "Q000",
-  "RUF059",
-  "S324"
 ]
+
+[tool.ruff.lint.isort]
+lines-after-imports = 2
 
 [tool.ruff.lint.flake8-quotes]
 inline-quotes = "single"
+multiline-quotes = "single"
 
 [tool.ruff.lint.per-file-ignores]
-"test_*.py" = ["S101"]
+"test_*.py" = ["S101", "PLR2004"]
 
+# mypy
 [tool.mypy]
 packages = ["dpsprep"]
 
@@ -80,7 +83,6 @@ packages = ["dpsprep"]
 module = [
   "djvu.*",
   "ocrmypdf.*",
-  "pdfrw.*",
-  "pytest_image_diff.*"
+  "pdfrw.*"
 ]
 ignore_missing_imports = true

@@ -152,7 +152,7 @@ def dpsprep(  # noqa: C901, PLR0912, PLR0913, PLR0915
     tasks = list[multiprocessing.pool.AsyncResult]()
 
     if not no_text:
-        tasks.append(pool.apply_async(func=process_text, args=[workdir], kwds={'verbose': verbose}))
+        tasks.append(pool.apply_async(func=process_text, args=[workdir, dpi], kwds={'verbose': verbose}))
 
     for i in range(len(document.pages)):
         # Cannot pass the page object itself because it does not support serialization for IPC

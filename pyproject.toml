@@ -87,7 +87,6 @@ packages = ["dpsprep"]
 module = [
   "djvu.*",
   "ocrmypdf.*",
-  "pdfrw.*",
-  "pytest_image_diff.*"
+  "pdfrw.*"
 ]
 ignore_missing_imports = true

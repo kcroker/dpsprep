@@ -1,6 +1,6 @@
 [project]
 name = "dpsprep"
-version = "2.5.3"
+version = "2.5.4"
 description = "A DjVu to PDF converter with a focus on small output size and the ability to preserve document outlines and text layers"
 requires-python = ">=3.11, <4.0"
 authors = [
@@ -14,7 +14,7 @@ dependencies = [
   "fpdf2 (>=2.8)",
   "loguru (>=0.7)",
   "pdfrw (>=0.4)",
-  "pillow (>=12)"
+  "pillow (>=12.2.0)"
 ]
 
 [project.urls]
@@ -32,7 +32,7 @@ dpsprep = "dpsprep:dpsprep"
 [dependency-groups]
 dev = [
   "mypy (>=1.19)",
-  "pytest (>=9)",
+  "pytest (>=9.0.3)",
   "ruff (>=0.15)",
   "types-fpdf2 (>=2.8.4.20260322)"
 ]
@@ -58,11 +58,40 @@ addopts = "--capture tee-sys"
 line-length = 120
 
 [tool.ruff.lint]
-select = ["ALL"]
+select = [
+  "A",     # flake8-builtins
+  "ANN",   # flake8-annotations
+  "ARG",   # flake8-unused-arguments
+  "ASYNC", # flake8-async
+  "B",     # flake8-bugbear
+  "C4",    # flake8-comrehensions
+  "C90",   # mccabe
+  "COM",   # flake8-commas
+  "E",     # pycodestyle error
+  "F",     # pyflakes
+  "FURB",  # refurb
+  "I",     # isort
+  "INP",   # flake8-no-pep420
+  "N",     # pep8-naming
+  "PERF",  # perflint
+  "PL",    # pylint
+  "PT",    # flake8-pytest-style
+  "PTH",   # flake8-use-pathlib
+  "Q",     # flake8-quotes
+  "RUF",   # ruff
+  "S",     # flake8-bandit
+  "SIM",   # flake8-simplify
+  "TC",    # flake8-type-checking
+  "TRY",   # tryceratops
+  "UP",    # pyupgrade
+  "W",     # pycodestyle warning
+]
 ignore = [
-  "D1", "D203", "D213",
-  "E501",
-  "PTH123",
+  "E501",    # line-too-long
+  "PLC1901", # compare-to-empty-string
+  "PLR6301", # no-self-use
+  "PTH123",  # builtin-open
+  "RUF001", "RUF002", "RUF003", # ambiguous-unicode-character-{string,docstring,comment}
 ]
 
 [tool.ruff.lint.isort]

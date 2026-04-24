@@ -20,10 +20,10 @@ def configure_loguru(*, verbose: bool) -> None:
 def human_readable_size(size: int) -> str:
     # ruff: disable[PLR2004]
     if size < 1024:
-      return f'{size} bytes'
+        return f'{size} bytes'
 
     if size < 1024 ** 2:
-      return f'{size / 1024:.02f} KiB'
+        return f'{size / 1024:.02f} KiB'
 
     return f'{size / 1024 ** 2:.02f} MiB'
     # ruff: enable[PLR2004]
@@ -33,7 +33,7 @@ def human_readable_size(size: int) -> str:
 # This is a way to temporarily silence it
 class SilencePrint:
     def __enter__(self) -> None:
-        sys.stdout = open(os.devnull, 'w')
+        sys.stdout = open(os.devnull, 'w', encoding='utf-8')
 
     def __exit__(
         self,

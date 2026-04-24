@@ -1,3 +1,4 @@
+import pathlib
 import string
 
 import djvu.decode
@@ -22,8 +23,7 @@ def test_extract_djvu_page_text_words() -> None:
 
     assert djvu_text is not None
 
-    with open('fixtures/lipsum_01.txt') as file:
-        source_pdf_text = file.read()
+    source_pdf_text = pathlib.Path('fixtures/lipsum_01.txt').read_text(encoding='utf-8')
 
     assert remove_whitespace(djvu_text) == remove_whitespace(source_pdf_text)
 
@@ -40,8 +40,7 @@ def test_extract_djvu_page_text_lines() -> None:
 
     assert djvu_text is not None
 
-    with open('fixtures/lipsum_01.txt') as file:
-        source_pdf_text = file.read()
+    source_pdf_text = pathlib.Path('fixtures/lipsum_01.txt').read_text(encoding='utf-8')
 
     assert remove_whitespace(djvu_text) == remove_whitespace(source_pdf_text)
 

@@ -1,3 +1,7 @@
+## v2.5.4 (2026-04-24)
+
+* Run `uv` security audit and update some dependencies
+
 ## v2.5.3 (2026-03-25)
 
 * Fix broken workflow without text layer translation

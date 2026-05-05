@@ -17,7 +17,7 @@ from .text import djvu_pages_to_text_fpdf
 from .workdir import WorkingDirectory
 
 
-def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: int | None, dpi: int | None, i: int, *, verbose: bool) -> None:  # noqa: PLR0913
+def process_page_bg(workdir: WorkingDirectory, mode: ImageMode, quality: int | None, dpi: int | None, i: int, *, verbose: bool) -> None:
     configure_loguru(verbose=verbose)
     page_number = i + 1
 
@@ -88,7 +88,7 @@ def process_text(workdir: WorkingDirectory, dpi: int | None, *, verbose: bool) -
 @click.argument('dest', type=click.Path(exists=False, resolve_path=True), required=False)
 @click.argument('src', type=click.Path(exists=True, resolve_path=True), required=True)
 @click.command()
-def dpsprep(  # noqa: C901, PLR0912, PLR0913, PLR0915
+def dpsprep(  # noqa: C901
     src: str,
     dest: str | None,
     quality: int | None,

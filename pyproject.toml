@@ -47,9 +47,6 @@ build-backend = "uv_build"
 [tool.uv]
 resolution = "lowest-direct"
 
-[tool.uv.build-backend]
-module-root = ""  # uv-build expects the code to be in src/dpsprep, but I did not want to move it when migrating to uv
-
 # pytest
 [tool.pytest.ini_options]
 addopts = "--capture tee-sys"

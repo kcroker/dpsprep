@@ -117,7 +117,7 @@ The following screenshot displays the same document without the background image
 
 Since the image is actually drawn on top of the text, there is no harm in using an actual visible font, possibly rendered using a transparent "color". Still, when searching and selecting text, the scrambled letters from the second image would be highlighted. With the invisible font, there are no visible glyphs to highlight, so an illusory "block" containing the text is highlighted instead.
 
-See [`./dpsprep/text.py`](./dpsprep/text.py) for the implementation.
+See [`text.py`](./src/dpsprep/text.py) for the implementation.
 
 ## Kevin's notes regarding the first version
 

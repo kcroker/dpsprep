@@ -2,7 +2,9 @@
 
 [![Tests](https://github.com/kcroker/dpsprep/actions/workflows/test.yml/badge.svg)](https://github.com/kcroker/dpsprep/actions/workflows/test.yml) [![AUR Package](https://img.shields.io/aur/version/dpsprep)](https://aur.archlinux.org/packages/dpsprep)
 
-This tool, initially made specifically for use with Sony's Digital Paper System (DPS), is now a general-purpose DjVu to PDF converter with a focus on small output size and the ability to preserve document outlines (e.g. TOC) and text layers (e.g. OCR).
+Convert DjVu files to PDF.
+
+The name comes from Sony's Digital Paper System (DPS), for which the tool was initially developed - see [below](#kevins-notes-regarding-the-first-version).
 
 ## Usage
 
@@ -18,7 +20,7 @@ You can also skip translating the text layer (it is sometimes not translated wel
 
     dpsprep --ocr '{"language": ["rus", "eng"]}' input.djvu
 
-Consult the man file ([online](./dpsprep.1.ronn)) for details; there are a lot of options to consider.
+Consult the man file ([online](https://github.com/kcroker/dpsprep/wiki/dpsprep.1)) for details; there are a lot of options.
 
 See the next section for different ways to run the program.
 
@@ -80,7 +82,7 @@ If you want `dpsprep` to be able to use `ocrmypdf` from `pipx`'s isolated enviro
 > If you are packaging this for some other package manager, consider using PEP-517 tools as shown in [this PKGBUILD file](https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=dpsprep).
 
 > [!NOTE]
-> Previous versions of the tool itself used to depend on third-party binaries, but this is no longer the case. The test fixtures are checked in, however regenerating them (see [`./fixtures/Makefile`](./fixtures/Makefile)) requires `pdflatex` (texlive, among others), `gs` (Ghostscript), `oxipng` (oxipng), `pdftotext` (Poppler), `djvudigital` (GSDjVU) and `djvused` (DjVuLibre). Similarly, the man file is checked in, but building it from markdown depends on `ronn`.
+> Previous versions of the tool itself used to depend on third-party binaries, but this is no longer the case. The test fixtures are checked in, however regenerating them (see [`./fixtures/Makefile`](./fixtures/Makefile)) requires `pdflatex` (texlive, among others), `gs` (Ghostscript), `oxipng` (oxipng), `pdftotext` (Poppler), `djvudigital` (GSDjVU) and `djvused` (DjVuLibre).
 
 ## Details
 

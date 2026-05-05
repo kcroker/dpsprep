@@ -38,7 +38,7 @@ class WorkingDirectory:
 
         # Working path
         # If possible, we avoid the ephemeral storage /tmp
-        persistent_tmp = pathlib.Path('/var/tmp')  # noqa: S108
+        persistent_tmp = pathlib.Path('/var/tmp')
 
         if persistent_tmp.exists() and (persistent_tmp.stat().st_mode & (os.W_OK | os.X_OK)):
             loguru.logger.debug('Using non-ephemeral storage "/var/tmp".')

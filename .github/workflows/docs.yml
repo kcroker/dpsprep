@@ -1,0 +1,36 @@
+name: Build docs
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  docs:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        # This actions is ridiculously bad at fetching tags
+        #   See https://github.com/actions/checkout/issues/2309
+        fetch-depth: 0
+        fetch-tags: true
+
+    - name: Install prerequisites on Ubuntu
+      run: |
+        sudo apt update
+        sudo apt install --yes libdjvulibre21 libdjvulibre-dev
+
+    - uses: astral-sh/setup-uv@v7
+    - name: Install dependencies
+      run: uv sync
+
+    - name: Build docs
+      run: |
+        make build-docs
+        mkdir .github/wiki
+        cp docs/Home.md docs/dpsprep.1.md .github/wiki
+
+    - name: Upload to wiki
+      uses: spenserblack/actions-wiki@v0.3.0

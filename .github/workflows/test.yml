@@ -12,7 +12,9 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v6
+      with:
+          submodules: true
 
     - name: Install prerequisites on Ubuntu
       if: matrix.os == 'ubuntu-24.04'
@@ -22,7 +24,7 @@ jobs:
 
     - name: Install prerequisites on macOS
       if: matrix.os == 'macos-14'
-      run: brew install djvulibre libtiff
+      run: brew install djvulibre
 
     # - name: Install prerequisites on Windows
     #   if: matrix.os == 'windows-2022'

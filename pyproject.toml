@@ -27,7 +27,7 @@ compress = [
 ]
 
 [project.scripts]
-dpsprep = "dpsprep:dpsprep"
+dpsprep = "dpsprep.cli:dpsprep"
 
 [dependency-groups]
 dev = [
@@ -68,6 +68,6 @@ packages = ["dpsprep"]
 module = [
   "djvu.*",
   "ocrmypdf.*",
-  "pdfrw.*"
+  "pdfrw.*",
 ]
 ignore_missing_imports = true

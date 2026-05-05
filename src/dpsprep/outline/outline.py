@@ -2,7 +2,7 @@ import djvu.sexpr
 import loguru
 from pdfrw import IndirectPdfDict, PdfDict, PdfName
 
-from .sexpr import SExpressionVisitor
+from .sexpr_visitor import SExpressionVisitor
 
 
 # Based on
@@ -58,3 +58,7 @@ class OutlineTransformVisitor(SExpressionVisitor[PdfDict]):
             self.visit(child, parent=outline)
 
         return outline
+
+
+def extract_outline_as_pdfdict(document: djvu.decode.Document) -> PdfDict:
+    return OutlineTransformVisitor().visit(document.outline.sexpr)

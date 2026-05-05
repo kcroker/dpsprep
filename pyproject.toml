@@ -14,7 +14,7 @@ dependencies = [
   "fpdf2 (>=2.8)",
   "loguru (>=0.7)",
   "pdfrw (>=0.4)",
-  "pillow (>=12.2.0)"
+  "pillow (>=12.2.0)",
 ]
 
 [project.urls]
@@ -31,6 +31,7 @@ dpsprep = "dpsprep:dpsprep"
 
 [dependency-groups]
 dev = [
+  "click-man (>=0.5.1)",
   "mypy (>=1.19)",
   "pytest (>=9.0.3)",
   "ruff (>=0.15)",

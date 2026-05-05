@@ -1,3 +1,4 @@
 .pytest_cache
 .ruff_cache
-.tests
+docs/dpsprep.1
+docs/dpsprep.1.md

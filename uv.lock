@@ -186,6 +186,18 @@ wheels = [
 ]
 
 [[package]]
+name = "click-man"
+version = "0.5.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "click" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/8b/1c/686c42d3a07d25d1cde107d0b92a2cf6234b92e569e61f8a294ffe6c9357/click_man-0.5.1.tar.gz", hash = "sha256:2db2163ef51a1b746d6d7781f78856430a2bcf0f10df428fe5986ecc0ef9809c", size = 21345, upload-time = "2025-04-08T14:41:11.092Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e1/37/34e03579eb583a587edba458599af6d82715a617e685dbe2ff30e4238930/click_man-0.5.1-py3-none-any.whl", hash = "sha256:ed63caf6d6bf04f2b1fb198a1a764daea9785ad29f303b2962418a417541a6ce", size = 8825, upload-time = "2025-04-08T14:41:09.345Z" },
+]
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 source = { registry = "https://pypi.org/simple" }
@@ -312,6 +324,7 @@ compress = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "click-man" },
     { name = "mypy" },
     { name = "pytest" },
     { name = "ruff" },
@@ -332,6 +345,7 @@ provides-extras = ["compress"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "click-man", specifier = ">=0.5.1" },
     { name = "mypy", specifier = ">=1.19" },
     { name = "pytest", specifier = ">=9.0.3" },
     { name = "ruff", specifier = ">=0.15" },

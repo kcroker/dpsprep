@@ -87,7 +87,7 @@ def process_text(workdir: WorkingDirectory, dpi: int | None, *, verbose: bool) -
 @click.version_option()
 @click.argument('dest', type=click.Path(exists=False, resolve_path=True), required=False)
 @click.argument('src', type=click.Path(exists=True, resolve_path=True), required=True)
-@click.command()
+@click.command(epilog='See dpsprep(1) for more details.')
 def dpsprep(  # noqa: C901
     src: str,
     dest: str | None,
@@ -104,6 +104,10 @@ def dpsprep(  # noqa: C901
     preserve_working: bool,
     no_text: bool,
 ) -> None:
+    """Convert DjVu files to PDF.
+
+    The name comes from Sony's Digital Paper System (DPS), for which the tool was initially developed.
+    """
     configure_loguru(verbose=verbose)
     workdir = WorkingDirectory(src, dest)
 

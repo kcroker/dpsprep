@@ -24,7 +24,7 @@ jobs:
 
     - name: Install prerequisites on macOS
       if: matrix.os == 'macos-14'
-      run: brew install djvulibre libtiff
+      run: brew install djvulibre
 
     # - name: Install prerequisites on Windows
     #   if: matrix.os == 'windows-2022'

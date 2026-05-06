@@ -10,7 +10,7 @@ import shutil
 
 import loguru
 
-from dpsprep.options import DpsPrepOptions, Json
+from dpsprep.options import DpsPrepOptions, JsonObject
 from dpsprep.workdir import WorkingDirectory
 
 
@@ -27,6 +27,8 @@ def run_ocrmypdf_optimizer(workdir: WorkingDirectory, options: DpsPrepOptions) -
         loguru.logger.warning('Cannot detect OCRmyPDF. No optimizations will be performed on the output file.')
         return False
 
+    quality = options.quality_overrides.get_global_value()
+
     omp_options = OcrOptions(
         input_file=workdir.combined_pdf_without_text_path,
         output_file=workdir.combined_pdf_path,
@@ -34,8 +36,8 @@ def run_ocrmypdf_optimizer(workdir: WorkingDirectory, options: DpsPrepOptions) -
         jobs=options.pool_size,
         optimize=options.optlevel,
         # When set to 0, OCRmyPDF's "optimize" function attempts to adjust them
-        jpg_quality=options.quality or 0,
-        png_quality=options.quality or 0,
+        jpg_quality=quality or 0,
+        png_quality=quality or 0,
     )
 
     info = PdfInfo(workdir.combined_pdf_path)
@@ -55,7 +57,7 @@ def run_ocrmypdf_optimizer(workdir: WorkingDirectory, options: DpsPrepOptions) -
     return True
 
 
-def perform_ocr(workdir: WorkingDirectory, options: Json) -> bool:
+def perform_ocr(workdir: WorkingDirectory, options: JsonObject) -> bool:
     try:
         from ocrmypdf import api
     except ImportError:

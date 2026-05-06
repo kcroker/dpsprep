@@ -1,13 +1,12 @@
 import pathlib
-from typing import Literal, NamedTuple
+from typing import NamedTuple
 
 import djvu.decode
 import loguru
 import PIL.features
 from PIL import Image, ImageOps
 
-
-ImageMode = Literal['rgb', 'grayscale', 'bitonal', 'infer']
+from dpsprep.options import DpsPrepOptions, ImageMode
 
 
 djvu_pixel_formats = {
@@ -32,6 +31,7 @@ pil_modes = {
 class ProcessedPageBackground(NamedTuple):
     pil_image: Image.Image
     resolution: int
+    mode: ImageMode
 
 
 def process_djvu_page(page: djvu.decode.Page, mode: ImageMode, i: int) -> ProcessedPageBackground:
@@ -67,7 +67,7 @@ def process_djvu_page(page: djvu.decode.Page, mode: ImageMode, i: int) -> Proces
             1,
         )
 
-        return ProcessedPageBackground(image, page_job.dpi)
+        return ProcessedPageBackground(image, page_job.dpi, 'bitonal')
 
     image = Image.frombuffer(
         pil_modes[mode],
@@ -81,10 +81,14 @@ def process_djvu_page(page: djvu.decode.Page, mode: ImageMode, i: int) -> Proces
         # See also https://github.com/kcroker/dpsprep/issues/16
         ImageOps.invert(image) if mode == 'bitonal' else image,
         page_job.dpi,
+        mode,
     )
 
 
-def failsafe_save_djvu_page(page_bg: ProcessedPageBackground, target: pathlib.Path, quality: int | None, dpi: int | None, page_number: int) -> None:
+def failsafe_save_djvu_page(page_bg: ProcessedPageBackground, target: pathlib.Path, options: DpsPrepOptions, i: int) -> None:
+    quality = options.quality_overrides.get_value_for_zero_based_page(i)
+    dpi = options.dpi_overrides.get_value_for_zero_based_page(i) or page_bg.resolution
+
     if quality is not None:
         if page_bg.pil_image.mode in pil_modes['bitonal'] and PIL.features.check_codec('libtiff'):
             loguru.logger.warning('Pillow uses TIFF for encoding bitonal PDF images. The encoder does not support a "quality" setting. If the conversion fails, please try again without specifying quality.')
@@ -94,15 +98,15 @@ def failsafe_save_djvu_page(page_bg: ProcessedPageBackground, target: pathlib.Pa
                 target,
                 format='PDF',
                 quality=quality,
-                resolution=dpi or page_bg.resolution,
+                resolution=dpi,
             )
         except ValueError:
-            loguru.logger.warning(f'Failed to encode page {page_number}. Trying again without setting quality.')
+            loguru.logger.warning(f'Failed to encode page {i}. Trying again without setting quality.')
         else:
             return
 
     page_bg.pil_image.save(
         target,
         format='PDF',
-        resolution=dpi or page_bg.resolution,
+        resolution=dpi,
     )

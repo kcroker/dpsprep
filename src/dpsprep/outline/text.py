@@ -9,6 +9,8 @@ import djvu.sexpr
 import loguru
 from fpdf import FPDF
 
+from dpsprep.options import DpsPrepOptions
+
 from .sexpr_visitor import SExpressionVisitor
 
 
@@ -163,7 +165,7 @@ class TextDrawVisitor(SExpressionVisitor):
     visit_list_region = visit_list_column
 
 
-def extract_text_as_fpdf(document: djvu.decode.Document, dpi: int | None) -> FPDF:
+def extract_text_as_fpdf(document: djvu.decode.Document, options: DpsPrepOptions) -> FPDF:
     pdf = FPDF(unit='in')
     pdf.add_font(
         family='Invisible',
@@ -173,7 +175,7 @@ def extract_text_as_fpdf(document: djvu.decode.Document, dpi: int | None) -> FPD
 
     for i, page in enumerate(document.pages):
         page_job = page.decode(wait=True)
-        page_dpi = dpi or page_job.dpi
+        page_dpi = options.dpi_overrides.get_value_for_zero_based_page(i) or page_job.dpi
         pdf.add_page(format=(page_job.width / page_dpi, page_job.height / page_dpi))
         loguru.logger.debug(f'Processing text for page {i + 1}.')
         visitor = TextDrawVisitor(pdf, page_dpi)

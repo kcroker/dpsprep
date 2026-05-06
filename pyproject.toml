@@ -20,6 +20,7 @@ dependencies = [
 [project.urls]
 Repository = "https://github.com/kcroker/dpsprep.git"
 Changelog = "https://github.com/kcroker/dpsprep/blob/master/CHANGELOG.md"
+Documentation = "https://github.com/kcroker/dpsprep/wiki"
 
 [project.optional-dependencies]
 compress = [

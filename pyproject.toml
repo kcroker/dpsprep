@@ -36,6 +36,7 @@ dev = [
   "mypy (>=1.19)",
   "pytest (>=9.0.3)",
   "ruff (>=0.15)",
+  "ruff-config-ivasilev @ git+https://github.com/v--/ruff-config-ivasilev.git@v0.15post7",
   "types-fpdf2 (>=2.8.4.20260322)"
 ]
 
@@ -54,7 +55,7 @@ addopts = "--capture tee-sys"
 
 # ruff
 [tool.ruff]
-extend = "./ruff_config/ruff.toml"
+extend = ".venv/share/ruff/ruff.ivasilev.toml"
 
 [tool.ruff.lint]
 extend-ignore = [

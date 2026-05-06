@@ -1,3 +1,0 @@
-[submodule "ruff_config"]
-	path = ruff_config
-	url = git@github.com:v--/ruff-config.git

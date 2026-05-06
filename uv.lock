@@ -328,6 +328,7 @@ dev = [
     { name = "mypy" },
     { name = "pytest" },
     { name = "ruff" },
+    { name = "ruff-config-ivasilev" },
     { name = "types-fpdf2" },
 ]
 
@@ -349,6 +350,7 @@ dev = [
     { name = "mypy", specifier = ">=1.19" },
     { name = "pytest", specifier = ">=9.0.3" },
     { name = "ruff", specifier = ">=0.15" },
+    { name = "ruff-config-ivasilev", git = "https://github.com/v--/ruff-config-ivasilev.git?rev=v0.15post7" },
     { name = "types-fpdf2", specifier = ">=2.8.4.20260322" },
 ]
 
@@ -1159,6 +1161,11 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/51/ad/f813b6e2c97e9b4598be25e94a9147b9af7e60523b0cb5d94d307c15229d/ruff-0.15.0-py3-none-win_amd64.whl", hash = "sha256:dd5e4d3301dc01de614da3cdffc33d4b1b96fb89e45721f1598e5532ccf78b18", size = 11564657, upload-time = "2026-02-03T17:52:51.893Z" },
     { url = "https://files.pythonhosted.org/packages/f6/b0/2d823f6e77ebe560f4e397d078487e8d52c1516b331e3521bc75db4272ca/ruff-0.15.0-py3-none-win_arm64.whl", hash = "sha256:c480d632cc0ca3f0727acac8b7d053542d9e114a462a145d0b00e7cd658c515a", size = 10865753, upload-time = "2026-02-03T17:53:03.014Z" },
 ]
+
+[[package]]
+name = "ruff-config-ivasilev"
+version = "0.15.post7"
+source = { git = "https://github.com/v--/ruff-config-ivasilev.git?rev=v0.15post7#d11a0e339a3a26bcd7e9043048b6421adc180105" }
 
 [[package]]
 name = "types-fpdf2"

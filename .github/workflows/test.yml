@@ -13,9 +13,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v6
-      with:
-          submodules: true
-
     - name: Install prerequisites on Ubuntu
       if: matrix.os == 'ubuntu-24.04'
       run: |

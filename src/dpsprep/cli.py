@@ -32,24 +32,24 @@ from dpsprep.workflow import attempt_to_optimize_result, combine_document, proce
 def dpsprep(
     src: str,
     dest: str | None,
-    quality: int | None,
-    dpi: int | None,
-    pool_size: int,
-    mode: ImageMode,
-    optlevel: int | None,
-    ocr: str | None,
-    verbose: bool,
-    overwrite: bool,
     delete_working: bool,
     preserve_working: bool,
+    overwrite: bool,
+    deprecated_overwrite: bool,
+    verbose: bool,
     no_text: bool,
+    optlevel: int | None,
+    pool_size: int,
+    quality: int | None,
+    mode: ImageMode,
+    dpi: int | None,
+    ocr: str | None,
 ) -> None:
     """Convert DjVu files to PDF.
 
     The name comes from Sony's Digital Paper System (DPS), for which the tool was initially developed.
     """
     configure_loguru(verbose=verbose)
-    workdir = WorkingDirectory(src, dest)
 
     try:
         ocr_options = parse_ocr_options(ocr)
@@ -69,6 +69,8 @@ def dpsprep(
         quality=quality,
         verbose=verbose,
     )
+
+    workdir = WorkingDirectory(src, dest)
 
     if not overwrite and workdir.dest.exists():
         raise SystemExit(f'File {workdir.dest} already exists.')

@@ -1,5 +1,13 @@
 SOURCE := $(wildcard src/dpsprep/*.py)
 
+ifneq ($(wildcard .git),)
+	VERSION := $(shell git describe --tags)
+	DATE := $(shell git log --max-count 1 --format=%as)
+else
+	VERSION := $(shell uv version --short)
+	DATE := $(shell grep --only-matching --perl-regexp '(?<=$(VERSION) - ).*' CHANGELOG.md)
+endif
+
 .PHONY: lint test build-docs
 
 lint:
@@ -15,8 +23,8 @@ docs:
 docs/dpsprep.1: $(SOURCE) pyproject.toml docs/examples.man | docs
 	uv run click-man dpsprep \
 		--target docs \
-		--man-version $(shell git describe --tags) \
-		--man-date $(shell git log --max-count 1 --format=%as)
+		--man-version $(VERSION) \
+		--man-date $(DATE)
 
 	cat docs/examples.man >> docs/dpsprep.1
 

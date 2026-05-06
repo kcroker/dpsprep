@@ -1,14 +1,15 @@
 # ruff: noqa: RUF059
 
 import unicodedata
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable
 from pathlib import Path
 
+import djvu.decode
 import djvu.sexpr
 import loguru
 from fpdf import FPDF
 
-from .sexpr import SExpressionVisitor
+from .sexpr_visitor import SExpressionVisitor
 
 
 BASE_FONT_SIZE = 10
@@ -162,15 +163,15 @@ class TextDrawVisitor(SExpressionVisitor):
     visit_list_region = visit_list_column
 
 
-def djvu_pages_to_text_fpdf(pages: Sequence[djvu.decode.Page], dpi: int | None) -> FPDF:
+def extract_text_as_fpdf(document: djvu.decode.Document, dpi: int | None) -> FPDF:
     pdf = FPDF(unit='in')
     pdf.add_font(
         family='Invisible',
-        fname=Path(__file__).parent / 'invisible1.ttf',
+        fname=Path(__file__).parent.parent / 'invisible1.ttf',
         style='',
     )
 
-    for i, page in enumerate(pages):
+    for i, page in enumerate(document.pages):
         page_job = page.decode(wait=True)
         page_dpi = dpi or page_job.dpi
         pdf.add_page(format=(page_job.width / page_dpi, page_job.height / page_dpi))

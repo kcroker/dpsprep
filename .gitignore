@@ -1,4 +1,9 @@
+# Generic Python files
+__pycache__
 .pytest_cache
 .ruff_cache
+.mypy_cache
+.venv
+
 docs/dpsprep.1
 docs/dpsprep.1.md

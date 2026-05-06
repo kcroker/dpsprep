@@ -7,14 +7,17 @@
 # ruff: noqa: PLC0415
 
 import shutil
-from typing import Any
 
 import loguru
 
-from .workdir import WorkingDirectory
+from dpsprep.options import DpsPrepOptions, Json
+from dpsprep.workdir import WorkingDirectory
 
 
-def optimize_pdf(workdir: WorkingDirectory, optlevel: int, quality: int | None, pool_size: int) -> bool:
+def run_ocrmypdf_optimizer(workdir: WorkingDirectory, options: DpsPrepOptions) -> bool:
+    if options.optlevel is None:
+        return False
+
     try:
         # ObjectStreamMode is actually from pikepdf, but I did not want to include that as a dependency
         from ocrmypdf._options import OcrOptions
@@ -24,19 +27,19 @@ def optimize_pdf(workdir: WorkingDirectory, optlevel: int, quality: int | None, 
         loguru.logger.warning('Cannot detect OCRmyPDF. No optimizations will be performed on the output file.')
         return False
 
-    options = OcrOptions(
+    omp_options = OcrOptions(
         input_file=workdir.combined_pdf_without_text_path,
         output_file=workdir.combined_pdf_path,
         # Jobs correspond to CPU cores rather than threads, but it seems better to use the available pool size parameter
-        jobs=pool_size,
-        optimize=optlevel,
-        # When 0, these should be adjusted inside OCRmyPDF's "optimize" function
-        jpg_quality=quality or 0,
-        png_quality=quality or 0,
+        jobs=options.pool_size,
+        optimize=options.optlevel,
+        # When set to 0, OCRmyPDF's "optimize" function attempts to adjust them
+        jpg_quality=options.quality or 0,
+        png_quality=options.quality or 0,
     )
 
     info = PdfInfo(workdir.combined_pdf_path)
-    context = PdfContext(options, workdir.ocrmypdf_tmp_path, workdir.combined_pdf_path, info, None)
+    context = PdfContext(omp_options, workdir.ocrmypdf_tmp_path, workdir.combined_pdf_path, info, None)
 
     optimize(
         workdir.combined_pdf_path,
@@ -52,7 +55,7 @@ def optimize_pdf(workdir: WorkingDirectory, optlevel: int, quality: int | None, 
     return True
 
 
-def perform_ocr(workdir: WorkingDirectory, options: dict[str, Any]) -> bool:
+def perform_ocr(workdir: WorkingDirectory, options: Json) -> bool:
     try:
         from ocrmypdf import api
     except ImportError:

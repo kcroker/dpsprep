@@ -1,4 +1,4 @@
-SOURCE := $(wildcard dpsprep/*.py)
+SOURCE := $(wildcard src/dpsprep/*.py)
 
 .PHONY: lint test build-docs
 

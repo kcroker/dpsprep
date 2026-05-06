@@ -27,7 +27,7 @@ compress = [
 ]
 
 [project.scripts]
-dpsprep = "dpsprep:dpsprep"
+dpsprep = "dpsprep.cli:dpsprep"
 
 [dependency-groups]
 dev = [
@@ -47,16 +47,13 @@ build-backend = "uv_build"
 [tool.uv]
 resolution = "lowest-direct"
 
-[tool.uv.build-backend]
-module-root = ""  # uv-build expects the code to be in src/dpsprep, but I did not want to move it when migrating to uv
-
 # pytest
 [tool.pytest.ini_options]
 addopts = "--capture tee-sys"
 
 # ruff
 [tool.ruff]
-extend = "./ruff-config/ruff.toml"
+extend = "./ruff_config/ruff.toml"
 
 [tool.ruff.lint]
 extend-ignore = [
@@ -71,6 +68,6 @@ packages = ["dpsprep"]
 module = [
   "djvu.*",
   "ocrmypdf.*",
-  "pdfrw.*"
+  "pdfrw.*",
 ]
 ignore_missing_imports = true

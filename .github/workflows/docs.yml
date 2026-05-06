@@ -11,12 +11,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v6
-      with:
-        # This actions is ridiculously bad at fetching tags
-        #   See https://github.com/actions/checkout/issues/2309
-        fetch-depth: 0
-        fetch-tags: true
-
     - name: Install prerequisites on Ubuntu
       run: |
         sudo apt update

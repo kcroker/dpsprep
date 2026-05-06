@@ -56,7 +56,7 @@ addopts = "--capture tee-sys"
 
 # ruff
 [tool.ruff]
-extend = "./ruff-config/ruff.toml"
+extend = "./ruff_config/ruff.toml"
 
 [tool.ruff.lint]
 extend-ignore = [

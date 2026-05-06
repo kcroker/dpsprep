@@ -10,7 +10,7 @@ import shutil
 
 import loguru
 
-from dpsprep.options import DpsPrepOptions, Json
+from dpsprep.options import DpsPrepOptions, JsonObject
 from dpsprep.workdir import WorkingDirectory
 
 
@@ -57,7 +57,7 @@ def run_ocrmypdf_optimizer(workdir: WorkingDirectory, options: DpsPrepOptions) -
     return True
 
 
-def perform_ocr(workdir: WorkingDirectory, options: Json) -> bool:
+def perform_ocr(workdir: WorkingDirectory, options: JsonObject) -> bool:
     try:
         from ocrmypdf import api
     except ImportError:

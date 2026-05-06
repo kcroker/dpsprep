@@ -28,17 +28,15 @@ class RangeOption(Generic[T]):
     start: int | None = None
     end: int | None = None
 
-    def matches_zero_based_page(self, i: int) -> bool:
-        one_based = i + 1
-
+    def matches_one_based_page(self, page_number: int) -> bool:
         if self.start is not None and self.end is not None:
-            return self.start <= one_based <= self.end
+            return self.start <= page_number <= self.end
 
         if self.start is not None:
-            return one_based >= self.start
+            return page_number >= self.start
 
         if self.end is not None:
-            return one_based <= self.end
+            return page_number <= self.end
 
         return True
 
@@ -47,12 +45,15 @@ class RangeOption(Generic[T]):
 class RangeOptionGroup(Generic[T]):
     ranges: Sequence[RangeOption[T]]
 
-    def get_value_for_zero_based_page(self, i: int) -> T | None:
+    def get_value_for_one_based_page(self, page_number: int) -> T | None:
         for range_ in self.ranges:
-            if range_.matches_zero_based_page(i):
+            if range_.matches_one_based_page(page_number):
                 return range_.value
 
         return None
+
+    def get_value_for_zero_based_page(self, i: int) -> T | None:
+        return self.get_value_for_one_based_page(i + 1)
 
     def get_global_value(self) -> T | None:
         if len(self.ranges) == 1 and self.ranges[0].start == self.ranges[0].end is None:
@@ -66,14 +67,14 @@ def parse_str_range_option(string: str) -> RangeOption[str]:
 
     if match is None:
         if '[' in string:
-            raise DpsPrepConfigError(f'Invalid range option {string}')
+            raise DpsPrepConfigError(f'Incomplete range option {string}')
 
         return RangeOption(string)
 
     groups = match.groupdict()
 
     if groups.get('tail'):
-        raise DpsPrepConfigError(f'Unexpected content after slice in range option {string}')
+        raise DpsPrepConfigError(f'Unexpected content after range in option {string}')
 
     value: Any
 
@@ -94,13 +95,6 @@ def parse_str_range_option(string: str) -> RangeOption[str]:
     return RangeOption(value, start, end)
 
 
-def parse_str_range_group_option(string: str) -> RangeOptionGroup[str]:
-    if string == '':
-        return RangeOptionGroup([])
-
-    return RangeOptionGroup(list(map(parse_str_range_option, string.split(','))))
-
-
 def parse_int_range_option(string: str) -> RangeOption[int]:
     str_range = parse_str_range_option(string)
 
@@ -109,9 +103,3 @@ def parse_int_range_option(string: str) -> RangeOption[int]:
     except ValueError:
         raise DpsPrepConfigError(f'Expected the value of the range option {string} to be an integer') from None
 
-
-def parse_int_range_group_option(string: str) -> RangeOptionGroup[int]:
-    if string == '':
-        return RangeOptionGroup([])
-
-    return RangeOptionGroup(list(map(parse_int_range_option, string.split(','))))

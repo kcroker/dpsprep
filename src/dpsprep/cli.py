@@ -22,7 +22,8 @@ from dpsprep.workflow import attempt_to_optimize_result, combine_document, proce
 @click.option('-O1', 'optlevel', flag_value=1, help='Use the lossless PDF image optimization from OCRmyPDF (without performing OCR).')
 @click.option('-t', '--no-text', is_flag=True, help='Disable the generation of text layers. Implied by --ocr.')
 @click.option('-v', '--verbose', is_flag=True, help='Display debug messages.')
-@click.option('-o', '--overwrite', is_flag=True, help='Overwrite destination file.')
+@click.option('-o', 'deprecated_overwrite', is_flag=True, help='Deprecated flag for overwriting destination file. The short variant of --overwrite has been renamed to -f.')
+@click.option('-f', '--overwrite', is_flag=True, help='Overwrite destination file.')
 @click.option('-w', '--preserve-working', is_flag=True, help='Preserve the working directory after script termination.')
 @click.option('-d', '--delete-working', is_flag=True, help='Delete any existing files in the working directory prior to writing to it.')
 @click.version_option()
@@ -50,6 +51,17 @@ def dpsprep(
     The name comes from Sony's Digital Paper System (DPS), for which the tool was initially developed.
     """
     configure_loguru(verbose=verbose)
+
+    if deprecated_overwrite:
+        click.echo(
+            click.style(
+                'Warning: The short variant of --overwrite has been renamed from -o to -f. The -o flag will be removed in the next major release.',
+                fg='yellow',
+            ),
+            err=True,
+        )
+
+        overwrite = deprecated_overwrite
 
     try:
         ocr_options = parse_ocr_options(ocr)

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Additions
+
+* Add a -f short variant for --overwrite
+
+### Changes
+
+* Deprecate the short overwrite flag -o in favor of -f
+* Warnings and errors are not logger to stderr
 * Restructure the code into smaller chunks
 * General maintenance work
 

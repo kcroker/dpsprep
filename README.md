@@ -16,11 +16,19 @@ If you have [OCRmyPDF](https://github.com/ocrmypdf/OCRmyPDF) installed, you can 
 
     dpsprep -O3 input.djvu
 
-You can also skip translating the text layer (it is sometimes not translated well) and redo the OCR (rather than launching the `ocrmypdf` CLI, we use the API directly and accept options in JSON format):
+You can also skip translating the text layer (it is sometimes not being translated well) and redo the OCR (rather than launching the `ocrmypdf` CLI, we use the API directly and accept options in JSON format):
 
     dpsprep --socr rus,eng,grc input.djvu
 
-Consult the man file ([online](https://github.com/kcroker/dpsprep/wiki/dpsprep.1)) for details.
+Sometimes the pages of scanned books are saved as colorful images. For PDF, saving bitonal page backgrounds as RGB images can inflate the file by an order of magnitude (see [below](#compression)). We try to infer the color mode of each page, however that is sometimes inefficient. In such cases, we can force the color mode as follows:
+
+    dpsprep --mode bitonal input.djvu start.pdf
+
+In case we want to preserve the cover page as-is, we can use ranges:
+
+    dpsprep --mode bitonal[2-end] input.djvu start.pdf
+
+For details on these and other options, as well as the allowed range syntax, consult the man file ([online](https://github.com/kcroker/dpsprep/wiki/dpsprep.1)).
 
 ## Installation
 
@@ -85,6 +93,8 @@ If you want `dpsprep` to be able to use `ocrmypdf` from `pipx`'s isolated enviro
 ## Details
 
 ### Compression
+
+PDF files full of images cannot be compressed as efficiently as DjVu, leading to files that are hundreds of megabytes large. Fortunately, books are often bitonal, which allows for efficient compression like `group4` or `jbig2`. Unfortunately, in badly digitized books the scanned images may be saved as colorful JPEG files, which can partially be mitigated using `--mode bitonal` (possibly for only a range of pages).
 
 We perform compression in two stages:
 

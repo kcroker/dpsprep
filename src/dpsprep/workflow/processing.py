@@ -6,7 +6,7 @@ import loguru
 
 from dpsprep.images import failsafe_save_djvu_page, process_djvu_page
 from dpsprep.logging import configure_loguru, human_readable_size
-from dpsprep.options import DpsPrepOptions
+from dpsprep.options import DEFAULT_IMAGE_MODE, DpsPrepOptions
 from dpsprep.outline import extract_text_as_fpdf
 from dpsprep.pdf import is_valid_pdf
 from dpsprep.workdir import WorkingDirectory
@@ -34,18 +34,26 @@ def process_page_bg(workdir: WorkingDirectory, options: DpsPrepOptions, i: int) 
     )
     document.decoding_job.wait()
 
-    page_bg = process_djvu_page(document.pages[i], options.mode, i)
-
+    mode = options.mode_overrides.get_value_for_zero_based_page(i) or DEFAULT_IMAGE_MODE
+    page_bg = process_djvu_page(document.pages[i], mode, i)
     failsafe_save_djvu_page(
         page_bg,
         workdir.get_page_pdf_path(i),
-        options.quality,
-        options.dpi,
+        options,
         page_number,
     )
 
+    dpi_override = options.dpi_overrides.get_value_for_zero_based_page(i)
     pdf_size = workdir.get_page_pdf_path(i).stat().st_size
-    loguru.logger.debug(f'Image data with size {human_readable_size(pdf_size)} from page {page_number} processed in {time() - start_time:.2f}s and written to working directory.')
+
+    message = (
+        f'Processed and saved image data for page {page_number} in {time() - start_time:.2f}s. '
+        f'The result has {page_bg.mode} mode, DPI {page_bg.resolution} '
+        + ('' if dpi_override is None else f'(will be rescaled to {dpi_override}) ') +
+        f'and size {human_readable_size(pdf_size)}.'
+    )
+
+    loguru.logger.debug(message)
 
 
 def process_text(workdir: WorkingDirectory, options: DpsPrepOptions) -> None:
@@ -67,7 +75,7 @@ def process_text(workdir: WorkingDirectory, options: DpsPrepOptions) -> None:
     )
     document.decoding_job.wait()
 
-    fpdf = extract_text_as_fpdf(document, options.dpi)
+    fpdf = extract_text_as_fpdf(document, options)
     fpdf.output(str(workdir.text_layer_pdf_path))
 
     pdf_size = workdir.text_layer_pdf_path.stat().st_size

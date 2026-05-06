@@ -9,15 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Additions
 
-* Add a --socr ("streamlined" OCR) option that abbreviates `--ocr '{"language": ["eng", "grc"]}'` to `--ocrs eng,grc`
-* Add a -f short variant for --overwrite
+* Implement page ranges for `--mode`, `--dpi` and `--quality`.
+* Add a `--socr` ("streamlined" OCR) option that abbreviates `--ocr '{"language": ["eng", "grc"]}'` to `--ocrs eng,grc`.
+* Add a `-f` short variant for `--overwrite`.
 
 ### Changes
 
-* Deprecate the short overwrite flag -o in favor of -f
-* Warnings and errors are not logger to stderr
-* Restructure the code into smaller chunks
-* General maintenance work
+* Deprecate the short overwrite flag `-o` in favor of `-f`.
+* Warnings and errors are not logger to stderr.
+* Restructure the code into smaller chunks.
+* General maintenance work.
 
 ## 2.5.4 - 2026-04-24
 

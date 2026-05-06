@@ -5,18 +5,16 @@ import djvu.decode
 import loguru
 
 from dpsprep.exceptions import DpsPrepConfigError
-from dpsprep.images import ImageMode
 from dpsprep.logging import configure_loguru, human_readable_size
-from dpsprep.options import DpsPrepOptions, parse_ocr_options
+from dpsprep.options import parse_all_options
 from dpsprep.workdir import WorkingDirectory
 from dpsprep.workflow import attempt_to_optimize_result, combine_document, process_in_pool
 
 
-@click.option('--socr', type=str, is_flag=False, flag_value='{}', help='"Streamlined" OCR; `--ocrs eng,grc` expands to `--ocr \'{"language": ["eng", "grc"]}\'`.')
-@click.option('--ocr', type=str, is_flag=False, flag_value='{}', help='Perform OCR via OCRmyPDF rather than trying to convert the text layer. If this parameter has a value, it should be a JSON dictionary of options to be passed to OCRmyPDF.')
-@click.option('--dpi', type=click.IntRange(min=1), help='Override DPI values encoded in the DjVu file for individual pages.')
-@click.option('-m', '--mode', type=click.Choice(['infer', 'bitonal', 'grayscale', 'rgb']), default='infer', help='Override the image modes encoded in the DjVu file for individual pages. It sometimes makes sense to force bitonal images since they compress well.')
-@click.option('-q', '--quality', type=click.IntRange(min=0, max=100), help="Quality of images in output. Used only for JPEG compression, i.e. RGB and Grayscale images. Passed directly to Pillow and to OCRmyPDF's optimizer.")
+# OCR options
+@click.option('--socr', type=str, default=None, help='"Streamlined" OCR; `--ocrs eng,grc` expands to `--ocr \'{"language": ["eng", "grc"]}\'`.')
+@click.option('--ocr', type=str, default=None, help='Perform OCR via OCRmyPDF rather than trying to convert the text layer. If this parameter has a value, it should be a JSON dictionary of options to be passed to OCRmyPDF.')
+# Other options
 @click.option('-p', '--pool-size', type=click.IntRange(min=0), default=4, help='Size of MultiProcessing pool for handling page-by-page operations.')
 @click.option('-O3', 'optlevel', flag_value=3, help='Use the aggressive lossy PDF image optimization from OCRmyPDF.')
 @click.option('-O2', 'optlevel', flag_value=2, help='Use the PDF image optimization from OCRmyPDF.')
@@ -27,13 +25,23 @@ from dpsprep.workflow import attempt_to_optimize_result, combine_document, proce
 @click.option('-f', '--overwrite', is_flag=True, help='Overwrite destination file.')
 @click.option('-w', '--preserve-working', is_flag=True, help='Preserve the working directory after script termination.')
 @click.option('-d', '--delete-working', is_flag=True, help='Delete any existing files in the working directory prior to writing to it.')
+# Range options
+@click.option('-q', '--quality', type=str, default='', help="A range group option that determines the quality of images in output. Valid values range between 1 and 100. Used only for JPEG compression, i.e. RGB and Grayscale images. Passed directly to Pillow and to OCRmyPDF's optimizer.")
+@click.option('--dpi', type=str, default='', help='A range group option that allows overriding DPI values encoded in the DjVu file for individual pages.')
+@click.option('-m', '--mode', type=str, default='infer', help='A range group option that allows overriding the image modes encoded in the DjVu file for individual pages.  Valid values are `infer` (default), `bitonal`, `grayscale` and `rgb`. It sometimes makes sense to force bitonal images since they compress well.')
 @click.version_option()
 @click.argument('dest', type=click.Path(exists=False, resolve_path=True), required=False)
 @click.argument('src', type=click.Path(exists=True, resolve_path=True), required=True)
 @click.command(epilog='See dpsprep(1) for more details.')
 def dpsprep(
+    # Positional arguments
     src: str,
     dest: str | None,
+    # Range options
+    mode: str,
+    dpi: str,
+    quality: str,
+    # Other options
     delete_working: bool,
     preserve_working: bool,
     overwrite: bool,
@@ -42,15 +50,18 @@ def dpsprep(
     no_text: bool,
     optlevel: int | None,
     pool_size: int,
-    quality: int | None,
-    mode: ImageMode,
-    dpi: int | None,
+    # OCR options
     ocr: str | None,
     socr: str | None,
 ) -> None:
     """Convert DjVu files to PDF.
 
     The name comes from Sony's Digital Paper System (DPS), for which the tool was initially developed.
+
+    The usage should be straightforward, however the options that accept page ranges require some
+    elaboration. For example, the --mode option accepts the following values:
+
+        `rgb`, `rgb[3]`, `rgb[3-4]`, `rgb[3-end]`, `rgb[3],rgb[10-end]`
     """
     configure_loguru(verbose=verbose)
 
@@ -66,28 +77,24 @@ def dpsprep(
         overwrite = deprecated_overwrite
 
     try:
-        ocr_options = parse_ocr_options(ocr, socr)
+        options = parse_all_options(
+            ocr=ocr,
+            socr=socr,
+            mode=mode,
+            dpi=dpi,
+            quality=quality,
+            no_text=no_text,
+            pool_size=pool_size,
+            verbose=verbose,
+            optlevel=optlevel,
+        )
     except DpsPrepConfigError as err:
-        raise SystemExit(str(err)) from err
-
-    if ocr_options:
-        no_text = True
-
-    options = DpsPrepOptions(
-        dpi=dpi,
-        mode=mode,
-        no_text=no_text,
-        ocr_options=ocr_options,
-        optlevel=optlevel,
-        pool_size=pool_size,
-        quality=quality,
-        verbose=verbose,
-    )
+        raise click.ClickException(str(err)) from err
 
     workdir = WorkingDirectory(src, dest)
 
     if not overwrite and workdir.dest.exists():
-        raise SystemExit(f'File {workdir.dest} already exists.')
+        raise click.ClickException(f'File {workdir.dest} already exists.')
 
     start_time = time()
 

@@ -12,9 +12,13 @@ Produce an output file using a large pool of workers:
 .IP
 dpsprep --pool=16 input.djvu
 .P
-Force bitonal images:
+Force all pages to be bitonal:
 .IP
 dpsprep --mode bitonal input.djvu
+.P
+Force bitonal pages but leave the cover page as-is (can be useful with badly digitized books):
+.IP
+dpsprep --mode bitonal[2-end] input.djvu
 .P
 Produce an output file by disregarding the text layer and running OCRmyPDF instead:
 .IP

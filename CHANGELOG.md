@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Additions
 
+* Add a --socr ("streamlined" OCR) option that abbreviates `--ocr '{"language": ["eng", "grc"]}'` to `--ocrs eng,grc`
 * Add a -f short variant for --overwrite
 
 ### Changes

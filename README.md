@@ -18,11 +18,9 @@ If you have [OCRmyPDF](https://github.com/ocrmypdf/OCRmyPDF) installed, you can 
 
 You can also skip translating the text layer (it is sometimes not translated well) and redo the OCR (rather than launching the `ocrmypdf` CLI, we use the API directly and accept options in JSON format):
 
-    dpsprep --ocr '{"language": ["rus", "eng"]}' input.djvu
+    dpsprep --socr rus,eng,grc input.djvu
 
-Consult the man file ([online](https://github.com/kcroker/dpsprep/wiki/dpsprep.1)) for details; there are a lot of options.
-
-See the next section for different ways to run the program.
+Consult the man file ([online](https://github.com/kcroker/dpsprep/wiki/dpsprep.1)) for details.
 
 ## Installation
 

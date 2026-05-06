@@ -12,6 +12,7 @@ from dpsprep.workdir import WorkingDirectory
 from dpsprep.workflow import attempt_to_optimize_result, combine_document, process_in_pool
 
 
+@click.option('--socr', type=str, is_flag=False, flag_value='{}', help='"Streamlined" OCR; `--ocrs eng,grc` expands to `--ocr \'{"language": ["eng", "grc"]}\'`.')
 @click.option('--ocr', type=str, is_flag=False, flag_value='{}', help='Perform OCR via OCRmyPDF rather than trying to convert the text layer. If this parameter has a value, it should be a JSON dictionary of options to be passed to OCRmyPDF.')
 @click.option('--dpi', type=click.IntRange(min=1), help='Override DPI values encoded in the DjVu file for individual pages.')
 @click.option('-m', '--mode', type=click.Choice(['infer', 'bitonal', 'grayscale', 'rgb']), default='infer', help='Override the image modes encoded in the DjVu file for individual pages. It sometimes makes sense to force bitonal images since they compress well.')
@@ -45,6 +46,7 @@ def dpsprep(
     mode: ImageMode,
     dpi: int | None,
     ocr: str | None,
+    socr: str | None,
 ) -> None:
     """Convert DjVu files to PDF.
 
@@ -64,7 +66,7 @@ def dpsprep(
         overwrite = deprecated_overwrite
 
     try:
-        ocr_options = parse_ocr_options(ocr)
+        ocr_options = parse_ocr_options(ocr, socr)
     except DpsPrepConfigError as err:
         raise SystemExit(str(err)) from err
 

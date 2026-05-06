@@ -18,7 +18,7 @@ dpsprep --mode bitonal input.djvu
 .P
 Produce an output file by disregarding the text layer and running OCRmyPDF instead:
 .IP
-dpsprep --ocr '{"language": ["rus", "eng"]}' input.djvu
+dpsprep --socr rus,eng,grc input.djvu
 .P
 Simply disregard the text layer without OCR:
 .IP

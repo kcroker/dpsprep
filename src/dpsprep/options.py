@@ -23,7 +23,13 @@ class DpsPrepOptions:
     quality: int | None
 
 
-def parse_ocr_options(ocr_str: str | None) -> Json | None:
+def parse_ocr_options(ocr_str: str | None, socr_str: str | None) -> Json | None:
+    if socr_str is not None:
+        if ocr_str is not None:
+            raise DpsPrepConfigError('Cannot specify both --ocr and -socr simultaneously.')
+
+        return dict(languages=socr_str.split(','))
+
     if ocr_str is None:
         return None
 

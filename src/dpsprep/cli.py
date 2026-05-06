@@ -71,8 +71,7 @@ def dpsprep(
     )
 
     if not overwrite and workdir.dest.exists():
-        msg = f'File {workdir.dest} already exists.'
-        raise SystemExit(msg)
+        raise SystemExit(f'File {workdir.dest} already exists.')
 
     start_time = time()
 

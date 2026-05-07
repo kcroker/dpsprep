@@ -46,6 +46,8 @@ As described in the [notes on compression below](#compression), you might want t
 
     uv tool install dpsprep --from git+https://github.com/kcroker/dpsprep[compress]
 
+Similarly, for OCR, the `ocr` extra must be used (coincidentally, both pull in the same package - OCRmyPDF).
+
 Sometimes a particular feature branch need to be tested. For installing a fixed revision (i.e. common/branch/tag), the following should work (if `extra-name` is needed, use `dpsprep@rev[extra-name]`):
 
     uv tool install dpsprep --from git+https://github.com/kcroker/dpsprep@rev
@@ -105,7 +107,7 @@ We perform compression in two stages:
 
 * The first one is the default compression provided by [Pillow](https://github.com/python-pillow/Pillow). For bitonal images, [the PDF generation code says](https://github.com/python-pillow/Pillow/blob/a088d54509e42e4eeed37d618b42d775c0d16ef5/src/PIL/PdfImagePlugin.py#L138C16-L138C16) that, if `libtiff` is available, `group4` compression is used.
 
-* If [OCRmyPDF](https://github.com/ocrmypdf/OCRmyPDF) is installed (possibly via the `compress` extra), its PDF optimization can be used via the flags `-O1` to `-O3` (this involves no OCR). This allows us to use advanced techniques, including JBIG2 compression via `jbig2enc`.
+* If [OCRmyPDF](https://github.com/ocrmypdf/OCRmyPDF) is installed (possibly via the `ocr` or `compress` extras), its PDF optimization can be used via the flags `-O1` to `-O3` (this involves no OCR). This allows us to use advanced techniques, including JBIG2 compression via `jbig2enc`.
 
 If manually running OCRmyPDF, note that the optimization command suggested [in the documentation](https://ocrmypdf.readthedocs.io/en/latest/cookbook.html#optimize-images-without-performing-ocr) (setting `--tesseract-timeout` to `0`) may ruin existing text layers. To perform only PDF optimization you can use the following undocumented tool instead:
 

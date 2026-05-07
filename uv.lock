@@ -321,6 +321,9 @@ dependencies = [
 compress = [
     { name = "ocrmypdf" },
 ]
+ocr = [
+    { name = "ocrmypdf" },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -339,10 +342,11 @@ requires-dist = [
     { name = "fpdf2", specifier = ">=2.8" },
     { name = "loguru", specifier = ">=0.7" },
     { name = "ocrmypdf", marker = "extra == 'compress'", specifier = ">=17" },
+    { name = "ocrmypdf", marker = "extra == 'ocr'", specifier = ">=17" },
     { name = "pdfrw", specifier = ">=0.4" },
     { name = "pillow", specifier = ">=12.2.0" },
 ]
-provides-extras = ["compress"]
+provides-extras = ["compress", "ocr"]
 
 [package.metadata.requires-dev]
 dev = [

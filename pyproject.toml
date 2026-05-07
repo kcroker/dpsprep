@@ -27,6 +27,10 @@ compress = [
   "ocrmypdf (>=17)"
 ]
 
+ocr = [
+  "ocrmypdf (>=17)"
+]
+
 [project.scripts]
 dpsprep = "dpsprep.cli:dpsprep"
 

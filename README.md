@@ -16,11 +16,15 @@ If you have [OCRmyPDF](https://github.com/ocrmypdf/OCRmyPDF) installed, you can 
 
     dpsprep -O3 input.djvu
 
-You can also skip translating the text layer (it is sometimes not being translated well) and redo the OCR (rather than launching the `ocrmypdf` CLI, we use the API directly and accept options in JSON format):
+You can also skip translating the text layer (it is sometimes not being translated well) and redo the OCR:
 
     dpsprep --socr rus,eng,grc input.djvu
 
-Sometimes the pages of scanned books are saved as colorful images. For PDF, saving bitonal page backgrounds as RGB images can inflate the file by an order of magnitude (see [below](#compression)). We try to infer the color mode of each page, however that is sometimes inefficient. In such cases, we can force the color mode as follows:
+Rather than launching the `ocrmypdf` CLI, we use the API directly. The option `--socr` ("streamlined" OCR) used above is a shorthand for the following:
+
+    dpsprep --ocr '{"language": ["rus", "eng", "grc"]}' input.djvu
+
+Sometimes the pages of scanned books are saved as colorful images. For PDF, saving bitonal page backgrounds as RGB images can inflate the file by an order of magnitude (see the [notes on compression below](#compression)). We try to infer the color mode of each page, however that is sometimes inefficient. In such cases, we can force the color mode as follows:
 
     dpsprep --mode bitonal input.djvu start.pdf
 
@@ -38,7 +42,7 @@ An easy way to install a `dpsprep` executable for the current user is via [`uv`]
 
     uv tool install dpsprep --from git+https://github.com/kcroker/dpsprep
 
-For better compression (see below), the `compress` extra must be specified:
+As described in the [notes on compression below](#compression), you might want to also include the `compress` extra:
 
     uv tool install dpsprep --from git+https://github.com/kcroker/dpsprep[compress]
 
@@ -55,6 +59,7 @@ The only hard prerequisite is `djvulibre` (e.g. `djvulibre` on Arch, `libdjvulib
 > Note that Windows support in `djvulibre-python` requires 64-bit `djvulibre`, and they only officially distribute 32-bit Windows packages. If you manage to make it work, consider opening a pull request.
 
 Optional prerequisites are:
+
 * `libtiff` for bitonal image compression.
 * `libjpeg` (or `libjpeg-turbo`) for multitotal (RGB or grayscale) compression.
 * `OCRmyPDF` and `jbig2enc` for PDF optimization (see the next section).
@@ -100,7 +105,7 @@ We perform compression in two stages:
 
 * The first one is the default compression provided by [Pillow](https://github.com/python-pillow/Pillow). For bitonal images, [the PDF generation code says](https://github.com/python-pillow/Pillow/blob/a088d54509e42e4eeed37d618b42d775c0d16ef5/src/PIL/PdfImagePlugin.py#L138C16-L138C16) that, if `libtiff` is available, `group4` compression is used.
 
-* If [OCRmyPDF](https://github.com/ocrmypdf/OCRmyPDF) is installed, its PDF optimization can be used via the flags `-O1` to `-O3` (this involves no OCR). This allows us to use advanced techniques, including JBIG2 compression via `jbig2enc`.
+* If [OCRmyPDF](https://github.com/ocrmypdf/OCRmyPDF) is installed (possibly via the `compress` extra), its PDF optimization can be used via the flags `-O1` to `-O3` (this involves no OCR). This allows us to use advanced techniques, including JBIG2 compression via `jbig2enc`.
 
 If manually running OCRmyPDF, note that the optimization command suggested [in the documentation](https://ocrmypdf.readthedocs.io/en/latest/cookbook.html#optimize-images-without-performing-ocr) (setting `--tesseract-timeout` to `0`) may ruin existing text layers. To perform only PDF optimization you can use the following undocumented tool instead:
 
@@ -108,9 +113,9 @@ If manually running OCRmyPDF, note that the optimization command suggested [in t
 
 ### Text layer
 
-The visible contents of a DjVu file are well-compressed images (see [here](http://yann.lecun.com/ex/djvu/index.html)). But a DjVu file also contains a "text layer" stored as metadata attached to invisible rectangular blocks. PDF does not support such constructs, so we do a little hack.
+The visible contents of a DjVu file are well-compressed images (see [LeCun's project page](http://yann.lecun.com/ex/djvu/index.html)). But a DjVu file also contains a "text layer" stored as metadata attached to invisible rectangular blocks. PDF does not support such constructs, so we do a little hack.
 
-We render each page as an image and put it as a background in the PDF. We then use a font, [`invisible1.ttf`](./dpsprep/invisible.ttf), taken from [here](https://www.angelfire.com/pr/pgpf/if.html), to "draw" text. Every time we draw a block of text, we rescale the font so that the width of the text matches that of the corresponding DjVu block.
+We render each page as an image and put it as a background in the PDF. We then use a font, [`invisible1.ttf`](./src/dpsprep/invisible1.ttf), taken from ["ifw2kxp"](https://web.archive.org/web/20230926193617/https://www.angelfire.com/pr/pgpf/if.html), to "draw" text. Every time we draw a block of text, we rescale the font so that the width of the text matches that of the corresponding DjVu block.
 
 > [!NOTE]
 > The font is small (12kb) and contains (invisible) Latin, Cyrillic and Greek characters. Even Chinese characters seem to be working correctly, at least with [Evince](https://gitlab.gnome.org/GNOME/evince).
@@ -125,7 +130,7 @@ The following screenshot displays the same document without the background image
 
 Since the image is actually drawn on top of the text, there is no harm in using an actual visible font, possibly rendered using a transparent "color". Still, when searching and selecting text, the scrambled letters from the second image would be highlighted. With the invisible font, there are no visible glyphs to highlight, so an illusory "block" containing the text is highlighted instead.
 
-See [`text.py`](./src/dpsprep/text.py) for the implementation.
+See [`text.py`](./src/dpsprep/outline/text.py) for the implementation.
 
 ## Kevin's notes regarding the first version
 

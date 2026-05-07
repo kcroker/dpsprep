@@ -24,7 +24,7 @@ from dpsprep.workflow import attempt_to_optimize_result, combine_document, proce
 @click.option('--socr', 'socr_options', type=SocrOptionClickType(), default=None, help='"Streamlined" OCR; `--ocrs eng,grc` expands to `--ocr \'{"language": ["eng", "grc"]}\'`.')
 @click.option('--ocr', 'ocr_options', type=OcrOptionClickType(), default=None, help='Perform OCR via OCRmyPDF rather than trying to convert the text layer. If this parameter has a value, it should be a JSON dictionary of options to be passed to OCRmyPDF.')
 # Other options
-@click.option('-p', '--pool-size', type=click.IntRange(min=0), default=4, help='Size of the MultiProcessing pool that handles page-by-page operations.')
+@click.option('-p', '--pool-size', type=click.IntRange(min=1), default=4, help='Size of the MultiProcessing pool that handles page-by-page operations.')
 @click.option('-O3', 'optlevel', flag_value=3, help='Use the aggressive lossy PDF image optimization from OCRmyPDF.')
 @click.option('-O2', 'optlevel', flag_value=2, help='Use the PDF image optimization from OCRmyPDF.')
 @click.option('-O1', 'optlevel', flag_value=1, help='Use the lossless PDF image optimization from OCRmyPDF (without performing OCR).')

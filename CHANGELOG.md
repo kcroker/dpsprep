@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 * Add an "ocr" extra.
+* Set minimal worker pool size to 1
 
 ## 2.6.2 - 2026-05-06
 

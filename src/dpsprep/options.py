@@ -85,7 +85,13 @@ class SocrOptionClickType(click.ParamType):
     name = 'comma-separated languages'
 
     @override
-    def convert(self, value: str, param: click.Parameter | None, ctx: click.Context | None) -> JsonObject | None:
+    def convert(self, value: str | JsonObject | None, param: click.Parameter | None, ctx: click.Context | None) -> JsonObject | None:
+        if value is None:
+            return None
+
+        if isinstance(value, Mapping):
+            return value
+
         return dict(languages=value.split(','))
 
 

@@ -37,7 +37,7 @@ dpsprep = "dpsprep.cli:dpsprep"
 [dependency-groups]
 dev = [
   "click-man (>=0.5.1)",
-  "mypy (>=1.19)",
+  "mypy (>=2)",
   "pytest (>=9.0.3)",
   "ruff (>=0.15)",
   "ruff-config-ivasilev @ git+https://github.com/v--/ruff-config-ivasilev.git@v0.15post7",
@@ -65,6 +65,7 @@ ignore = [
 # mypy
 [tool.mypy]
 packages = ["dpsprep"]
+strict_bytes = false
 
 [[tool.mypy.overrides]]
 module = [

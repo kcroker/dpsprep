@@ -53,10 +53,6 @@ build-backend = "uv_build"
 [tool.uv]
 resolution = "lowest-direct"
 
-# pytest
-[tool.pytest.ini_options]
-addopts = "--capture tee-sys"
-
 # ruff
 [tool.ruff]
 extend = ".venv/share/ruff/ruff.ivasilev.toml"

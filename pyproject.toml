@@ -58,7 +58,7 @@ resolution = "lowest-direct"
 extend = ".venv/share/ruff/ruff.ivasilev.toml"
 
 [tool.ruff.lint]
-extend-ignore = [
+ignore = [
   "D1", # undocumented-*
 ]
 

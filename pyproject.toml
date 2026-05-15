@@ -37,7 +37,7 @@ dpsprep = "dpsprep.cli:dpsprep"
 [dependency-groups]
 dev = [
   "click-man (>=0.5.1)",
-  "mypy (>=1.19)",
+  "mypy (>=2)",
   "pytest (>=9.0.3)",
   "ruff (>=0.15)",
   "ruff-config-ivasilev @ git+https://github.com/v--/ruff-config-ivasilev.git@v0.15post7",
@@ -53,22 +53,19 @@ build-backend = "uv_build"
 [tool.uv]
 resolution = "lowest-direct"
 
-# pytest
-[tool.pytest.ini_options]
-addopts = "--capture tee-sys"
-
 # ruff
 [tool.ruff]
 extend = ".venv/share/ruff/ruff.ivasilev.toml"
 
 [tool.ruff.lint]
-extend-ignore = [
+ignore = [
   "D1", # undocumented-*
 ]
 
 # mypy
 [tool.mypy]
 packages = ["dpsprep"]
+strict_bytes = false
 
 [[tool.mypy.overrides]]
 module = [

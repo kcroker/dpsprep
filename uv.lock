@@ -357,6 +357,7 @@ dependencies = [
     { name = "loguru" },
     { name = "pdfrw" },
     { name = "pillow" },
+    { name = "typing-extensions", marker = "python_full_version < '3.12'" },
 ]
 
 [package.optional-dependencies]
@@ -387,6 +388,7 @@ requires-dist = [
     { name = "ocrmypdf", marker = "extra == 'ocr'", specifier = ">=17" },
     { name = "pdfrw", specifier = ">=0.4" },
     { name = "pillow", specifier = ">=12.2.0" },
+    { name = "typing-extensions", marker = "python_full_version < '3.12'", specifier = ">=4.5.0" },
 ]
 provides-extras = ["compress", "ocr"]
 

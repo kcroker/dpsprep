@@ -13,6 +13,7 @@ dependencies = [
   "djvulibre-python (>=0.9.3)",
   "fpdf2 (>=2.8)",
   "loguru (>=0.7)",
+  "typing_extensions (>=4.5.0); python_version < '3.12'",
   "pdfrw (>=0.4)",
   "pillow (>=12.2.0)",
 ]

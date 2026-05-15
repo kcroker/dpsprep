@@ -1,10 +1,16 @@
 import json
+import sys
 from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
 from typing import Any, Literal, cast, get_args
 
 import click
-from typing_extensions import override
+
+
+if sys.version_info < (3, 12):
+    from typing_extensions import override
+else:
+    from typing import override
 
 from dpsprep.exceptions import DpsPrepConfigError
 from dpsprep.ranges import (

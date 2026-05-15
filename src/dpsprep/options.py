@@ -1,10 +1,9 @@
 import json
 from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
-from typing import Any, Literal, cast, get_args
+from typing import Any, Literal, cast, get_args, override
 
 import click
-from typing_extensions import override
 
 from dpsprep.exceptions import DpsPrepConfigError
 from dpsprep.ranges import (

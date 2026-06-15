@@ -6,6 +6,14 @@ Convert DjVu files to PDF.
 
 The name comes from Sony's Digital Paper System (DPS), for which the tool was initially developed - see [below](#kevins-notes-regarding-the-first-version).
 
+## Table of contents
+
+* [Usage](#usage)
+* [Installation](#installation)
+* [Project setup](#project-setup)
+
+Also see [the wiki](https://github.com/kcroker/dpsprep/wiki).
+
 ## Usage
 
 Full example (the name of the PDF is optional and inferred from the input name):
@@ -24,7 +32,7 @@ Rather than launching the `ocrmypdf` CLI, we use the API directly. The option `-
 
     dpsprep --ocr '{"language": ["rus", "eng", "grc"]}' input.djvu
 
-Sometimes the pages of scanned books are saved as colorful images. For PDF, saving bitonal page backgrounds as RGB images can inflate the file by an order of magnitude (see the [notes on compression below](#compression)). We try to infer the color mode of each page, however that is sometimes inefficient. In such cases, we can force the color mode as follows:
+Sometimes the pages of scanned books are saved as colorful images. For PDF, saving bitonal page backgrounds as RGB images can inflate the file by an order of magnitude (see the [notes on compression](https://github.com/kcroker/dpsprep/wiki/compression) in the wiki). We try to infer the color mode of each page, however that is sometimes inefficient. In such cases, we can force the color mode as follows:
 
     dpsprep --mode bitonal input.djvu start.pdf
 
@@ -36,13 +44,17 @@ For details on these and other options, as well as the allowed range syntax, con
 
 ## Installation
 
-### Automated
+### Automatic
 
 An easy way to install a `dpsprep` executable for the current user is via [`uv`](https://docs.astral.sh/uv/):
 
     uv tool install dpsprep --from git+https://github.com/kcroker/dpsprep
 
-As described in the [notes on compression below](#compression), you might want to also include the `compress` extra:
+or [`pipx`](https://pipx.pypa.io):
+
+    pipx install git+https://github.com/kcroker/dpsprep
+
+As described in the [notes on compression](https://github.com/kcroker/dpsprep/wiki/compression) in the wiki, you might want to also include the `compress` extra:
 
     uv tool install dpsprep --from git+https://github.com/kcroker/dpsprep[compress]
 
@@ -68,11 +80,11 @@ Optional prerequisites are:
 
 `libtiff` depends on `libjpeg`, so installing `libtiff` will likely install both.
 
-For details on how these dependencies can be installed, see the GitHub Actions [workflow](./.github/workflows/test.yml) and the [dpsprep](https://aur.archlinux.org/packages/dpsprep) package for Arch Linux.
+For details on how these dependencies can be installed, see the GitHub Actions [test workflow](./.github/workflows/test.yml) and the [dpsprep](https://aur.archlinux.org/packages/dpsprep) package for Arch Linux.
 
 ### Manual
 
-Setting up the project in is again done via `uv`. Once inside the cloned repository, the environment for the program can be set up by simply running `uv sync --all-extras`. After than, the following should work:
+Setting up the project in is again done via `uv`. Once inside the cloned repository, the environment for the program can be set up by simply running `uv sync`. After than, the following should work:
 
     uv run dpsprep [OPTIONS] SRC [DEST]
 
@@ -97,42 +109,15 @@ If you want `dpsprep` to be able to use `ocrmypdf` from `pipx`'s isolated enviro
 > [!NOTE]
 > Previous versions of the tool itself used to depend on third-party binaries, but this is no longer the case. The test fixtures are checked in, however regenerating them (see [`./fixtures/Makefile`](./fixtures/Makefile)) requires `pdflatex` (texlive, among others), `gs` (Ghostscript), `oxipng` (oxipng), `pdftotext` (Poppler), `djvudigital` (GSDjVU) and `djvused` (DjVuLibre).
 
-## Details
+## Project setup
 
-### Compression
+The project uses `uv` for managing Python versions, dependencies and builds. Running `uv sync` will create a virtual environment with an appropriate Python version (based on [.python-version](./.python-version)) and install all development dependencies.
 
-PDF files full of images cannot be compressed as efficiently as DjVu, leading to files that are hundreds of megabytes large. Fortunately, books are often bitonal, which allows for efficient compression like `group4` or `jbig2`. Unfortunately, in badly digitized books the scanned images may be saved as colorful JPEG files, which can partially be mitigated using `--mode bitonal` (possibly for only a range of pages).
+Other tasks like linting, type checking and building the documentation are described in [`poe.toml`](./poe.toml) (configuration for [poethepoet](https://pypi.org/project/poethepoet/)).
 
-We perform compression in two stages:
+Run [`tox`](https://tox.wiki/) (via e.g. `uv run tox` or `poe run test-multienv`) to test the project in all supported environments.
 
-* The first one is the default compression provided by [Pillow](https://github.com/python-pillow/Pillow). For bitonal images, [the PDF generation code says](https://github.com/python-pillow/Pillow/blob/a088d54509e42e4eeed37d618b42d775c0d16ef5/src/PIL/PdfImagePlugin.py#L138C16-L138C16) that, if `libtiff` is available, `group4` compression is used.
-
-* If [OCRmyPDF](https://github.com/ocrmypdf/OCRmyPDF) is installed (possibly via the `ocr` or `compress` extras), its PDF optimization can be used via the flags `-O1` to `-O3` (this involves no OCR). This allows us to use advanced techniques, including JBIG2 compression via `jbig2enc`.
-
-If manually running OCRmyPDF, note that the optimization command suggested [in the documentation](https://ocrmypdf.readthedocs.io/en/latest/cookbook.html#optimize-images-without-performing-ocr) (setting `--tesseract-timeout` to `0`) may ruin existing text layers. To perform only PDF optimization you can use the following undocumented tool instead:
-
-    python -m ocrmypdf.optimize <input_file> <level> <output_file>
-
-### Text layer
-
-The visible contents of a DjVu file are well-compressed images (see [LeCun's project page](http://yann.lecun.com/ex/djvu/index.html)). But a DjVu file also contains a "text layer" stored as metadata attached to invisible rectangular blocks. PDF does not support such constructs, so we do a little hack.
-
-We render each page as an image and put it as a background in the PDF. We then use a font, [`invisible1.ttf`](./src/dpsprep/invisible1.ttf), taken from ["ifw2kxp"](https://web.archive.org/web/20230926193617/https://www.angelfire.com/pr/pgpf/if.html), to "draw" text. Every time we draw a block of text, we rescale the font so that the width of the text matches that of the corresponding DjVu block.
-
-> [!NOTE]
-> The font is small (12kb) and contains (invisible) Latin, Cyrillic and Greek characters. Even Chinese characters seem to be working correctly, at least with [Evince](https://gitlab.gnome.org/GNOME/evince).
-
-The following screenshot displays the result of converting a DjVu document:
-
-![Image](./screenshots/lipsum_with_image.png)
-
-The following screenshot displays the same document without the background image and with the invisible font replaced by Times New Roman:
-
-![Image](./screenshots/lipsum_with_text.png)
-
-Since the image is actually drawn on top of the text, there is no harm in using an actual visible font, possibly rendered using a transparent "color". Still, when searching and selecting text, the scrambled letters from the second image would be highlighted. With the invisible font, there are no visible glyphs to highlight, so an illusory "block" containing the text is highlighted instead.
-
-See [`text.py`](./src/dpsprep/outline/text.py) for the implementation.
+If you plan to submit any work, consider also updating [`CHANGELOG.md`](./CHANGELOG.md).
 
 ## Kevin's notes regarding the first version
 

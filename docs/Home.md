@@ -1,3 +1,13 @@
-The only document on this wiki is the [man page](./dpsprep.1).
+# dpsprep docs
 
-See the README in the [repository](https://github.com/kcroker/dpsprep) for installation instructions and technical notes.
+This wiki hosts the project's [man page](./dpsprep.1.md).
+
+It also has some implementation details:
+
+* [Compression](./compression)
+* [Text layer](./text-layer)
+
+See the README in the [repository](https://github.com/kcroker/dpsprep) for installation/setup instructions.
+
+> [!NOTE]
+> The documentation here is built from the repository's [`docs/`](https://github.com/kcroker/dpsprep/tree/master/docs) directory, along with a dynamically generated man page.

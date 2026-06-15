@@ -110,6 +110,7 @@ strict_bytes = false
 
 [[tool.mypy.overrides]]
 module = [
+  "click_man.*",
   "djvu.*",
   "ocrmypdf.*",
   "pdfrw.*",

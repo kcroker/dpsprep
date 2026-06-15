@@ -1,13 +1,5 @@
 SOURCE := $(wildcard src/dpsprep/*.py)
 
-ifneq ($(wildcard .git),)
-	VERSION := $(shell git describe --tags)
-	DATE := $(shell git log --max-count 1 --format=%as)
-else
-	VERSION := $(shell uv version --short)
-	DATE := $(shell grep --only-matching --perl-regexp '(?<=$(VERSION) - ).*' CHANGELOG.md)
-endif
-
 .PHONY: lint test test-multienv build-docs
 
 lint:
@@ -24,16 +16,10 @@ docs:
 	mkdir docs
 
 docs/dpsprep.1: $(SOURCE) pyproject.toml docs/examples.man | docs
-	uv run click-man dpsprep \
-		--target docs \
-		--man-version $(VERSION) \
-		--man-date $(DATE)
-
-	cat docs/examples.man >> docs/dpsprep.1
+	uv run python -c 'from src.helpers.docs import build_man_page; build_man_page()'
 
 # Render the man page as text and indent the entire file so that it is a valid markdown code block
 docs/dpsprep.1.md: docs/dpsprep.1
-	echo -n '    ' > docs/dpsprep.1.md
-	MANWIDTH=100 man docs/dpsprep.1 | sed --null-data 's/\n/\n    /g' | head --lines=-1 >> docs/dpsprep.1.md
+	uv run python -c 'from src.helpers.docs import build_man_md; build_man_md()'
 
 build-docs: docs/dpsprep.1.md

@@ -32,17 +32,41 @@ ocr = [
   "ocrmypdf (>=17)"
 ]
 
+all = [
+  "dpsprep[ocr] (>=0.0.0)"
+]
+
 [project.scripts]
 dpsprep = "dpsprep.cli:dpsprep"
 
 [dependency-groups]
-dev = [
-  "click-man (>=0.5.1)",
-  "mypy (>=2)",
-  "pytest (>=9.0.3)",
+lint = [
   "ruff (>=0.15)",
   "ruff-config-ivasilev @ git+https://github.com/v--/ruff-config-ivasilev.git@v0.15post7",
+]
+
+typing = [
+  {include-group = "test"},
+  "mypy (>=2)",
   "types-fpdf2 (>=2.8.4.20260322)"
+]
+
+test = [
+  "pytest (>=9.0.3)",
+]
+
+docs = [
+  "click-man (>=0.5.1)",
+]
+
+dev = [
+  "dpsprep[all] (>=0.0.0)",
+  "poethepoet (>=0.42)",
+  "tox (>=4.50)",
+  {include-group = "lint"},
+  {include-group = "typing"},
+  {include-group = "test"},
+  {include-group = "docs"},
 ]
 
 [build-system]
@@ -53,6 +77,22 @@ build-backend = "uv_build"
 # uv
 [tool.uv]
 resolution = "lowest-direct"
+
+# tox
+[tool.tox]
+env_list = ["lint", "typing", "3.11", "3.12", "3.13", "3.14"]
+
+[tool.tox.env_run_base]
+dependency_groups = ["test"]
+commands = [["pytest"]]
+
+[tool.tox.env.lint]
+dependency_groups = ["lint"]
+commands = [["ruff", "check"]]
+
+[tool.tox.env.typing]
+dependency_groups = ["typing"]
+commands = [["mypy", "--package", "dpsprep"]]
 
 # ruff
 [tool.ruff]

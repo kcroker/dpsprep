@@ -8,7 +8,7 @@ else
 	DATE := $(shell grep --only-matching --perl-regexp '(?<=$(VERSION) - ).*' CHANGELOG.md)
 endif
 
-.PHONY: lint test build-docs
+.PHONY: lint test test-multienv build-docs
 
 lint:
 	uv run ruff check
@@ -16,6 +16,9 @@ lint:
 
 test:
 	uv run pytest
+
+test-multienv:
+	uv run tox
 
 docs:
 	mkdir docs

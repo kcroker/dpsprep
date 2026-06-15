@@ -9,10 +9,9 @@ from dpsprep.logging import configure_loguru, human_readable_size
 from dpsprep.options import DEFAULT_IMAGE_MODE, DpsPrepOptions
 from dpsprep.outline import extract_text_as_fpdf
 from dpsprep.pdf import is_valid_pdf
-from dpsprep.workdir import WorkingDirectory
 
 
-def process_page_bg(workdir: WorkingDirectory, options: DpsPrepOptions, i: int) -> None:
+def process_page_bg(options: DpsPrepOptions, i: int) -> None:
     """Process a page image.
 
     It is assumed that this will run in a worker, so the document must be read anew and loguru must be (re)configured.
@@ -20,8 +19,8 @@ def process_page_bg(workdir: WorkingDirectory, options: DpsPrepOptions, i: int) 
     configure_loguru(verbose=options.verbose)
     page_number = i + 1
 
-    if workdir.get_page_pdf_path(i).exists():
-        if is_valid_pdf(workdir.get_page_pdf_path(i)):
+    if options.workdir.get_page_pdf_path(i).exists():
+        if is_valid_pdf(options.workdir.get_page_pdf_path(i)):
             loguru.logger.debug(f'Image data from page {page_number} already processed.')
             return
         loguru.logger.debug(f'Invalid page generated for {page_number}, regenerating.')
@@ -30,7 +29,7 @@ def process_page_bg(workdir: WorkingDirectory, options: DpsPrepOptions, i: int) 
 
     start_time = time()
     document = djvu.decode.Context().new_document(
-        djvu.decode.FileURI(workdir.src),
+        djvu.decode.FileURI(options.workdir.src),
     )
     document.decoding_job.wait()
 
@@ -38,13 +37,13 @@ def process_page_bg(workdir: WorkingDirectory, options: DpsPrepOptions, i: int) 
     page_bg = process_djvu_page(document.pages[i], mode, i)
     failsafe_save_djvu_page(
         page_bg,
-        workdir.get_page_pdf_path(i),
+        options.workdir.get_page_pdf_path(i),
         options,
         page_number,
     )
 
     dpi_override = options.dpi_overrides.get_value_for_zero_based_page(i)
-    pdf_size = workdir.get_page_pdf_path(i).stat().st_size
+    pdf_size = options.workdir.get_page_pdf_path(i).stat().st_size
 
     message = (
         f'Processed and saved image data for page {page_number} in {time() - start_time:.2f}s. '
@@ -56,14 +55,14 @@ def process_page_bg(workdir: WorkingDirectory, options: DpsPrepOptions, i: int) 
     loguru.logger.debug(message)
 
 
-def process_text(workdir: WorkingDirectory, options: DpsPrepOptions) -> None:
+def process_text(options: DpsPrepOptions) -> None:
     """Process the text of the entire document.
 
     It is assumed that this will run in a worker, so the document must be read anew and loguru must be (re)configured.
     """
     configure_loguru(verbose=options.verbose)
 
-    if workdir.text_layer_pdf_path.exists():
+    if options.workdir.text_layer_pdf_path.exists():
         loguru.logger.info('Text data already processed.')
         return
 
@@ -71,29 +70,29 @@ def process_text(workdir: WorkingDirectory, options: DpsPrepOptions) -> None:
 
     start_time = time()
     document = djvu.decode.Context().new_document(
-        djvu.decode.FileURI(workdir.src),
+        djvu.decode.FileURI(options.workdir.src),
     )
     document.decoding_job.wait()
 
     fpdf = extract_text_as_fpdf(document, options)
-    fpdf.output(str(workdir.text_layer_pdf_path))
+    fpdf.output(str(options.workdir.text_layer_pdf_path))
 
-    pdf_size = workdir.text_layer_pdf_path.stat().st_size
+    pdf_size = options.workdir.text_layer_pdf_path.stat().st_size
     loguru.logger.info(f'Text data with size {human_readable_size(pdf_size) } processed in {time() - start_time:.2f}s and written to working directory')
 
 
-def process_in_pool(workdir: WorkingDirectory, options: DpsPrepOptions, document: djvu.decode.Document) -> None:
-    djvu_size = workdir.src.stat().st_size
-    loguru.logger.info(f'Processing {workdir.src} with {len(document.pages)} pages and size {human_readable_size(djvu_size)} using {options.pool_size} workers.')
+def process_in_pool(options: DpsPrepOptions, document: djvu.decode.Document) -> None:
+    djvu_size = options.workdir.src.stat().st_size
+    loguru.logger.info(f'Processing {options.workdir.src} with {len(document.pages)} pages and size {human_readable_size(djvu_size)} using {options.pool_size} workers.')
 
     pool = multiprocessing.Pool(processes=options.pool_size)
     tasks = list[multiprocessing.pool.AsyncResult]()
 
     if not options.no_text:
-        tasks.append(pool.apply_async(func=process_text, args=[workdir, options]))
+        tasks.append(pool.apply_async(func=process_text, args=[options]))
 
     for i in range(len(document.pages)):
-        tasks.append(pool.apply_async(func=process_page_bg, args=[workdir, options, i]))
+        tasks.append(pool.apply_async(func=process_page_bg, args=[options, i]))
 
     pool.close()
     pool_is_working = True

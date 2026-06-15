@@ -10,11 +10,10 @@ import shutil
 
 import loguru
 
-from dpsprep.options import DpsPrepOptions, JsonObject
-from dpsprep.workdir import WorkingDirectory
+from dpsprep.options import DpsPrepOptions
 
 
-def run_ocrmypdf_optimizer(workdir: WorkingDirectory, options: DpsPrepOptions) -> bool:
+def run_ocrmypdf_optimizer(options: DpsPrepOptions) -> bool:
     if options.optlevel is None:
         return False
 
@@ -24,10 +23,11 @@ def run_ocrmypdf_optimizer(workdir: WorkingDirectory, options: DpsPrepOptions) -
         from ocrmypdf.optimize import ObjectStreamMode, PdfContext, optimize
         from ocrmypdf.pdfinfo import PdfInfo
     except ImportError:
-        loguru.logger.warning('Cannot detect OCRmyPDF. No optimizations will be performed on the output file.')
+        loguru.logger.error('Cannot detect OCRmyPDF. No optimizations will be performed on the output file.')
         return False
 
     quality = options.quality_overrides.get_global_value()
+    workdir = options.workdir
 
     omp_options = OcrOptions(
         input_file=workdir.combined_pdf_without_text_path,
@@ -57,22 +57,26 @@ def run_ocrmypdf_optimizer(workdir: WorkingDirectory, options: DpsPrepOptions) -
     return True
 
 
-def perform_ocr(workdir: WorkingDirectory, options: JsonObject) -> bool:
+def perform_ocr(options: DpsPrepOptions) -> bool:
     try:
         from ocrmypdf import api
     except ImportError:
-        loguru.logger.warning('Cannot detect OCRmyPDF. No OCR will be performed on the output file.')
+        loguru.logger.error('Cannot detect OCRmyPDF. No OCR will be performed on the output file.')
         return False
 
     try:
         api.ocr(
-            input_file_or_options=workdir.combined_pdf_without_text_path,
-            output_file=workdir.combined_pdf_path,
-            **options,
+            input_file_or_options=options.workdir.combined_pdf_without_text_path,
+            output_file=options.workdir.combined_pdf_path,
+            **options.ocr_options or {},
         )
     except Exception as err:
-        loguru.logger.warning(f'OCRmyPDF failed: {err}')
-        shutil.copy(workdir.combined_pdf_without_text_path, workdir.combined_pdf_path)
+        loguru.logger.error(f'OCRmyPDF failed: {err}')
+        shutil.copy(
+            options.workdir.combined_pdf_without_text_path,
+            options.workdir.combined_pdf_path,
+        )
+
         return False
     else:
         return True

@@ -6,6 +6,8 @@ from typing import Any, Literal, cast, get_args
 
 import click
 
+from dpsprep.workdir import WorkingDirectory
+
 
 if sys.version_info < (3, 12):
     from typing_extensions import override
@@ -31,6 +33,8 @@ DEFAULT_IMAGE_MODE: ImageMode = 'infer'
 
 @dataclass(frozen=True)
 class DpsPrepOptions:
+    workdir: WorkingDirectory
+
     # Range options
     mode_overrides: RangeOptionGroup[ImageMode]
     dpi_overrides: RangeOptionGroup[int]

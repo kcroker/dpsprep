@@ -16,8 +16,13 @@ from dpsprep.options import (
     SocrOptionClickType,
 )
 from dpsprep.ranges import RangeOptionGroup
-from dpsprep.workdir import WorkingDirectory
-from dpsprep.workflow import attempt_to_optimize_result, combine_document, process_in_pool
+from dpsprep.workflow import (
+    attempt_to_optimize_result,
+    combine_document,
+    destroy_workdir,
+    initialize_workdir,
+    process_in_pool,
+)
 
 
 # OCR options
@@ -88,7 +93,13 @@ def dpsprep(
     if ocr_options and socr_options:
         raise click.ClickException('Cannot specify both --ocr and -socr simultaneously.')
 
+    workdir = initialize_workdir(src, dest, delete_working)
+
+    if not overwrite and workdir.dest.exists():
+        raise click.ClickException(f'File {workdir.dest} already exists.')
+
     options = DpsPrepOptions(
+        workdir=workdir,
         mode_overrides=mode_overrides,
         dpi_overrides=dpi_overrides,
         quality_overrides=quality_overrides,
@@ -99,41 +110,23 @@ def dpsprep(
         verbose=verbose,
     )
 
-    workdir = WorkingDirectory(src, dest)
-
-    if not overwrite and workdir.dest.exists():
-        raise click.ClickException(f'File {workdir.dest} already exists.')
-
     start_time = time()
-
-    if workdir.workdir.exists():
-        if delete_working:
-            loguru.logger.debug(f'Removing existing working directory {workdir.workdir}.')
-            workdir.destroy()
-            loguru.logger.info(f'Removed existing working directory {workdir.workdir}.')
-        else:
-            loguru.logger.info(f'Reusing working directory {workdir.workdir}.')
-    else:
-        loguru.logger.info(f'Working directory {workdir.workdir} has been created.')
-
-    workdir.create_if_necessary()
-
     document = djvu.decode.Context().new_document(
         djvu.decode.FileURI(workdir.src),
     )
     document.decoding_job.wait()
     djvu_size = workdir.src.stat().st_size
 
-    process_in_pool(workdir, options, document)
-    combine_document(workdir, options, document)
+    process_in_pool(options, document)
+    combine_document(options, document)
 
     combined_size = workdir.combined_pdf_path.stat().st_size
     loguru.logger.info(f'Produced a combined output file with size {human_readable_size(combined_size)} in {time() - start_time:.2f}s. This is {round(100 * combined_size / djvu_size, 2)}% of the DjVu source file.')
 
-    attempt_to_optimize_result(workdir, options, djvu_size, combined_size)
+    attempt_to_optimize_result(options, djvu_size, combined_size)
 
     if preserve_working:
-        loguru.logger.info(f'Working directory {workdir.workdir} will be preserved.')
+        loguru.logger.info(f'Working directory {workdir.working} will be preserved.')
     else:
-        loguru.logger.info(f'Deleting the working directory {workdir.workdir}.')
-        workdir.destroy()
+        loguru.logger.info(f'Deleting the working directory {workdir.working}.')
+        destroy_workdir(workdir)

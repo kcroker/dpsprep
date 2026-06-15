@@ -57,11 +57,11 @@ test = [
 
 docs = [
   "click-man (>=0.5.1)",
+  "poethepoet (>=0.42)",
 ]
 
 dev = [
   "dpsprep[all] (>=0.0.0)",
-  "poethepoet (>=0.42)",
   "tox (>=4.50)",
   {include-group = "lint"},
   {include-group = "typing"},
@@ -77,6 +77,10 @@ build-backend = "uv_build"
 # uv
 [tool.uv]
 resolution = "lowest-direct"
+
+# poe
+[tool.poe]
+include = "./poe.toml"
 
 # tox
 [tool.tox]

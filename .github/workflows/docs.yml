@@ -22,7 +22,7 @@ jobs:
 
     - name: Build docs
       run: |
-        make build-docs
+        uv run poe build-docs
         mkdir .github/wiki
         cp docs/Home.md docs/dpsprep.1.md .github/wiki
 

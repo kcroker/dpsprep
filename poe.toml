@@ -1,0 +1,20 @@
+[tasks.test]
+cmd = "pytest"
+
+[tasks.test-multienv]
+cmd = "tox"
+
+[tasks.lint]
+sequence = [
+  { cmd = "ruff check $path" },
+  { cmd = "mypy $path" },
+]
+args = [
+  { name = "path", positional = true, default = "" }
+]
+
+[tasks.build-docs]
+sequence = [
+  { script = "src.helpers.docs:build_man_page" },
+  { script = "src.helpers.docs:build_man_md" },
+]

@@ -38,7 +38,10 @@ jobs:
       run: uv sync --all-extras
 
     - name: Lint
-      run: make lint
+      run: ruff check
+
+    - name: Typing
+      run: mypy
 
     - name: Test
-      run: make test
+      run: pytest

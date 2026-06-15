@@ -1,6 +1,8 @@
 import djvu.decode
 from PIL import Image, ImageChops, ImageStat
 
+from dpsprep.options import ImageMode
+
 from .images import process_djvu_page
 
 
@@ -23,7 +25,7 @@ def test_process_djvu_page_bitonal() -> None:
     document.decoding_job.wait()
 
     fixture = Image.open('fixtures/lipsum_01.png')
-    result = process_djvu_page(document.pages[0], mode='infer', i=0)
+    result = process_djvu_page(document.pages[0], mode=ImageMode.INFER, i=0)
 
     page_decode_job = document.pages[0].decode()
     page_decode_job.wait()

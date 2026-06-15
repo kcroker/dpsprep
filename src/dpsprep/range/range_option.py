@@ -1,9 +1,6 @@
-import re
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Generic, TypeVar
-
-from dpsprep.exceptions import DpsPrepConfigError
+from typing import Generic, TypeVar
 
 
 T = TypeVar('T')
@@ -61,45 +58,8 @@ class RangeOptionGroup(Generic[T]):
 
         return None
 
+    def __or__(self, other: object) -> 'RangeOptionGroup':
+        if not isinstance(other, RangeOptionGroup):
+            return NotImplemented
 
-def parse_str_range_option(string: str) -> RangeOption[str]:
-    match = re.match(r'(?P<value>[^\[]+)\[(?P<start>\d+)(-(?P<end>(\d+|end)))?\](?P<tail>.+)?', string)
-
-    if match is None:
-        if '[' in string:
-            raise DpsPrepConfigError(f'Incomplete range option {string}')
-
-        return RangeOption(string)
-
-    groups = match.groupdict()
-
-    if groups.get('tail'):
-        raise DpsPrepConfigError(f'Unexpected content after range in option {string}')
-
-    value: Any
-
-    value = groups['value']
-    start = int(groups['start']) if groups.get('start') else None
-
-    if end_str := groups.get('end'):
-        try:
-            end = int(end_str)
-        except ValueError:
-            end = None
-    else:
-        end = start
-
-    if start is None and end is None:
-        return RangeOption(value)
-
-    return RangeOption(value, start, end)
-
-
-def parse_int_range_option(string: str) -> RangeOption[int]:
-    str_range = parse_str_range_option(string)
-
-    try:
-        return RangeOption[int](int(str_range.value), str_range.start, str_range.end)
-    except ValueError:
-        raise DpsPrepConfigError(f'Expected the value of the range option {string} to be an integer') from None
-
+        return RangeOptionGroup([*self.ranges, *other.ranges])

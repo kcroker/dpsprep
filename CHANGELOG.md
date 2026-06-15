@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+* Reimplement option group parsing.
 * Use the Rich logging handler.
 * Migrate to stdlib logging.
 

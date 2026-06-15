@@ -13,9 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 djvu_pixel_formats = {
-    'rgb': djvu.decode.PixelFormatRgb(byte_order='RGB'),
-    'grayscale': djvu.decode.PixelFormatGrey(),
-    'bitonal': djvu.decode.PixelFormatPackedBits('>'),
+    ImageMode.RGB: djvu.decode.PixelFormatRgb(byte_order='RGB'),
+    ImageMode.GRAYSCALE: djvu.decode.PixelFormatGrey(),
+    ImageMode.BITONAL: djvu.decode.PixelFormatPackedBits('>'),
 }
 
 
@@ -25,9 +25,9 @@ for pixel_format in djvu_pixel_formats.values():
 
 
 pil_modes = {
-    'rgb': 'RGB',
-    'grayscale': 'L',
-    'bitonal': '1',
+    ImageMode.RGB: 'RGB',
+    ImageMode.GRAYSCALE: 'L',
+    ImageMode.BITONAL: '1',
 }
 
 
@@ -44,10 +44,10 @@ def process_djvu_page(page: djvu.decode.Page, mode: ImageMode, i: int) -> Proces
 
     rect = (0, 0, width, height)
 
-    if mode == 'infer':
-        mode = 'bitonal' if page_job.type == djvu.decode.PAGE_TYPE_BITONAL else 'rgb'
+    if mode == ImageMode.INFER:
+        mode = ImageMode.BITONAL if page_job.type == djvu.decode.PAGE_TYPE_BITONAL else ImageMode.RGB
 
-    if mode == 'bitonal':
+    if mode == ImageMode.BITONAL:
         if not PIL.features.check_codec('libtiff'):
             logger.warning('Bitonal image compression may suffer because Pillow has been built without libtiff support.')
     elif not PIL.features.check_codec('jpg'):
@@ -65,12 +65,12 @@ def process_djvu_page(page: djvu.decode.Page, mode: ImageMode, i: int) -> Proces
     except djvu.decode.NotAvailable:
         logger.warning(f'libdjvu claims that data for page {i + 1} is not available. Producing a blank page.')
         image = Image.new(
-            pil_modes['bitonal'],
+            pil_modes[ImageMode.BITONAL],
             page_job.size,
             1,
         )
 
-        return ProcessedPageBackground(image, page_job.dpi, 'bitonal')
+        return ProcessedPageBackground(image, page_job.dpi, ImageMode.BITONAL)
 
     image = Image.frombuffer(
         pil_modes[mode],
@@ -82,7 +82,7 @@ def process_djvu_page(page: djvu.decode.Page, mode: ImageMode, i: int) -> Proces
     return ProcessedPageBackground(
         # I have experimentally determined that we need to invert the black-and-white images. -- Ianis, 2023-05-13
         # See also https://github.com/kcroker/dpsprep/issues/16
-        ImageOps.invert(image) if mode == 'bitonal' else image,
+        ImageOps.invert(image) if mode == ImageMode.BITONAL else image,
         page_job.dpi,
         mode,
     )
@@ -93,7 +93,7 @@ def failsafe_save_djvu_page(page_bg: ProcessedPageBackground, target: pathlib.Pa
     dpi = options.dpi_overrides.get_value_for_zero_based_page(i) or page_bg.resolution
 
     if quality is not None:
-        if page_bg.pil_image.mode in pil_modes['bitonal'] and PIL.features.check_codec('libtiff'):
+        if page_bg.pil_image.mode in pil_modes[ImageMode.BITONAL] and PIL.features.check_codec('libtiff'):
             logger.warning('Pillow uses TIFF for encoding bitonal PDF images. The encoder does not support a "quality" setting. If the conversion fails, please try again without specifying quality.')
 
         try:

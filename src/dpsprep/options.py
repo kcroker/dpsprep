@@ -1,8 +1,9 @@
+import enum
 import json
 import sys
-from collections.abc import Iterator, Mapping
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Any, Literal, cast, get_args
+from typing import Any
 
 import click
 
@@ -14,21 +15,26 @@ if sys.version_info < (3, 12):
 else:
     from typing import override
 
-from dpsprep.exceptions import DpsPrepConfigError
-from dpsprep.ranges import (
-    RangeOption,
+from dpsprep.exceptions import DpsPrepConfigError, DpsPrepParseError
+from dpsprep.range import (
     RangeOptionGroup,
-    parse_int_range_option,
-    parse_str_range_option,
+    parse_enum_range_group,
+    parse_int_range_group,
 )
 
 
 # I have implemented better JSON types elsewhere, but here there is no point to do so.
 JsonObject = Mapping[str, Any]
-ImageMode = Literal['rgb', 'grayscale', 'bitonal', 'infer']
-IMAGE_MODES = get_args(ImageMode)
 
-DEFAULT_IMAGE_MODE: ImageMode = 'infer'
+
+class ImageMode(enum.StrEnum):
+    RGB = 'rgb'
+    GRAYSCALE = 'grayscale'
+    BITONAL = 'bitonal'
+    INFER = 'infer'
+
+
+DEFAULT_IMAGE_MODE = ImageMode.INFER
 
 
 @dataclass(frozen=True)
@@ -108,76 +114,53 @@ class SocrOptionClickType(click.ParamType):
 class ImageModeOverridesClickType(click.ParamType):
     name = 'comma-separated image modes with page ranges'
 
-    def _iter_convert(self, value: str, param: click.Parameter | None, ctx: click.Context | None) -> Iterator[RangeOption[ImageMode]]:
-        if value == '':
-            return
-
-        for segment in value.split(','):
-            try:
-                option = parse_str_range_option(segment)
-            except DpsPrepConfigError as err:
-                self.fail(str(err), param, ctx)
-
-            if option.value not in IMAGE_MODES:
-                self.fail(f'Expected one of {", ".join(IMAGE_MODES)}, but got {option.value}', param, ctx)
-
-            yield cast('RangeOption[ImageMode]', option)
-
     @override
     def convert(self, value: RangeOptionGroup[ImageMode] | str, param: click.Parameter | None, ctx: click.Context | None) -> RangeOptionGroup[ImageMode]:
         if isinstance(value, RangeOptionGroup):
             return value
 
-        return RangeOptionGroup(list(self._iter_convert(value, param, ctx)))
+        try:
+            return parse_enum_range_group(value, ImageMode)
+        except DpsPrepParseError as err:
+            self.fail(str(err), param, ctx)
+
 
 
 class DpiOverridesClickType(click.ParamType):
     name = 'comma-separated integers with page ranges'
 
-    def _iter_convert(self, value: str, param: click.Parameter | None, ctx: click.Context | None) -> Iterator[RangeOption[int]]:
-        if value == '':
-            return
-
-        for segment in value.split(','):
-            try:
-                option = parse_int_range_option(segment)
-            except DpsPrepConfigError as err:
-                self.fail(str(err), param, ctx)
-
-            if option.value < 1:
-                self.fail(f'Expected a positive DPI, but got {option.value}', param, ctx)
-
-            yield option
-
     @override
     def convert(self, value: RangeOptionGroup[int] | str, param: click.Parameter | None, ctx: click.Context | None) -> RangeOptionGroup[int]:
         if isinstance(value, RangeOptionGroup):
             return value
 
-        return RangeOptionGroup(list(self._iter_convert(value, param, ctx)))
+        try:
+            group = parse_int_range_group(value)
+        except DpsPrepParseError as err:
+            self.fail(str(err), param, ctx)
+
+        for range_option in group.ranges:
+            if range_option.value < 1:
+                self.fail(f'Expected a positive DPI, but got {range_option.value}', param, ctx)
+
+        return group
 
 
 class QualityOverridesClickType(click.ParamType):
     name = 'comma-separated integers with page ranges'
 
-    def _iter_convert(self, value: str, param: click.Parameter | None, ctx: click.Context | None) -> Iterator[RangeOption[int]]:
-        if value == '':
-            return
-
-        for segment in value.split(','):
-            try:
-                option = parse_int_range_option(segment)
-            except DpsPrepConfigError as err:
-                self.fail(str(err), param, ctx)
-
-            if not 1 <= option.value <= 100:
-                self.fail(f'Expected quality option to be between 1 and 100, but got {option.value}', param, ctx)
-
-            yield option
-
     @override
     def convert(self, value: RangeOptionGroup[int] | str, param: click.Parameter | None, ctx: click.Context | None) -> RangeOptionGroup[int]:
         if isinstance(value, RangeOptionGroup):
             return value
 
-        return RangeOptionGroup(list(self._iter_convert(value, param, ctx)))
+        try:
+            group = parse_int_range_group(value)
+        except DpsPrepParseError as err:
+            self.fail(str(err), param, ctx)
+
+        for range_option in group.ranges:
+            if not 1 <= range_option.value <= 100:
+                self.fail(f'Expected quality option to be between 1 and 100, but got {range_option.value}', param, ctx)
+
+        return group

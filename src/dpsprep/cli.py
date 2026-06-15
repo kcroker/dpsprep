@@ -1,4 +1,6 @@
+import functools
 import logging
+import operator
 from time import time
 
 import click
@@ -15,7 +17,7 @@ from dpsprep.options import (
     QualityOverridesClickType,
     SocrOptionClickType,
 )
-from dpsprep.ranges import RangeOptionGroup
+from dpsprep.range import RangeOptionGroup
 from dpsprep.workflow import (
     attempt_to_optimize_result,
     combine_document,
@@ -43,9 +45,9 @@ logger = logging.getLogger(__name__)
 @click.option('-w', '--preserve-working', is_flag=True, help='Preserve the working directory after script termination.')
 @click.option('-d', '--delete-working', is_flag=True, help='Delete any existing files in the working directory prior to writing to it.')
 # Range options
-@click.option('-q', '--quality', 'quality_overrides', type=QualityOverridesClickType(), default='', help="Determine the quality of images in output. Valid values range between 1 and 100. Used only for JPEG compression, i.e. RGB and Grayscale images. Passed directly to Pillow and to OCRmyPDF's optimizer.")
-@click.option('--dpi', 'dpi_overrides', type=DpiOverridesClickType(), default='', help='Override the DPI values encoded in the DjVu file for individual pages.')
-@click.option('-m', '--mode', 'mode_overrides', type=ImageModeOverridesClickType(), default='infer', help='Override the image modes encoded in the DjVu file for individual pages. Valid values are "infer" (default), "bitonal", "grayscale" and "rgb". It sometimes makes sense to force bitonal images since they compress well.')
+@click.option('-q', '--quality', 'quality_overrides', type=QualityOverridesClickType(), multiple=True, default=[], help="Determine the quality of images in output. Valid values range between 1 and 100. Used only for JPEG compression, i.e. RGB and Grayscale images. Passed directly to Pillow and to OCRmyPDF's optimizer.")
+@click.option('--dpi', 'dpi_overrides', type=DpiOverridesClickType(), multiple=True, default=[], help='Override the DPI values encoded in the DjVu file for individual pages.')
+@click.option('-m', '--mode', 'mode_overrides', type=ImageModeOverridesClickType(), multiple=True, default=['infer'], help='Override the image modes encoded in the DjVu file for individual pages. Valid values are "infer" (default), "bitonal", "grayscale" and "rgb". It sometimes makes sense to force bitonal images since they compress well.')
 @click.version_option()
 @click.argument('dest', type=click.Path(exists=False, resolve_path=True), required=False)
 @click.argument('src', type=click.Path(exists=True, resolve_path=True), required=True)
@@ -55,9 +57,9 @@ def dpsprep(
     src: str,
     dest: str | None,
     # Range options
-    mode_overrides: RangeOptionGroup[ImageMode],
-    dpi_overrides: RangeOptionGroup[int],
-    quality_overrides: RangeOptionGroup[int],
+    mode_overrides: tuple[RangeOptionGroup[ImageMode], ...],
+    dpi_overrides: tuple[RangeOptionGroup[int], ...],
+    quality_overrides: tuple[RangeOptionGroup[int], ...],
     # Other options
     delete_working: bool,
     preserve_working: bool,
@@ -78,7 +80,9 @@ def dpsprep(
     The usage should be straightforward, however the options that accept page ranges require some
     elaboration. For example, the --mode option accepts the following values:
 
-        "rgb", "rgb[3]", "rgb[3-4]", "rgb[3-end]", "rgb[3],rgb[10-end]"
+        "rgb", "rgb[3]", "rgb[3,4,5]", "rgb[3-5]", "rgb[3-end]", "bitonal[3],rgb[10-end]"
+
+    Furthermore, --mode can be passed multiple times with the same effect as placing commas.
     """
     configure_logging(verbose=verbose)
 
@@ -103,9 +107,9 @@ def dpsprep(
 
     options = DpsPrepOptions(
         workdir=workdir,
-        mode_overrides=mode_overrides,
-        dpi_overrides=dpi_overrides,
-        quality_overrides=quality_overrides,
+        mode_overrides=functools.reduce(operator.or_, mode_overrides),
+        dpi_overrides=functools.reduce(operator.or_, dpi_overrides, RangeOptionGroup([])),
+        quality_overrides=functools.reduce(operator.or_, quality_overrides, RangeOptionGroup([])),
         no_text=no_text or bool(ocr_options or socr_options),
         ocr_options=ocr_options or socr_options,
         optlevel=optlevel,

@@ -6,6 +6,8 @@ from time import time
 import click
 import djvu.decode
 
+from dpsprep.concurrency import concurrently_process_document
+from dpsprep.exceptions import DpsPrepConcurrencyError
 from dpsprep.logging import configure_logging, human_readable_size
 from dpsprep.options import (
     DpiOverridesClickType,
@@ -16,6 +18,7 @@ from dpsprep.options import (
     OcrOptionClickType,
     QualityOverridesClickType,
     SocrOptionClickType,
+    get_default_pool_size,
 )
 from dpsprep.range import RangeOptionGroup
 from dpsprep.workflow import (
@@ -23,7 +26,6 @@ from dpsprep.workflow import (
     combine_document,
     destroy_workdir,
     initialize_workdir,
-    process_in_pool,
 )
 
 
@@ -34,7 +36,7 @@ logger = logging.getLogger(__name__)
 @click.option('--socr', 'socr_options', type=SocrOptionClickType(), default=None, help='"Streamlined" OCR; `--ocrs eng,grc` expands to `--ocr \'{"language": ["eng", "grc"]}\'`.')
 @click.option('--ocr', 'ocr_options', type=OcrOptionClickType(), default=None, help='Perform OCR via OCRmyPDF rather than trying to convert the text layer. If this parameter has a value, it should be a JSON dictionary of options to be passed to OCRmyPDF.')
 # Other options
-@click.option('-p', '--pool-size', type=click.IntRange(min=1), default=4, help='Size of the MultiProcessing pool that handles page-by-page operations.')
+@click.option('-p', '--pool-size', type=click.IntRange(min=1), default=None, help='Size of the MultiProcessing pool that handles page-by-page operations. Defaults to os.process_cpu_count() with a fallback to 2 * os.cpu_count()')
 @click.option('-O3', 'optlevel', flag_value=3, help='Use the aggressive lossy PDF image optimization from OCRmyPDF.')
 @click.option('-O2', 'optlevel', flag_value=2, help='Use the PDF image optimization from OCRmyPDF.')
 @click.option('-O1', 'optlevel', flag_value=1, help='Use the lossless PDF image optimization from OCRmyPDF (without performing OCR).')
@@ -52,7 +54,9 @@ logger = logging.getLogger(__name__)
 @click.argument('dest', type=click.Path(exists=False, resolve_path=True), required=False)
 @click.argument('src', type=click.Path(exists=True, resolve_path=True), required=True)
 @click.command(epilog='See dpsprep(1) for more details.')
+@click.pass_context
 def dpsprep(
+    ctx: click.Context,
     # Positional arguments
     src: str,
     dest: str | None,
@@ -68,7 +72,7 @@ def dpsprep(
     verbose: bool,
     no_text: bool,
     optlevel: int | None,
-    pool_size: int,
+    pool_size: int | None,
     # OCR options
     ocr_options: JsonObject | None,
     socr_options: JsonObject | None,
@@ -113,7 +117,7 @@ def dpsprep(
         no_text=no_text or bool(ocr_options or socr_options),
         ocr_options=ocr_options or socr_options,
         optlevel=optlevel,
-        pool_size=pool_size,
+        pool_size=pool_size or get_default_pool_size(),
         verbose=verbose,
     )
 
@@ -124,7 +128,12 @@ def dpsprep(
     document.decoding_job.wait()
     djvu_size = workdir.src.stat().st_size
 
-    process_in_pool(options, document)
+    try:
+        concurrently_process_document(options, document)
+    except DpsPrepConcurrencyError:
+        # We assume that the actual error has been logged, so we ignore its message.
+        ctx.abort()
+
     combine_document(options, document)
 
     combined_size = workdir.combined_pdf_path.stat().st_size

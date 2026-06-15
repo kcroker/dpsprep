@@ -6,3 +6,4 @@ Implementation details:
 
 * [Compression](./compression)
 * [Text layer](./text-layer)
+* [Concurrency](./concurrency)

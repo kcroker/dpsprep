@@ -12,3 +12,7 @@ class DpsPrepParseError(DpsPrepError):
 
 class DpsPrepConfigError(DpsPrepError):
     pass
+
+
+class DpsPrepConcurrencyError(DpsPrepError):
+    pass

@@ -6,6 +6,7 @@ It also has some implementation details:
 
 * [Compression](./compression)
 * [Text layer](./text-layer)
+* [Concurrency](./concurrency)
 
 See the README in the [repository](https://github.com/kcroker/dpsprep) for installation/setup instructions.
 

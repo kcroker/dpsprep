@@ -1,5 +1,6 @@
 import enum
 import json
+import os
 import sys
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -164,3 +165,13 @@ class QualityOverridesClickType(click.ParamType):
                 self.fail(f'Expected quality option to be between 1 and 100, but got {range_option.value}', param, ctx)
 
         return group
+
+
+def get_default_pool_size() -> int:
+    if sys.version_info < (3, 13):
+        if cpu_count := os.cpu_count():
+            return 2 * cpu_count
+    elif lcpu_count := os.process_cpu_count():
+        return lcpu_count
+
+    return 1

@@ -1,10 +1,12 @@
 import logging
 
+from rich.logging import RichHandler
+
 
 def configure_logging(verbose: bool) -> None:
     base_logger = logging.getLogger('dpsprep')
     base_logger.setLevel(logging.DEBUG if verbose else logging.INFO)
-    base_logger.addHandler(logging.StreamHandler())
+    base_logger.addHandler(RichHandler(log_time_format='%X'))
 
 
 def human_readable_size(size: int) -> str:

@@ -12,9 +12,10 @@ dependencies = [
   "click (>=8)",
   "djvulibre-python (>=0.9.3)",
   "fpdf2 (>=2.8)",
-  "typing_extensions (>=4.5.0); python_version < '3.12'",
   "pdfrw (>=0.4)",
   "pillow (>=12.2.0)",
+  "rich (>=13)",
+  "typing_extensions (>=4.5.0); python_version < '3.12'",
 ]
 
 [project.urls]

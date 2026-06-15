@@ -6,11 +6,13 @@
 
 # ruff: noqa: PLC0415
 
+import logging
 import shutil
 
-import loguru
-
 from dpsprep.options import DpsPrepOptions
+
+
+logger = logging.getLogger(__name__)
 
 
 def run_ocrmypdf_optimizer(options: DpsPrepOptions) -> bool:
@@ -23,7 +25,7 @@ def run_ocrmypdf_optimizer(options: DpsPrepOptions) -> bool:
         from ocrmypdf.optimize import ObjectStreamMode, PdfContext, optimize
         from ocrmypdf.pdfinfo import PdfInfo
     except ImportError:
-        loguru.logger.error('Cannot detect OCRmyPDF. No optimizations will be performed on the output file.')
+        logger.error('Cannot detect OCRmyPDF. No optimizations will be performed on the output file.')  # noqa: TRY400
         return False
 
     quality = options.quality_overrides.get_global_value()
@@ -61,7 +63,7 @@ def perform_ocr(options: DpsPrepOptions) -> bool:
     try:
         from ocrmypdf import api
     except ImportError:
-        loguru.logger.error('Cannot detect OCRmyPDF. No OCR will be performed on the output file.')
+        logger.error('Cannot detect OCRmyPDF. No OCR will be performed on the output file.')  # noqa: TRY400
         return False
 
     try:
@@ -70,8 +72,8 @@ def perform_ocr(options: DpsPrepOptions) -> bool:
             output_file=options.workdir.combined_pdf_path,
             **options.ocr_options or {},
         )
-    except Exception as err:
-        loguru.logger.error(f'OCRmyPDF failed: {err}')
+    except Exception:
+        logger.exception('OCRmyPDF failed.')
         shutil.copy(
             options.workdir.combined_pdf_without_text_path,
             options.workdir.combined_pdf_path,

@@ -1,27 +1,10 @@
-import sys
-
-import loguru
+import logging
 
 
-LOGURU_FORMAT = '<level>{level}</level> <green>{time:HH:mm:ss}</green> <level>{message}</level>'
-LOGURU_WARNING_LEVEL = 30
-
-
-def configure_loguru(*, verbose: bool) -> None:
-    loguru.logger.remove()
-
-    loguru.logger.add(
-        sys.stderr,
-        format=LOGURU_FORMAT,
-        level='WARNING',
-    )
-
-    loguru.logger.add(
-        sys.stdout,
-        filter=lambda record: record['level'].no < LOGURU_WARNING_LEVEL,
-        format=LOGURU_FORMAT,
-        level='DEBUG' if verbose else 'INFO',
-    )
+def configure_logging(verbose: bool) -> None:
+    base_logger = logging.getLogger('dpsprep')
+    base_logger.setLevel(logging.DEBUG if verbose else logging.INFO)
+    base_logger.addHandler(logging.StreamHandler())
 
 
 def human_readable_size(size: int) -> str:

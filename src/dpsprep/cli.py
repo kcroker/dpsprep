@@ -1,10 +1,10 @@
+import logging
 from time import time
 
 import click
 import djvu.decode
-import loguru
 
-from dpsprep.logging import configure_loguru, human_readable_size
+from dpsprep.logging import configure_logging, human_readable_size
 from dpsprep.options import (
     DpiOverridesClickType,
     DpsPrepOptions,
@@ -23,6 +23,9 @@ from dpsprep.workflow import (
     initialize_workdir,
     process_in_pool,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 # OCR options
@@ -77,7 +80,7 @@ def dpsprep(
 
         "rgb", "rgb[3]", "rgb[3-4]", "rgb[3-end]", "rgb[3],rgb[10-end]"
     """
-    configure_loguru(verbose=verbose)
+    configure_logging(verbose=verbose)
 
     if deprecated_overwrite:
         click.echo(
@@ -121,12 +124,12 @@ def dpsprep(
     combine_document(options, document)
 
     combined_size = workdir.combined_pdf_path.stat().st_size
-    loguru.logger.info(f'Produced a combined output file with size {human_readable_size(combined_size)} in {time() - start_time:.2f}s. This is {round(100 * combined_size / djvu_size, 2)}% of the DjVu source file.')
+    logger.info(f'Produced a combined output file with size {human_readable_size(combined_size)} in {time() - start_time:.2f}s. This is {round(100 * combined_size / djvu_size, 2)}% of the DjVu source file.')
 
     attempt_to_optimize_result(options, djvu_size, combined_size)
 
     if preserve_working:
-        loguru.logger.info(f'Working directory {workdir.working} will be preserved.')
+        logger.info(f'Working directory {workdir.working} will be preserved.')
     else:
-        loguru.logger.info(f'Deleting the working directory {workdir.working}.')
+        logger.info(f'Deleting the working directory {workdir.working}.')
         destroy_workdir(workdir)

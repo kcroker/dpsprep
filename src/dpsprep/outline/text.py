@@ -1,12 +1,12 @@
 # ruff: noqa: RUF059
 
+import logging
 import unicodedata
 from collections.abc import Iterable
 from pathlib import Path
 
 import djvu.decode
 import djvu.sexpr
-import loguru
 from fpdf import FPDF
 
 from dpsprep.options import DpsPrepOptions
@@ -16,6 +16,7 @@ from .sexpr_visitor import SExpressionVisitor
 
 BASE_FONT_SIZE = 10
 TAB_SIZE = 4
+logger = logging.getLogger(__name__)
 
 
 class TextExtractVisitor(SExpressionVisitor[str]):
@@ -51,7 +52,7 @@ class TextExtractVisitor(SExpressionVisitor[str]):
         try:
             string = node.value  # This getter is not static - it does UTF-8 conversion and fails for some DjVu files
         except ValueError as err:
-            loguru.logger.warning(f'Could not decode {node!r}: {err}')
+            logger.warning(f'Could not decode {node!r}: {err}')
             return ''
         else:
             return ''.join(self.iter_chars(string))
@@ -92,7 +93,7 @@ class TextDrawVisitor(SExpressionVisitor):
         page_width, page_height = self.pdf.pages[self.pdf.page].dimensions()
 
         if page_height is None:
-            loguru.logger.warning(f'Cannot draw {text!r} because page height is not set.')
+            logger.warning(f'Cannot draw {text!r} because page height is not set.')
             return
 
         self.pdf.set_font('Invisible', size=BASE_FONT_SIZE)
@@ -109,7 +110,7 @@ class TextDrawVisitor(SExpressionVisitor):
         try:
             self.pdf.text(x=x1 / self.dpi, y=page_height / 72 - y1 / self.dpi, text=text)
         except TypeError as err:
-            loguru.logger.warning(f'FPDF refuses to draw {text!r}: {err}')
+            logger.warning(f'FPDF refuses to draw {text!r}: {err}')
 
     def iter_loose_string_content(self, expressions: list[djvu.sexpr.Expression]) -> Iterable[str]:
         for child in expressions:
@@ -177,7 +178,7 @@ def extract_text_as_fpdf(document: djvu.decode.Document, options: DpsPrepOptions
         page_job = page.decode(wait=True)
         page_dpi = options.dpi_overrides.get_value_for_zero_based_page(i) or page_job.dpi
         pdf.add_page(format=(page_job.width / page_dpi, page_job.height / page_dpi))
-        loguru.logger.debug(f'Processing text for page {i + 1}.')
+        logger.debug(f'Processing text for page {i + 1}.')
         visitor = TextDrawVisitor(pdf, page_dpi)
         visitor.visit(page.text.sexpr)
 

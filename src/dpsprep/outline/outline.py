@@ -1,8 +1,12 @@
+import logging
+
 import djvu.sexpr
-import loguru
 from pdfrw import IndirectPdfDict, PdfDict, PdfName
 
 from .sexpr_visitor import SExpressionVisitor
+
+
+logger = logging.getLogger(__name__)
 
 
 # Based on
@@ -16,13 +20,13 @@ class OutlineTransformVisitor(SExpressionVisitor[PdfDict]):
             page_number = int(page.value[1:]) - 1
         except ValueError:
             # As far as I understand, python-djvulibre doesn't support Djvu's page titles. -- Ianis, 2023-12-09
-            loguru.logger.warning(f'Could not determine page number from the page title {page.value}.')
+            logger.warning(f'Could not determine page number from the page title {page.value}.')
             return None
 
         try:
             title_text = title.value
         except UnicodeDecodeError:
-            loguru.logger.warning(f'Could not decode page title {title!r}; leaving it in escaped form.')
+            logger.warning(f'Could not decode page title {title!r}; leaving it in escaped form.')
             title_text = str(title)
 
         bookmark = IndirectPdfDict(

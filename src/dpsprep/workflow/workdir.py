@@ -1,15 +1,15 @@
 import hashlib
+import logging
 import os
 import pathlib
 import shutil
 import tempfile
 
-import loguru
-
 from dpsprep.workdir import WorkingDirectory
 
 
 HASHING_BUFFER_SIZE = 64 * 1024
+logger = logging.getLogger(__name__)
 
 
 def get_file_hash(path: os.PathLike | str) -> str:
@@ -35,10 +35,10 @@ def initialize_workdir(
     persistent_tmp = pathlib.Path('/var/tmp')
 
     if persistent_tmp.exists() and (persistent_tmp.stat().st_mode & (os.W_OK | os.X_OK)):
-        loguru.logger.debug('Using non-ephemeral storage /var/tmp.')
+        logger.debug('Using non-ephemeral storage /var/tmp.')
         root = persistent_tmp
     else:
-        loguru.logger.debug(f'Using default system storage {tempfile.gettempdir()}.')
+        logger.debug(f'Using default system storage {tempfile.gettempdir()}.')
         root = pathlib.Path(tempfile.gettempdir())
 
     src_ = pathlib.Path(src)
@@ -51,20 +51,20 @@ def initialize_workdir(
 
     if workdir.working.exists():
         if delete_existing:
-            loguru.logger.debug(f'Removing existing working directory {working}.')
+            logger.debug(f'Removing existing working directory {working}.')
             destroy_workdir(workdir)
-            loguru.logger.info(f'Removed existing working directory {working}.')
+            logger.info(f'Removed existing working directory {working}.')
         else:
-            loguru.logger.info(f'Reusing working directory {working}.')
+            logger.info(f'Reusing working directory {working}.')
     else:
-        loguru.logger.info(f'Working directory {working} has been created.')
+        logger.info(f'Working directory {working} has been created.')
 
     if not working.exists():
-        loguru.logger.debug(f'Creating {working}.')
+        logger.debug(f'Creating {working}.')
         working.mkdir(parents=True)
 
     if not workdir.ocrmypdf_tmp_path.exists():
-        loguru.logger.debug(f'Creating {workdir.ocrmypdf_tmp_path}.')
+        logger.debug(f'Creating {workdir.ocrmypdf_tmp_path}.')
 
     return workdir
 

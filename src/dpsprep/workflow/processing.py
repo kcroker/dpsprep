@@ -1,31 +1,34 @@
+import logging
 import multiprocessing
 from time import time
 
 import djvu.decode
-import loguru
 
 from dpsprep.images import failsafe_save_djvu_page, process_djvu_page
-from dpsprep.logging import configure_loguru, human_readable_size
+from dpsprep.logging import configure_logging, human_readable_size
 from dpsprep.options import DEFAULT_IMAGE_MODE, DpsPrepOptions
 from dpsprep.outline import extract_text_as_fpdf
 from dpsprep.pdf import is_valid_pdf
 
 
+logger = logging.getLogger(__name__)
+
+
 def process_page_bg(options: DpsPrepOptions, i: int) -> None:
     """Process a page image.
 
-    It is assumed that this will run in a worker, so the document must be read anew and loguru must be (re)configured.
+    It is assumed that this will run in a worker, so the document must be read anew and logging must be (re)configured.
     """
-    configure_loguru(verbose=options.verbose)
+    configure_logging(verbose=options.verbose)
     page_number = i + 1
 
     if options.workdir.get_page_pdf_path(i).exists():
         if is_valid_pdf(options.workdir.get_page_pdf_path(i)):
-            loguru.logger.debug(f'Image data from page {page_number} already processed.')
+            logger.debug(f'Image data from page {page_number} already processed.')
             return
-        loguru.logger.debug(f'Invalid page generated for {page_number}, regenerating.')
+        logger.debug(f'Invalid page generated for {page_number}, regenerating.')
     else:
-        loguru.logger.debug(f'Processing image data from page {page_number}.')
+        logger.debug(f'Processing image data from page {page_number}.')
 
     start_time = time()
     document = djvu.decode.Context().new_document(
@@ -52,21 +55,21 @@ def process_page_bg(options: DpsPrepOptions, i: int) -> None:
         f'and size {human_readable_size(pdf_size)}.'
     )
 
-    loguru.logger.debug(message)
+    logger.debug(message)
 
 
 def process_text(options: DpsPrepOptions) -> None:
     """Process the text of the entire document.
 
-    It is assumed that this will run in a worker, so the document must be read anew and loguru must be (re)configured.
+    It is assumed that this will run in a worker, so the document must be read anew and logging must be (re)configured.
     """
-    configure_loguru(verbose=options.verbose)
+    configure_logging(verbose=options.verbose)
 
     if options.workdir.text_layer_pdf_path.exists():
-        loguru.logger.info('Text data already processed.')
+        logger.info('Text data already processed.')
         return
 
-    loguru.logger.debug('Processing text data.')
+    logger.debug('Processing text data.')
 
     start_time = time()
     document = djvu.decode.Context().new_document(
@@ -78,12 +81,12 @@ def process_text(options: DpsPrepOptions) -> None:
     fpdf.output(str(options.workdir.text_layer_pdf_path))
 
     pdf_size = options.workdir.text_layer_pdf_path.stat().st_size
-    loguru.logger.info(f'Text data with size {human_readable_size(pdf_size) } processed in {time() - start_time:.2f}s and written to working directory')
+    logger.info(f'Text data with size {human_readable_size(pdf_size) } processed in {time() - start_time:.2f}s and written to working directory')
 
 
 def process_in_pool(options: DpsPrepOptions, document: djvu.decode.Document) -> None:
     djvu_size = options.workdir.src.stat().st_size
-    loguru.logger.info(f'Processing {options.workdir.src} with {len(document.pages)} pages and size {human_readable_size(djvu_size)} using {options.pool_size} workers.')
+    logger.info(f'Processing {options.workdir.src} with {len(document.pages)} pages and size {human_readable_size(djvu_size)} using {options.pool_size} workers.')
 
     pool = multiprocessing.Pool(processes=options.pool_size)
     tasks = list[multiprocessing.pool.AsyncResult]()
@@ -107,4 +110,4 @@ def process_in_pool(options: DpsPrepOptions, document: djvu.decode.Document) -> 
                 pool_is_working = True
 
     pool.join()
-    loguru.logger.info('Processed all pages.')
+    logger.info('Processed all pages.')

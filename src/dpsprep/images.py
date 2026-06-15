@@ -1,12 +1,15 @@
+import logging
 import pathlib
 from typing import NamedTuple
 
 import djvu.decode
-import loguru
 import PIL.features
 from PIL import Image, ImageOps
 
 from dpsprep.options import DpsPrepOptions, ImageMode
+
+
+logger = logging.getLogger(__name__)
 
 
 djvu_pixel_formats = {
@@ -46,9 +49,9 @@ def process_djvu_page(page: djvu.decode.Page, mode: ImageMode, i: int) -> Proces
 
     if mode == 'bitonal':
         if not PIL.features.check_codec('libtiff'):
-            loguru.logger.warning('Bitonal image compression may suffer because Pillow has been built without libtiff support.')
+            logger.warning('Bitonal image compression may suffer because Pillow has been built without libtiff support.')
     elif not PIL.features.check_codec('jpg'):
-        loguru.logger.warning('Multitonal image compression may suffer because Pillow has been built without libjpeg support.')
+        logger.warning('Multitonal image compression may suffer because Pillow has been built without libjpeg support.')
 
     try:
         page_job.render(
@@ -60,7 +63,7 @@ def process_djvu_page(page: djvu.decode.Page, mode: ImageMode, i: int) -> Proces
             buffer=buffer,
         )
     except djvu.decode.NotAvailable:
-        loguru.logger.warning(f'libdjvu claims that data for page {i + 1} is not available. Producing a blank page.')
+        logger.warning(f'libdjvu claims that data for page {i + 1} is not available. Producing a blank page.')
         image = Image.new(
             pil_modes['bitonal'],
             page_job.size,
@@ -91,7 +94,7 @@ def failsafe_save_djvu_page(page_bg: ProcessedPageBackground, target: pathlib.Pa
 
     if quality is not None:
         if page_bg.pil_image.mode in pil_modes['bitonal'] and PIL.features.check_codec('libtiff'):
-            loguru.logger.warning('Pillow uses TIFF for encoding bitonal PDF images. The encoder does not support a "quality" setting. If the conversion fails, please try again without specifying quality.')
+            logger.warning('Pillow uses TIFF for encoding bitonal PDF images. The encoder does not support a "quality" setting. If the conversion fails, please try again without specifying quality.')
 
         try:
             page_bg.pil_image.save(
@@ -101,7 +104,7 @@ def failsafe_save_djvu_page(page_bg: ProcessedPageBackground, target: pathlib.Pa
                 resolution=dpi,
             )
         except ValueError:
-            loguru.logger.warning(f'Failed to encode page {i}. Trying again without setting quality.')
+            logger.warning(f'Failed to encode page {i}. Trying again without setting quality.')
         else:
             return
 

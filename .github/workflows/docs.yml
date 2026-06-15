@@ -2,27 +2,29 @@ name: Build docs
 
 on:
   push:
-    tags:
-      - '**'
+    branches:
+      - 'master'
 
 jobs:
   docs:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
 
     steps:
     - uses: actions/checkout@v6
     - name: Install prerequisites on Ubuntu
       run: |
         sudo apt update
-        sudo apt install --yes libdjvulibre21 libdjvulibre-dev
+        sudo apt install --yes libdjvulibre21 libdjvulibre-dev groff
 
-    - uses: astral-sh/setup-uv@v7
+    - name: Setup uv
+      uses: astral-sh/setup-uv@v7
+
     - name: Install dependencies
-      run: uv sync
+      run: uv sync --frozen --group docs --no-default-groups
 
     - name: Build docs
       run: |
-        uv run poe build-docs
+        uv run --no-sync poe build-docs
         mkdir .github/wiki
         cp --recursive docs/*.md docs/screenshots .github/wiki
 

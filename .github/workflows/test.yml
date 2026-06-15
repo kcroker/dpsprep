@@ -1,27 +1,41 @@
 name: Run tests
 
-on: [push]
+on:
+  push:
+    branches:
+      - 'master'
+
+  pull_request:
 
 jobs:
   test:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, macos-14]
-        python: [3.11, 3.12, 3.13, 3.14]
+        include:
+          - os: ubuntu-slim
+            python: 3.11
+          - os: ubuntu-slim
+            python: 3.12
+          - os: ubuntu-slim
+            python: 3.13
+          - os: ubuntu-slim
+            python: 3.14
+          - os: macos-26
+            python: 3.14
 
     runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v6
     - name: Install prerequisites on Ubuntu
-      if: matrix.os == 'ubuntu-24.04'
+      if: matrix.os == 'ubuntu-slim'
       run: |
         sudo apt update
         sudo apt install --yes libdjvulibre21 libdjvulibre-dev
 
     - name: Install prerequisites on macOS
-      if: matrix.os == 'macos-14'
+      if: matrix.os == 'macos-26'
       run: brew install djvulibre
 
     # - name: Install prerequisites on Windows
@@ -30,18 +44,19 @@ jobs:
     #     choco install djvu-libre
     #     vcpkg install tiff
 
-    - uses: astral-sh/setup-uv@v7
+    - name: Setup uv
+      uses: astral-sh/setup-uv@v7
       with:
         python-version: ${{ matrix.python }}
 
     - name: Install dependencies
-      run: uv sync --all-extras
+      run: uv sync --frozen --group lint --group typing --group test --no-default-groups
 
     - name: Lint
-      run: ruff check
+      run: uv run --no-sync ruff check
 
     - name: Typing
-      run: mypy
+      run: uv run --no-sync mypy
 
     - name: Test
-      run: pytest
+      run: uv run --no-sync pytest

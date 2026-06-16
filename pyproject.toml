@@ -24,12 +24,12 @@ Changelog = "https://github.com/kcroker/dpsprep/blob/master/CHANGELOG.md"
 Documentation = "https://github.com/kcroker/dpsprep/wiki"
 
 [project.optional-dependencies]
-compress = [
+ocr = [
   "ocrmypdf (>=17)"
 ]
 
-ocr = [
-  "ocrmypdf (>=17)"
+compress = [
+  "dpsprep[ocr] (>=0.0.0)"
 ]
 
 all = [

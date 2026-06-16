@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+* Allow specifying custom working directories via the --tmp option.
+* Improve access check for /var/tmp.
 * Improve concurrent processing and add a progress indicator.
 * Reimplement option group parsing.
 * Use the Rich logging handler.

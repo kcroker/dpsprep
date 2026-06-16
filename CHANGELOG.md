@@ -5,10 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 2.7.0 - 2026-06-17
+
+### Additions
 
 * Declare Python 3.15 support.
 * Allow specifying custom working directories via the --tmp option.
+
+### Changes
+
 * Improve access check for /var/tmp.
 * Improve concurrent processing and add a progress indicator.
 * Reimplement option group parsing.

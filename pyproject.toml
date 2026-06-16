@@ -1,6 +1,6 @@
 [project]
 name = "dpsprep"
-version = "2.6.4"
+version = "2.7.0"
 description = "A DjVu to PDF converter"
 requires-python = ">=3.11"
 authors = [

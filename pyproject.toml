@@ -8,6 +8,7 @@ authors = [
   { name = "Ianis Vasilev", email = "ianis@ivasilev.net" }
 ]
 license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
 dependencies = [
   "click (>=8)",
   "djvulibre-python (>=0.9.3)",

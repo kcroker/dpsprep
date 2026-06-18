@@ -36,6 +36,7 @@ logger = logging.getLogger(__name__)
 @click.option('--socr', 'socr_options', type=SocrOptionClickType(), default=None, help='"Streamlined" OCR; `--ocrs eng,grc` expands to `--ocr \'{"language": ["eng", "grc"]}\'`.')
 @click.option('--ocr', 'ocr_options', type=OcrOptionClickType(), default=None, help='Perform OCR via OCRmyPDF rather than trying to convert the text layer. If this parameter has a value, it should be a JSON dictionary of options to be passed to OCRmyPDF.')
 # Other options
+@click.option('--tmp', 'tmp_root', type=click.Path(exists=True, file_okay=False, writable=True, resolve_path=True), help="Override the default temporary directory (Python's tempfile.gettempdir() with a preference for /var/tmp on Unix-like systems).")
 @click.option('-p', '--pool-size', type=click.IntRange(min=1), default=None, help='Size of the MultiProcessing pool that handles page-by-page operations. Defaults to os.process_cpu_count() with a fallback to 2 * os.cpu_count()')
 @click.option('-O3', 'optlevel', flag_value=3, help='Use the aggressive lossy PDF image optimization from OCRmyPDF.')
 @click.option('-O2', 'optlevel', flag_value=2, help='Use the PDF image optimization from OCRmyPDF.')
@@ -51,8 +52,8 @@ logger = logging.getLogger(__name__)
 @click.option('--dpi', 'dpi_overrides', type=DpiOverridesClickType(), multiple=True, default=[], help='Override the DPI values encoded in the DjVu file for individual pages.')
 @click.option('-m', '--mode', 'mode_overrides', type=ImageModeOverridesClickType(), multiple=True, default=['infer'], help='Override the image modes encoded in the DjVu file for individual pages. Valid values are "infer" (default), "bitonal", "grayscale" and "rgb". It sometimes makes sense to force bitonal images since they compress well.')
 @click.version_option()
-@click.argument('dest', type=click.Path(exists=False, resolve_path=True), required=False)
-@click.argument('src', type=click.Path(exists=True, resolve_path=True), required=True)
+@click.argument('dest', type=click.Path(exists=False, dir_okay=False, resolve_path=True), required=False)
+@click.argument('src', type=click.Path(exists=True, dir_okay=False, resolve_path=True), required=True)
 @click.command(epilog='See dpsprep(1) for more details.')
 @click.pass_context
 def dpsprep(
@@ -73,6 +74,7 @@ def dpsprep(
     no_text: bool,
     optlevel: int | None,
     pool_size: int | None,
+    tmp_root: str | None,
     # OCR options
     ocr_options: JsonObject | None,
     socr_options: JsonObject | None,
@@ -104,7 +106,7 @@ def dpsprep(
     if ocr_options and socr_options:
         raise click.ClickException('Cannot specify both --ocr and -socr simultaneously.')
 
-    workdir = initialize_workdir(src, dest, delete_working)
+    workdir = initialize_workdir(src, dest, tmp_root, delete_working)
 
     if not overwrite and workdir.dest.exists():
         raise click.ClickException(f'File {workdir.dest} already exists.')

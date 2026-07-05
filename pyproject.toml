@@ -12,7 +12,7 @@ license-files = ["LICENSE"]
 dependencies = [
   "click (>=8)",
   "djvulibre-python (>=0.9.3)",
-  "fpdf2 (>=2.8)",
+  "fpdf2 (>=2.8.6)",
   "pdfrw (>=0.4)",
   "pillow (>=12.2.0)",
   "rich (>=13)",
@@ -64,7 +64,6 @@ lint = [
 typing = [
   { include-group = "test" },
   "mypy (>=2)",
-  "types-fpdf2 (>=2.8.4.20260322)"
 ]
 
 test = [

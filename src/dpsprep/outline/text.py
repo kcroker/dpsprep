@@ -172,14 +172,18 @@ def extract_text_as_fpdf(document: djvu.decode.Document, options: DpsPrepOptions
     pdf = FPDF(unit='in')
     pdf.add_font(
         family='Invisible',
-        fname=Path(__file__).parent.parent / 'invisible1.ttf',
+        fname=Path(__file__).parent.parent.joinpath('invisible1.ttf').as_posix(),
         style='',
     )
 
     for i, page in enumerate(document.pages):
         page_job = page.decode(wait=True)
         page_dpi = options.dpi_overrides.get_value_for_zero_based_page(i) or page_job.dpi
-        pdf.add_page(format=(page_job.width / page_dpi, page_job.height / page_dpi))
+
+        # This annotation will get fixed in the next release after 2.8.7
+        #   See https://github.com/py-pdf/fpdf2/commit/9dbd2da8c382f03bac7f23721d6dde9f130dd967
+        pdf.add_page(format=(page_job.width / page_dpi, page_job.height / page_dpi))  # type: ignore[arg-type]
+
         logger.debug(f'Processing text for page {i + 1}.')
         visitor = TextDrawVisitor(pdf, page_dpi)
         visitor.visit(page.text.sexpr)

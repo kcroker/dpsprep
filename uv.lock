@@ -399,7 +399,6 @@ dev = [
     { name = "ruff" },
     { name = "ruff-config-ivasilev" },
     { name = "tox" },
-    { name = "types-fpdf2" },
 ]
 docs = [
     { name = "click-man" },
@@ -415,7 +414,6 @@ test = [
 typing = [
     { name = "mypy" },
     { name = "pytest" },
-    { name = "types-fpdf2" },
 ]
 
 [package.metadata]
@@ -424,7 +422,7 @@ requires-dist = [
     { name = "djvulibre-python", specifier = ">=0.9.3" },
     { name = "dpsprep", extras = ["ocr"], marker = "extra == 'all'", specifier = ">=0.0.0" },
     { name = "dpsprep", extras = ["ocr"], marker = "extra == 'compress'", specifier = ">=0.0.0" },
-    { name = "fpdf2", specifier = ">=2.8" },
+    { name = "fpdf2", specifier = ">=2.8.6" },
     { name = "ocrmypdf", marker = "extra == 'ocr'", specifier = ">=17" },
     { name = "pdfrw", specifier = ">=0.4" },
     { name = "pillow", specifier = ">=12.2.0" },
@@ -443,7 +441,6 @@ dev = [
     { name = "ruff", specifier = ">=0.15.20" },
     { name = "ruff-config-ivasilev", git = "https://github.com/v--/ruff-config-ivasilev.git?rev=v0.15.post9" },
     { name = "tox", specifier = ">=4.50" },
-    { name = "types-fpdf2", specifier = ">=2.8.4.20260322" },
 ]
 docs = [
     { name = "click-man", specifier = ">=0.5.1" },
@@ -457,7 +454,6 @@ test = [{ name = "pytest", specifier = ">=9.0.3" }]
 typing = [
     { name = "mypy", specifier = ">=2" },
     { name = "pytest", specifier = ">=9.0.3" },
-    { name = "types-fpdf2", specifier = ">=2.8.4.20260322" },
 ]
 
 [[package]]
@@ -520,16 +516,16 @@ wheels = [
 
 [[package]]
 name = "fpdf2"
-version = "2.8.1"
+version = "2.8.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "defusedxml" },
     { name = "fonttools" },
     { name = "pillow" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e4/2f/bfd880dbad75fb1921fd9e6523b7c163ca6297f15585fb002a6f276aadd5/fpdf2-2.8.1.tar.gz", hash = "sha256:8866161396f942c8f7e3f022c4afb5e671b4d044745d4ed13c5d2ccc16ae5091", size = 256587, upload-time = "2024-10-04T11:50:51.312Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/74/3f/b23cf3a1943905645f44df95de8289770e69f85c9442abf89f93dc5c4a74/fpdf2-2.8.6.tar.gz", hash = "sha256:5132f26bbeee69a7ca6a292e4da1eb3241147b5aea9348b35e780ecd02bf5fc2", size = 362052, upload-time = "2026-02-19T03:45:25.736Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/14/5d/4444880d9a49c21f57381505175b4302ae2d69fab7273c060ed9f9372d12/fpdf2-2.8.1-py2.py3-none-any.whl", hash = "sha256:02f9e81ea5a0ec723c467de392bc6f4c54ea7859857e6fcee46579bd02bd335f", size = 227769, upload-time = "2024-10-04T11:50:49.202Z" },
+    { url = "https://files.pythonhosted.org/packages/06/93/af9bff8ea01bf0895b4ebf0641da613e4e342112ee82d50642638f763239/fpdf2-2.8.6-py3-none-any.whl", hash = "sha256:464658b896c6b0fcbf883abb316b8f0a52d582eb959d71822ba254d6c790bfdd", size = 326981, upload-time = "2026-02-19T03:45:23.732Z" },
 ]
 
 [[package]]
@@ -1419,18 +1415,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/e0/19/9feeea84d193333ba022c1154cdf70af14b5cb531911d968d7a47ce2b899/tox-4.50.0.tar.gz", hash = "sha256:1d9c1d678bb5c1a2d59c19ae58df7d033578ac1d91c5625aaa62aac792093401", size = 264526, upload-time = "2026-03-17T16:54:09.145Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c1/ad/16a2cf605b81a2d615ee6fe1f7513afcdfee2e71cd52454198b55b84f572/tox-4.50.0-py3-none-any.whl", hash = "sha256:fb0bf14043b8d9d6cbe56b322b2860da50f6b898788ebfec621b84396dc948d6", size = 207490, upload-time = "2026-03-17T16:54:07.214Z" },
-]
-
-[[package]]
-name = "types-fpdf2"
-version = "2.8.4.20260322"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pillow" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/6d/1b/341a5780a843c43908237e906d0b1ec0d763c541e3c7a59e6fb64eca613b/types_fpdf2-2.8.4.20260322.tar.gz", hash = "sha256:6edadba33e2ff1de60ea20da41ab6781f0e555144d7d310cd244d6b0402125b5", size = 41615, upload-time = "2026-03-22T04:08:58.802Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/9e/ed/0e745d3d87e27c683ec0145b6a2d35e1da311063252865e770fcca01156b/types_fpdf2-2.8.4.20260322-py3-none-any.whl", hash = "sha256:2c107fcded0835706da17ef12b7e58ead41cceb2737e84fd0f7b28e7d2754810", size = 48416, upload-time = "2026-03-22T04:08:57.714Z" },
 ]
 
 [[package]]

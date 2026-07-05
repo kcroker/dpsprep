@@ -1,4 +1,3 @@
-import pathlib
 import re
 import subprocess
 
@@ -7,8 +6,7 @@ from click_man.core import generate_man_page
 
 from dpsprep.cli import dpsprep
 
-
-ROOT = pathlib.Path(__file__).parent.parent.parent
+from .paths import ROOT
 
 
 def build_man_page() -> None:
@@ -27,8 +25,11 @@ def build_man_page() -> None:
     ctx = click.Context(dpsprep, info_name=dpsprep.name)
     man_page = generate_man_page(ctx, version=version, date=date_str)
 
-    # ruff: ignore[read-whole-file]
-    with open('docs/dpsprep.1', 'w', encoding='utf-8') as man_file, open('docs/examples.man', encoding='utf-8') as example_file:
+    with (
+        open(ROOT / 'docs' / 'dpsprep.1', 'w', encoding='utf-8') as man_file,
+        # ruff: ignore[read-whole-file]
+        open(ROOT / 'docs' / 'examples.man', encoding='utf-8') as example_file,
+    ):
         man_file.write(man_page)
         man_file.write(example_file.read())
 
@@ -45,7 +46,7 @@ def build_man_md() -> None:
     # ruff: ignore[unraw-re-pattern]
     unescaped = re.sub('\x1B\\[[0-9;]*[JKmsu]', '', proc.stdout)
 
-    with open('docs/dpsprep.1.md', 'w', encoding='utf-8') as file:
+    with open(ROOT / 'docs' / 'dpsprep.1.md', 'w', encoding='utf-8') as file:
         for line in unescaped.splitlines(keepends=True):
             file.write('    ')
             file.write(line)

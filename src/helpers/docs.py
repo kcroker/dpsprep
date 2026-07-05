@@ -6,7 +6,7 @@ from click_man.core import generate_man_page
 
 from dpsprep.cli import dpsprep
 
-from .paths import ROOT
+from .paths import MAN_FILE, ROOT
 
 
 def build_man_page() -> None:
@@ -20,13 +20,14 @@ def build_man_page() -> None:
 
     [1]: https://github.com/click-contrib/click-man/pull/76
     """
-    version, date_str = extract_version_and_date_from_changelog()
+    MAN_FILE.parent.mkdir(parents=True, exist_ok=True)
 
+    version, date_str = extract_version_and_date_from_changelog()
     ctx = click.Context(dpsprep, info_name=dpsprep.name)
     man_page = generate_man_page(ctx, version=version, date=date_str)
 
     with (
-        open(ROOT / 'docs' / 'dpsprep.1', 'w', encoding='utf-8') as man_file,
+        open(MAN_FILE, 'w', encoding='utf-8') as man_file,
         # ruff: ignore[read-whole-file]
         open(ROOT / 'docs' / 'examples.man', encoding='utf-8') as example_file,
     ):
@@ -36,7 +37,7 @@ def build_man_page() -> None:
 
 def build_man_md() -> None:
     proc = subprocess.run(
-        ['groff', '-mandoc', '-Tutf8', '-rLL=100n', 'docs/dpsprep.1'],
+        ['groff', '-mandoc', '-Tutf8', '-rLL=100n', MAN_FILE.as_posix()],
         stdout=subprocess.PIPE,
         encoding='utf-8',
         check=True,

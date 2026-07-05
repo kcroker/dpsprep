@@ -2,6 +2,7 @@
 name = "dpsprep"
 version = "2.7.0"
 description = "A DjVu to PDF converter"
+readme = "README.md"
 requires-python = ">=3.11"
 authors = [
   { name = "Kevin Arthur Schiff Croker" },
@@ -9,7 +10,6 @@ authors = [
 ]
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE"]
-dynamic = ["readme"]
 
 dependencies = [
   "click (>=8)",
@@ -66,7 +66,6 @@ lint = [
 typing = [
   { include-group = "test" },
   "mypy (>=2)",
-  "hatchling (>=1.27)",
 ]
 
 test = [
@@ -94,30 +93,19 @@ dev = [
 ]
 
 [build-system]
-requires = ["hatchling (>=1.27)", "hatch-fancy-pypi-readme (>=25)"]
+# uv build complains if no upper bound is set, but it updates its minor versions often, so we put a major version just to shut it up
+requires = ["uv_build (>=0.10, <1)"]
 build-backend = "helpers.build_backend"
 backend-path = ["src"]
-
-# hatch
-[tool.hatch.build.targets.sdist]
-include = ["/README.md", "/CHANGELOG.md", "/pyproject.toml", "/uv.lock", "/src", "/docs/examples.man"]
-
-[tool.hatch.build.targets.wheel]
-shared-data = { "docs/dpsprep.1" = "share/man/man1/dpsprep.1" }
-
-[tool.hatch.metadata.hooks.fancy-pypi-readme]
-content-type = "text/markdown"
-
-[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
-path = "README.md"
-
-[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
-pattern = "\\[([^\\]]+)\\]\\(./([^)]+)\\)"
-replacement = '[\1](https://github.com/kcroker/dpsprep/blob/master/\2)'
 
 # uv
 [tool.uv]
 resolution = "lowest-direct"
+
+[tool.uv.build-backend]
+source-include = ["CHANGELOG.md", "src/helpers/*", "docs/examples.man"]
+source-exclude = ["dist"]
+data = { data = "dist/data" }
 
 # tox
 [tool.tox]
@@ -156,5 +144,6 @@ module = [
   "djvu.*",
   "ocrmypdf.*",
   "pdfrw.*",
+  "uv_build.*",
 ]
 ignore_missing_imports = true

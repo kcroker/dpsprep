@@ -62,7 +62,7 @@ lint = [
 ]
 
 typing = [
-  {include-group = "test"},
+  { include-group = "test" },
   "mypy (>=2)",
   "types-fpdf2 (>=2.8.4.20260322)"
 ]
@@ -79,10 +79,10 @@ docs = [
 dev = [
   "dpsprep[all] (>=0.0.0)",
   "tox (>=4.50)",
-  {include-group = "lint"},
-  {include-group = "typing"},
-  {include-group = "test"},
-  {include-group = "docs"},
+  { include-group = "lint" },
+  { include-group = "typing" },
+  { include-group = "test" },
+  { include-group = "docs" },
 ]
 
 [build-system]

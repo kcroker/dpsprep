@@ -113,7 +113,7 @@ If you want `dpsprep` to be able to use `ocrmypdf` from `pipx`'s isolated enviro
 
 The project uses `uv` for managing Python versions, dependencies and builds. Running `uv sync` will create a virtual environment with an appropriate Python version (based on [.python-version](./.python-version)) and install all development dependencies.
 
-Other tasks like linting, type checking and building the documentation are described in [`poe.toml`](./poe.toml) (configuration for [poethepoet](https://pypi.org/project/poethepoet/)).
+Other tasks like linting, type checking and building the documentation are described in [`poe_tasks.toml`](./poe_tasks.toml) (configuration for [poethepoet](https://pypi.org/project/poethepoet/)).
 
 Run [`tox`](https://tox.wiki/) (via e.g. `uv run tox` or `poe run test-multienv`) to test the project in all supported environments.
 

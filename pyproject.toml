@@ -94,10 +94,6 @@ build-backend = "uv_build"
 [tool.uv]
 resolution = "lowest-direct"
 
-# poe
-[tool.poe]
-include = "./poe.toml"
-
 # tox
 [tool.tox]
 env_list = ["lint", "typing", "3.11", "3.12", "3.13", "3.14", "3.15"]

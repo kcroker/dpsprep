@@ -1,0 +1,36 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on:  ubuntu-slim
+
+    environment:
+      name: pypi
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v6
+    - uses: astral-sh/setup-uv@v7
+
+    - name: Install dependencies
+      run: uv sync --frozen --all-extras
+
+    - name: Build
+      run: uv build
+
+    - name: Test source distribution
+      run: uv run --isolated --with dist/*.tar.gz pytest
+
+    - name: Test wheel distribution
+      run: uv run --isolated --with dist/*.whl pytest
+
+    - name: Publish
+      run: uv publish

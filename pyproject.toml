@@ -57,8 +57,8 @@ dpsprep = "dpsprep.cli:dpsprep"
 
 [dependency-groups]
 lint = [
-  "ruff (>=0.15)",
-  "ruff-config-ivasilev @ git+https://github.com/v--/ruff-config-ivasilev.git@v0.15post7",
+  "ruff (>=0.15.20)",
+  "ruff-config-ivasilev @ git+https://github.com/v--/ruff-config-ivasilev.git@v0.15.post9",
 ]
 
 typing = [
@@ -113,6 +113,7 @@ commands = [["mypy", "--package", "dpsprep"]]
 # ruff
 [tool.ruff]
 extend = ".venv/share/ruff/ruff.ivasilev.toml"
+preview = true
 
 [tool.ruff.lint]
 ignore = [

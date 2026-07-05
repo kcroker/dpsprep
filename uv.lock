@@ -408,6 +408,9 @@ lint = [
     { name = "ruff" },
     { name = "ruff-config-ivasilev" },
 ]
+man = [
+    { name = "click-man" },
+]
 test = [
     { name = "pytest" },
 ]
@@ -450,6 +453,7 @@ lint = [
     { name = "ruff", specifier = ">=0.15.20" },
     { name = "ruff-config-ivasilev", git = "https://github.com/v--/ruff-config-ivasilev.git?rev=v0.15.post9" },
 ]
+man = [{ name = "click-man", specifier = ">=0.5.1" }]
 test = [{ name = "pytest", specifier = ">=9.0.3" }]
 typing = [
     { name = "mypy", specifier = ">=2" },

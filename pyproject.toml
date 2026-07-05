@@ -2,6 +2,7 @@
 name = "dpsprep"
 version = "2.7.0"
 description = "A DjVu to PDF converter"
+readme = "README.md"
 requires-python = ">=3.11"
 authors = [
   { name = "Kevin Arthur Schiff Croker" },
@@ -9,6 +10,7 @@ authors = [
 ]
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE"]
+
 dependencies = [
   "click (>=8)",
   "djvulibre-python (>=0.9.3)",
@@ -70,9 +72,14 @@ test = [
   "pytest (>=9.0.3)",
 ]
 
+man = [
+  "click-man (>=0.5.1)",
+]
+
 docs = [
   "click-man (>=0.5.1)",
   "poethepoet (>=0.42)",
+  { include-group = "man" },
 ]
 
 dev = [
@@ -81,17 +88,24 @@ dev = [
   { include-group = "lint" },
   { include-group = "typing" },
   { include-group = "test" },
+  { include-group = "man" },
   { include-group = "docs" },
 ]
 
 [build-system]
 # uv build complains if no upper bound is set, but it updates its minor versions often, so we put a major version just to shut it up
 requires = ["uv_build (>=0.10, <1)"]
-build-backend = "uv_build"
+build-backend = "helpers.build_backend"
+backend-path = ["src"]
 
 # uv
 [tool.uv]
 resolution = "lowest-direct"
+
+[tool.uv.build-backend]
+source-include = ["CHANGELOG.md", "src/helpers/*", "docs/examples.man"]
+source-exclude = ["dist"]
+data = { data = "dist/data" }
 
 # tox
 [tool.tox]
@@ -121,7 +135,7 @@ ignore = [
 
 # mypy
 [tool.mypy]
-packages = ["dpsprep"]
+packages = ["dpsprep", "helpers"]
 strict_bytes = false
 
 [[tool.mypy.overrides]]
@@ -130,5 +144,6 @@ module = [
   "djvu.*",
   "ocrmypdf.*",
   "pdfrw.*",
+  "uv_build.*",
 ]
 ignore_missing_imports = true

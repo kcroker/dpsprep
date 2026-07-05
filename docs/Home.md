@@ -1,6 +1,6 @@
 # dpsprep docs
 
-This wiki hosts the project's [man page](./dpsprep.1.md).
+This wiki hosts the project's [man page](./dpsprep.1).
 
 It also has some implementation details:
 

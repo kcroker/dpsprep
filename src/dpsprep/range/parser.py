@@ -41,7 +41,6 @@ class RangeOptionParser(Generic[T]):
 
         return f'after {self.source[:self.index]!r}'
 
-
     def create_unexpected_end_error(self) -> DpsPrepParseError:
         if self.source == '':
             return DpsPrepParseError('Empty input')

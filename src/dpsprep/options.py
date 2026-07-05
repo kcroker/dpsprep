@@ -126,7 +126,6 @@ class ImageModeOverridesClickType(click.ParamType):
             self.fail(str(err), param, ctx)
 
 
-
 class DpiOverridesClickType(click.ParamType):
     name = 'comma-separated integers with page ranges'
 

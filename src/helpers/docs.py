@@ -27,7 +27,8 @@ def build_man_page() -> None:
     ctx = click.Context(dpsprep, info_name=dpsprep.name)
     man_page = generate_man_page(ctx, version=version, date=date_str)
 
-    with open('docs/dpsprep.1', 'w') as man_file, open('docs/examples.man') as example_file:
+    # ruff: ignore[read-whole-file]
+    with open('docs/dpsprep.1', 'w', encoding='utf-8') as man_file, open('docs/examples.man', encoding='utf-8') as example_file:
         man_file.write(man_page)
         man_file.write(example_file.read())
 
@@ -41,16 +42,17 @@ def build_man_md() -> None:
     )
 
     # The replacement patterns are based on https://stackoverflow.com/a/78367016/2756776
+    # ruff: ignore[unraw-re-pattern]
     unescaped = re.sub('\x1B\\[[0-9;]*[JKmsu]', '', proc.stdout)
 
-    with open('docs/dpsprep.1.md', 'w') as file:
+    with open('docs/dpsprep.1.md', 'w', encoding='utf-8') as file:
         for line in unescaped.splitlines(keepends=True):
             file.write('    ')
             file.write(line)
 
 
 def extract_version_and_date_from_changelog() -> tuple[str, str]:
-    with open(ROOT / 'CHANGELOG.md') as file:
+    with open(ROOT / 'CHANGELOG.md', encoding='utf-8') as file:
         for line in file:
             if match := re.match(r'## (?P<version>[^\s]+) - (?P<date>[\d-]+)', line):
                 return match.group('version'), match.group('date')

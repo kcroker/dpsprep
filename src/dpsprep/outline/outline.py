@@ -30,11 +30,11 @@ class OutlineTransformVisitor(SExpressionVisitor[PdfDict]):
             title_text = str(title)
 
         bookmark = IndirectPdfDict(
-            Parent = parent,
-            Title = title_text,
-            A = PdfDict(
-                D = [page_number, PdfName.Fit],
-                S = PdfName.GoTo,
+            Parent=parent,
+            Title=title_text,
+            A=PdfDict(
+                D=[page_number, PdfName.Fit],
+                S=PdfName.GoTo,
             ),
         )
 

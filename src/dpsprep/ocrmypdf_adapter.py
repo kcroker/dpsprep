@@ -1,10 +1,10 @@
+# ruff: file-ignore[import-outside-top-level]
+
 # We use OCRmyPDF in a non-canonical way: only optimize the file without performing any OCR.
 # The optimization procedure provides good results and preserves the text layer and outline.
 # The code here is based on
 #   https://github.com/ocrmypdf/OCRmyPDF/blob/fb006ef39f7f8842dec1976bebe4bcd5ca2e8df8/src/ocrmypdf/optimize.py#L724
 # with some simplifications for OCRmyPDF 17
-
-# ruff: noqa: PLC0415
 
 import logging
 import shutil
@@ -21,11 +21,13 @@ def run_ocrmypdf_optimizer(options: DpsPrepOptions) -> bool:
 
     try:
         # ObjectStreamMode is actually from pikepdf, but I did not want to include that as a dependency
+        # ruff: ignore[import-private-name]
         from ocrmypdf._options import OcrOptions
         from ocrmypdf.optimize import ObjectStreamMode, PdfContext, optimize
         from ocrmypdf.pdfinfo import PdfInfo
     except ImportError:
-        logger.error('Cannot detect OCRmyPDF. No optimizations will be performed on the output file.')  # noqa: TRY400
+        # ruff: ignore[error-instead-of-exception]
+        logger.error('Cannot import OCRmyPDF. No optimizations will be performed on the output file.')
         return False
 
     quality = options.quality_overrides.get_global_value()
@@ -63,7 +65,8 @@ def perform_ocr(options: DpsPrepOptions) -> bool:
     try:
         from ocrmypdf import api
     except ImportError:
-        logger.error('Cannot detect OCRmyPDF. No OCR will be performed on the output file.')  # noqa: TRY400
+        # ruff: ignore[error-instead-of-exception]
+        logger.error('Cannot import OCRmyPDF. No OCR will be performed on the output file.')
         return False
 
     try:

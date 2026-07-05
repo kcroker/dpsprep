@@ -57,7 +57,8 @@ def test_invalid_utf8() -> None:
 
     # djvulibre cannot decode the first word
     with pytest.raises(UnicodeDecodeError):
-        first_word_sexpr.value  # noqa: B018
+        # ruff: ignore[useless-expression]
+        first_word_sexpr.value
 
     first_word = TextExtractVisitor().visit(first_word_sexpr)
     assert first_word == ''

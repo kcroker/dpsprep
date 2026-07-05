@@ -72,11 +72,13 @@ class SubprocessDocumentProcessor:
             self.pool.close()
 
             while not self.rich_progress.finished:
+                # ruff: ignore[too-many-statements-in-try-clause]
                 try:
                     if self.parent_conn.poll(0.1):
                         match data := self.parent_conn.recv():
                             case ExceptionWorkerMessage():
-                                raise DpsPrepConcurrencyError('Worker error') from data.error  # noqa: TRY301
+                                # ruff: ignore[raise-within-try]
+                                raise DpsPrepConcurrencyError('Worker error') from data.error
 
                             case LogRecordWorkerMessage():
                                 logger.handle(data.record)

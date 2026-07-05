@@ -1,4 +1,4 @@
-# ruff: noqa: RUF059
+# ruff: file-ignore[no-self-use, unused-unpacked-variable]
 
 import logging
 import unicodedata
@@ -57,7 +57,8 @@ class TextExtractVisitor(SExpressionVisitor[str]):
         else:
             return ''.join(self.iter_chars(string))
 
-    def visit_plain_list(self, node: djvu.sexpr.ListExpression) -> str:  # noqa: ARG002
+    # ruff: ignore[unused-method-argument]
+    def visit_plain_list(self, node: djvu.sexpr.ListExpression) -> str:
         return ''
 
     def visit_list_word(self, node: djvu.sexpr.ListExpression) -> str | None:
@@ -89,7 +90,8 @@ class TextDrawVisitor(SExpressionVisitor):
         self.dpi = dpi
         self.extractor = TextExtractVisitor()
 
-    def draw_text(self, x1: int, x2: int, y1: int, y2: int, text: str) -> None:  # noqa: ARG002
+    # ruff: ignore[unused-method-argument]
+    def draw_text(self, x1: int, x2: int, y1: int, y2: int, text: str) -> None:
         page_width, page_height = self.pdf.pages[self.pdf.page].dimensions()
 
         if page_height is None:

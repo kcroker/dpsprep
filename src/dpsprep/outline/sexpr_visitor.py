@@ -1,3 +1,5 @@
+# ruff: file-ignore[no-self-use]
+
 import logging
 from typing import Generic, TypeVar
 
@@ -22,7 +24,8 @@ class SExpressionVisitor(Generic[R]):
         logger.warning("Don't know how to visit a plain ListExpression.")
         return None
 
-    def visit_other(self, node: djvu.sexpr.Expression, **kwargs: T) -> R | None:  # noqa: ARG002
+    # ruff: ignore[unused-method-argument]
+    def visit_other(self, node: djvu.sexpr.Expression, **kwargs: T) -> R | None:
         logger.warning(f"Don't know how to visit S-expression type {type(node)!r}.")
         return None
 

@@ -103,7 +103,7 @@ backend-path = ["src"]
 resolution = "lowest-direct"
 
 [tool.uv.build-backend]
-source-include = ["CHANGELOG.md", "src/helpers/*", "docs/examples.man"]
+source-include = ["CHANGELOG.md", "src/helpers/*", "docs/examples.man", "fixtures/*"]
 source-exclude = ["dist"]
 data = { data = "dist/data" }
 

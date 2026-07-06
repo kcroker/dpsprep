@@ -13,8 +13,5 @@ args = [
   { name = "path", positional = true, default = "" }
 ]
 
-[tasks.build-docs]
-sequence = [
-  { script = "src.helpers.docs:build_man_page" },
-  { script = "src.helpers.docs:build_man_md" },
-]
+[tasks.docs]
+script = "src.helpers.docs_cli"

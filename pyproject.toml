@@ -77,13 +77,12 @@ man = [
 ]
 
 docs = [
-  "click-man (>=0.5.1)",
-  "poethepoet (>=0.42)",
   { include-group = "man" },
 ]
 
 dev = [
   "dpsprep[all] (>=0.0.0)",
+  "poethepoet (>=0.42)",
   "tox (>=4.50)",
   { include-group = "lint" },
   { include-group = "typing" },

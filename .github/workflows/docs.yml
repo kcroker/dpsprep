@@ -24,7 +24,7 @@ jobs:
 
     - name: Build docs
       run: |
-        uv run --no-sync poe build-docs
+        uv run --no-sync --module src.helpers.docs_cli build-dynamic-docs
         mkdir .github/wiki
         cp --recursive docs/*.md docs/screenshots .github/wiki
 

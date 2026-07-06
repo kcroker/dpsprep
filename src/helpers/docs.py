@@ -1,5 +1,7 @@
+import io
 import re
 import subprocess
+from typing import TextIO
 
 import click
 from click_man.core import generate_man_page
@@ -9,7 +11,7 @@ from dpsprep.cli import dpsprep
 from .paths import MAN_FILE, ROOT
 
 
-def build_man_page() -> None:
+def write_man_page(sink: TextIO) -> None:
     """Build a man page using click-man.
 
     We invoke `write_man_page` programmatically because CLI usage requires `dpsprep` to be installed
@@ -20,25 +22,30 @@ def build_man_page() -> None:
 
     [1]: https://github.com/click-contrib/click-man/pull/76
     """
-    MAN_FILE.parent.mkdir(parents=True, exist_ok=True)
-
     version, date_str = extract_version_and_date_from_changelog()
     ctx = click.Context(dpsprep, info_name=dpsprep.name)
     man_page = generate_man_page(ctx, version=version, date=date_str)
+    examples = ROOT.joinpath('docs', 'examples.man').read_text(encoding='utf-8')
 
-    with (
-        open(MAN_FILE, 'w', encoding='utf-8') as man_file,
-        # ruff: ignore[read-whole-file]
-        open(ROOT / 'docs' / 'examples.man', encoding='utf-8') as example_file,
-    ):
-        man_file.write(man_page)
-        man_file.write(example_file.read())
+    sink.write(man_page)
+    sink.write(examples)
 
 
-def build_man_md() -> None:
+def build_man_page() -> None:
+    MAN_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+    with open(MAN_FILE, 'w', encoding='utf-8') as man_file:
+        write_man_page(man_file)
+
+
+def write_man_md(sink: TextIO) -> None:
+    buffer = io.StringIO()
+    write_man_page(buffer)
+
     proc = subprocess.run(
-        ['groff', '-mandoc', '-Tutf8', '-rLL=100n', MAN_FILE.as_posix()],
+        ['groff', '-mandoc', '-Tutf8', '-rLL=100n'],
         stdout=subprocess.PIPE,
+        input=buffer.getvalue(),
         encoding='utf-8',
         check=True,
     )
@@ -47,10 +54,14 @@ def build_man_md() -> None:
     # ruff: ignore[unraw-re-pattern]
     unescaped = re.sub('\x1B\\[[0-9;]*[JKmsu]', '', proc.stdout)
 
+    for line in unescaped.splitlines(keepends=True):
+        sink.write('    ')
+        sink.write(line)
+
+
+def build_man_md() -> None:
     with open(ROOT / 'docs' / 'dpsprep.1.md', 'w', encoding='utf-8') as file:
-        for line in unescaped.splitlines(keepends=True):
-            file.write('    ')
-            file.write(line)
+        write_man_md(file)
 
 
 def extract_version_and_date_from_changelog() -> tuple[str, str]:

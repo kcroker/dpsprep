@@ -1,0 +1,45 @@
+version = 1
+
+[[annotations]]
+path = [
+  "**/.gitattributes",
+  ".github/**.yml",
+  ".gitignore",
+  ".python-version",
+  "fixtures/lipsum.tex",
+  "fixtures/Makefile",
+  "poe_tasks.toml",
+  "pyproject.toml",
+  "REUSE.toml",
+  "src/**.py",
+
+  # It seems appropriate to license the documentation separately, but software projects tend not to do that.
+  "**/README.md",
+  "CHANGELOG.md",
+  "docs/**.md",
+  "docs/examples.man",
+  "docs/README.markdown",
+]
+SPDX-FileCopyrightText = "Copyright © 2015-2026 Kevin Croker, Ianis Vasilev <ianis@ivasilev.net> and contributors"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+# The REUSE documentation suggests licensing generated files under CC0-1.0 with NONE as author.
+# https://reuse.software/faq/#exclude-file
+[[annotations]]
+path = [
+  "docs/screenshots/*.png",
+  "fixtures/*",
+  "uv.lock",
+]
+SPDX-FileCopyrightText = "NONE"
+SPDX-License-Identifier = "CC0-1.0"
+
+# The particular invisible font is taken from a page of a person who identified as vedaal.
+# They claimed that 'Invisible font' is unrestricted freeware, so CC0 seems fitting.
+# See <https://web.archive.org/web/20230926193617/https://www.angelfire.com/pr/pgpf/if.html>
+[[annotations]]
+path = [
+  "src/dpsprep/invisible1.ttf",
+]
+SPDX-FileCopyrightText = "vedaal <vedaal@gmail.com>"
+SPDX-License-Identifier = "CC0-1.0"

@@ -9,7 +9,7 @@ authors = [
   { name = "Ianis Vasilev", email = "ianis@ivasilev.net" }
 ]
 license = "GPL-3.0-or-later"
-license-files = ["LICENSE"]
+license-files = ["LICENSES/GPL-3.0-or-later.txt"]
 
 dependencies = [
   "click (>=8)",

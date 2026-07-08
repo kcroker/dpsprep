@@ -8,8 +8,8 @@ authors = [
   { name = "Kevin Arthur Schiff Croker" },
   { name = "Ianis Vasilev", email = "ianis@ivasilev.net" }
 ]
-license = "GPL-3.0-or-later"
-license-files = ["LICENSES/GPL-3.0-or-later.txt"]
+license = "GPL-3.0-or-later and CC0-1.0"
+license-files = ["LICENSES/GPL-3.0-or-later.txt", "LICENSES/CC0-1.0.txt"]
 
 dependencies = [
   "click (>=8)",
@@ -102,7 +102,7 @@ backend-path = ["src"]
 resolution = "lowest-direct"
 
 [tool.uv.build-backend]
-source-include = ["CHANGELOG.md", "src/helpers/*", "docs/examples.man", "fixtures/*"]
+source-include = ["CHANGELOG.md", "REUSE.toml", "src/helpers/*", "docs/examples.man", "fixtures/*"]
 source-exclude = ["dist"]
 data = { data = "dist/data" }
 

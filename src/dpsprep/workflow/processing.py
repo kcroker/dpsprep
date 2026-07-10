@@ -1,4 +1,5 @@
 import logging
+from collections.abc import Callable
 from time import time
 
 import djvu.decode
@@ -47,7 +48,11 @@ def process_page_bg(options: DpsPrepOptions, document: djvu.decode.Document, i: 
     logger.debug(message)
 
 
-def process_text(options: DpsPrepOptions, document: djvu.decode.Document) -> None:
+def process_text(
+    options: DpsPrepOptions,
+    document: djvu.decode.Document,
+    callback: Callable[[int], None] | None = None,
+) -> None:
     if options.workdir.text_layer_pdf_path.exists():
         logger.info('Text data already processed.')
         return
@@ -55,7 +60,7 @@ def process_text(options: DpsPrepOptions, document: djvu.decode.Document) -> Non
     logger.debug('Processing text data.')
 
     start_time = time()
-    fpdf = extract_text_as_fpdf(document, options)
+    fpdf = extract_text_as_fpdf(document, options, callback)
     fpdf.output(str(options.workdir.text_layer_pdf_path))
 
     pdf_size = options.workdir.text_layer_pdf_path.stat().st_size

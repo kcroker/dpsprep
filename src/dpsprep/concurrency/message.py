@@ -1,3 +1,4 @@
+import enum
 import logging
 from dataclasses import dataclass
 
@@ -12,9 +13,15 @@ class LogRecordWorkerMessage:
     record: logging.LogRecord
 
 
+class TaskDoneType(enum.IntEnum):
+    TEXT = enum.auto()
+    IMAGE = enum.auto()
+
+
 @dataclass(frozen=True)
 class TaskDoneWorkerMessage:
-    pass
+    type: TaskDoneType
+    page: int
 
 
 WorkerMessage = ExceptionWorkerMessage | LogRecordWorkerMessage | TaskDoneWorkerMessage

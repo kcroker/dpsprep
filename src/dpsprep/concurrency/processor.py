@@ -9,7 +9,13 @@ from typing import TYPE_CHECKING
 import djvu.decode
 from rich.progress import Progress, TaskID
 
-from dpsprep.concurrency.message import ExceptionWorkerMessage, LogRecordWorkerMessage, TaskDoneWorkerMessage
+from dpsprep.concurrency.counter import PageCounter
+from dpsprep.concurrency.message import (
+    ExceptionWorkerMessage,
+    LogRecordWorkerMessage,
+    TaskDoneType,
+    TaskDoneWorkerMessage,
+)
 from dpsprep.exceptions import DpsPrepConcurrencyError
 from dpsprep.options import DpsPrepOptions
 
@@ -25,7 +31,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class SubprocessDocumentProcessor:
+class SubprocessPageProcessor:
     options: DpsPrepOptions
     document: djvu.decode.Document
 
@@ -43,20 +49,20 @@ class SubprocessDocumentProcessor:
         self.parent_conn, self.child_conn = multiprocessing.Pipe()
         self.pool = Pool(processes=self.options.pool_size)
 
-        self.rich_progress = Progress()
-        self.rich_task = self.rich_progress.add_task('Processing', total=len(document.pages) + 1)
-
-        self.active_tasks = 0
-
     def on_child_error(self, err: BaseException | None) -> None:
         if err:
             logger.exception('Worker error.', exc_info=err)
             self.child_conn.send(ExceptionWorkerMessage(err))
 
+    # ruff: ignore[complex-structure]
     def process(self) -> None:
         worker = SubprocessWorker(self.options, self.child_conn)
+        counter = PageCounter(len(self.document.pages))
 
-        with self.rich_progress:
+        rich_progress = Progress()
+        rich_task = rich_progress.add_task('Processing pages', total=counter.total)
+
+        with rich_progress:
             if not self.options.no_text:
                 self.pool.apply_async(
                     worker.process_text,
@@ -71,20 +77,28 @@ class SubprocessDocumentProcessor:
 
             self.pool.close()
 
-            while not self.rich_progress.finished:
+            while not rich_progress.finished:
                 # ruff: ignore[too-many-statements-in-try-clause]
                 try:
                     if self.parent_conn.poll(0.1):
-                        match data := self.parent_conn.recv():
+                        match message := self.parent_conn.recv():
                             case ExceptionWorkerMessage():
                                 # ruff: ignore[raise-within-try]
-                                raise DpsPrepConcurrencyError('Worker error') from data.error
+                                raise DpsPrepConcurrencyError('Worker error') from message.error
 
                             case LogRecordWorkerMessage():
-                                logger.handle(data.record)
+                                logger.handle(message.record)
 
                             case TaskDoneWorkerMessage():
-                                self.rich_progress.advance(self.rich_task)
+                                match message.type:
+                                    case TaskDoneType.IMAGE:
+                                        counter.images[message.page] = True
+
+                                    case TaskDoneType.TEXT:
+                                        counter.text[message.page] = True
+
+                                if counter.images[message.page] and counter.text[message.page]:
+                                    rich_progress.advance(rich_task)
 
                 except KeyboardInterrupt:
                     logger.info('Conversion interrupted. Terminating all workers.')

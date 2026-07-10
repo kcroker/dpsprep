@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+* Improve the progress indicator by synchronizing image and text operations.
 * Add missing trove classifier for Python 3.11.
 
 ## 2.8.1 - 2026-07-05

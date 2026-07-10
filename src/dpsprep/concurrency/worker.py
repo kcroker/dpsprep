@@ -7,7 +7,7 @@ import djvu.decode
 from dpsprep.options import DpsPrepOptions
 from dpsprep.workflow.processing import process_page_bg, process_text
 
-from .message import LogRecordWorkerMessage, TaskDoneWorkerMessage, WorkerMessage
+from .message import LogRecordWorkerMessage, TaskDoneType, TaskDoneWorkerMessage, WorkerMessage
 
 
 if TYPE_CHECKING:
@@ -56,8 +56,12 @@ class SubprocessWorker:
         )
         document.decoding_job.wait()
 
-        process_text(self.options, document)
-        self.child_conn.send(TaskDoneWorkerMessage())
+        def callback(page: int) -> None:
+            self.child_conn.send(
+                TaskDoneWorkerMessage(TaskDoneType.TEXT, page),
+            )
+
+        process_text(self.options, document, callback)
 
     def process_page_bg(self, worker_id: int) -> None:
         self.setup_child_process()
@@ -70,4 +74,6 @@ class SubprocessWorker:
 
         for i in range(worker_id, len(document.pages), self.options.pool_size):
             process_page_bg(self.options, document, i)
-            self.child_conn.send(TaskDoneWorkerMessage())
+            self.child_conn.send(
+                TaskDoneWorkerMessage(TaskDoneType.IMAGE, i),
+            )

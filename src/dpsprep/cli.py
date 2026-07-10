@@ -6,7 +6,7 @@ from time import time
 import click
 import djvu.decode
 
-from dpsprep.concurrency import concurrently_process_document
+from dpsprep.concurrency import concurrently_process_pages
 from dpsprep.exceptions import DpsPrepConcurrencyError
 from dpsprep.logging import configure_logging, human_readable_size
 from dpsprep.options import (
@@ -131,7 +131,7 @@ def dpsprep(
     djvu_size = workdir.src.stat().st_size
 
     try:
-        concurrently_process_document(options, document)
+        concurrently_process_pages(options, document)
     except DpsPrepConcurrencyError:
         # We assume that the actual error has been logged, so we ignore its message.
         ctx.abort()

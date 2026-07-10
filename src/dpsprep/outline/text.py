@@ -1,9 +1,9 @@
 # ruff: file-ignore[no-self-use, unused-unpacked-variable]
 
+import importlib
 import logging
 import unicodedata
 from collections.abc import Iterable
-from pathlib import Path
 
 import djvu.decode
 import djvu.sexpr
@@ -170,11 +170,13 @@ class TextDrawVisitor(SExpressionVisitor):
 
 def extract_text_as_fpdf(document: djvu.decode.Document, options: DpsPrepOptions) -> FPDF:
     pdf = FPDF(unit='in')
-    pdf.add_font(
-        family='Invisible',
-        fname=Path(__file__).parent.parent.joinpath('invisible1.ttf').as_posix(),
-        style='',
-    )
+
+    with importlib.resources.path('dpsprep', 'invisible1.ttf') as fspath:
+        pdf.add_font(
+            family='Invisible',
+            fname=fspath.as_posix(),
+            style='',
+        )
 
     for i, page in enumerate(document.pages):
         page_job = page.decode(wait=True)

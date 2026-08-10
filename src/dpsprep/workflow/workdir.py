@@ -55,7 +55,7 @@ def initialize_workdir(
         logger.debug(f'Using custom temporary directory {tmp_root}.')
     elif os.name == 'posix' and os.access(PERSISTENT_TMP, os.W_OK | os.X_OK):
         tmp_root = PERSISTENT_TMP
-        logger.debug('Using non-ephemeral storage {PERSISTENT_TMP}.')
+        logger.debug(f'Using non-ephemeral storage {PERSISTENT_TMP}.')
     else:
         tmp_root = tempfile.gettempdir()
         logger.debug(f'Using default system storage {tmp_root}.')

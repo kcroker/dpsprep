@@ -168,6 +168,19 @@ class TextDrawVisitor(SExpressionVisitor):
     visit_list_page = visit_list_column
     visit_list_region = visit_list_column
 
+    def visit_plain_list(self, node: djvu.sexpr.ListExpression) -> None:
+        if len(node) == 0:
+            logger.debug('Ignoring empty list expression.')
+        else:
+            logger.debug(f'Ignoring unrecognized but nonempty list expression {node}.')
+
+    def visit_string(self, node: djvu.sexpr.StringExpression) -> None:
+        if len(node.value) == 0:
+            logger.debug('Ignoring empty string expression.')
+        else:
+            print(node.value)
+            logger.debug(f'Ignoring unrecognized but nonempty string expression {node.value}.')
+
 
 class TextExtractionTracker(Protocol):
     def mark_page_as_processed(self, i: int) -> None:

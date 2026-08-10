@@ -1,4 +1,4 @@
-name: Run tests
+name: Test
 
 on:
   push:
@@ -47,18 +47,12 @@ jobs:
     #     vcpkg install tiff
 
     - name: Setup uv
-      uses: astral-sh/setup-uv@v7
+      uses: astral-sh/setup-uv@v9.0.0
       with:
         python-version: ${{ matrix.python }}
 
     - name: Install dependencies
-      run: uv sync --frozen --group lint --group typing --group test --no-default-groups
-
-    - name: Lint
-      run: uv run --no-sync ruff check
-
-    - name: Typing
-      run: uv run --no-sync mypy
+      run: uv sync --frozen --group test --no-default-groups
 
     - name: Test
       run: uv run --no-sync pytest

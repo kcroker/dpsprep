@@ -33,6 +33,9 @@ def run_ocrmypdf_optimizer(options: DpsPrepOptions) -> bool:
     quality = options.quality_overrides.get_global_value()
     workdir = options.workdir
 
+    # Detect the OcrOptions JPEG quality key: was renamed in OCRmyPDF 17.10
+    jpg_quality_key = 'jpeg_quality' if 'jpeg_quality' in OcrOptions.model_fields else 'jpg_quality'
+
     omp_options = OcrOptions(
         input_file=workdir.combined_pdf_without_text_path,
         output_file=workdir.combined_pdf_path,
@@ -40,8 +43,8 @@ def run_ocrmypdf_optimizer(options: DpsPrepOptions) -> bool:
         jobs=options.pool_size,
         optimize=options.optlevel,
         # When set to 0, OCRmyPDF's "optimize" function attempts to adjust them
-        jpg_quality=quality or 0,
         png_quality=quality or 0,
+        **{jpg_quality_key: quality or 0},
     )
 
     info = PdfInfo(workdir.combined_pdf_path)

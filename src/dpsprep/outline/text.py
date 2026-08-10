@@ -3,7 +3,8 @@
 import importlib
 import logging
 import unicodedata
-from collections.abc import Callable, Iterable
+from collections.abc import Iterable
+from typing import Protocol
 
 import djvu.decode
 import djvu.sexpr
@@ -168,10 +169,18 @@ class TextDrawVisitor(SExpressionVisitor):
     visit_list_region = visit_list_column
 
 
+class TextExtractionTracker(Protocol):
+    def mark_page_as_processed(self, i: int) -> None:
+        ...
+
+    def mark_all_pages_as_processed(self) -> None:
+        ...
+
+
 def extract_text_as_fpdf(
     document: djvu.decode.Document,
     options: DpsPrepOptions,
-    callback: Callable[[int], None] | None = None,
+    tracker: TextExtractionTracker | None = None,
 ) -> FPDF:
     pdf = FPDF(unit='in')
 
@@ -194,7 +203,7 @@ def extract_text_as_fpdf(
         visitor = TextDrawVisitor(pdf, page_dpi)
         visitor.visit(page.text.sexpr)
 
-        if callback:
-            callback(i)
+        if tracker:
+            tracker.mark_page_as_processed(i)
 
     return pdf

@@ -1,5 +1,4 @@
 import logging
-from collections.abc import Callable
 from time import time
 
 import djvu.decode
@@ -8,6 +7,7 @@ from dpsprep.images import failsafe_save_djvu_page, process_djvu_page
 from dpsprep.logging import human_readable_size
 from dpsprep.options import DEFAULT_IMAGE_MODE, DpsPrepOptions
 from dpsprep.outline import extract_text_as_fpdf
+from dpsprep.outline.text import TextExtractionTracker
 from dpsprep.pdf import is_valid_pdf
 
 
@@ -51,16 +51,20 @@ def process_page_bg(options: DpsPrepOptions, document: djvu.decode.Document, i: 
 def process_text(
     options: DpsPrepOptions,
     document: djvu.decode.Document,
-    callback: Callable[[int], None] | None = None,
+    tracker: TextExtractionTracker | None = None,
 ) -> None:
     if options.workdir.text_layer_pdf_path.exists():
         logger.info('Text data already processed.')
+
+        if tracker:
+            tracker.mark_all_pages_as_processed()
+
         return
 
     logger.debug('Processing text data.')
 
     start_time = time()
-    fpdf = extract_text_as_fpdf(document, options, callback)
+    fpdf = extract_text_as_fpdf(document, options, tracker)
     fpdf.output(str(options.workdir.text_layer_pdf_path))
 
     pdf_size = options.workdir.text_layer_pdf_path.stat().st_size

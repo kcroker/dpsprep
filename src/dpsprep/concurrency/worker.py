@@ -5,9 +5,16 @@ from typing import TYPE_CHECKING
 import djvu.decode
 
 from dpsprep.options import DpsPrepOptions
-from dpsprep.workflow.processing import process_page_bg, process_text
+from dpsprep.outline import TextExtractionTracker
+from dpsprep.workflow import process_page_bg, process_text
 
-from .message import LogRecordWorkerMessage, TaskDoneType, TaskDoneWorkerMessage, WorkerMessage
+from .message import (
+    ImagePageProcessedMessage,
+    LogRecordWorkerMessage,
+    TextLayerAlreadyProcessedMessage,
+    TextPageProcessedMessage,
+    WorkerMessage,
+)
 
 
 if TYPE_CHECKING:
@@ -26,6 +33,23 @@ class SubprocessWorkerLoggerHandler(logging.Handler):
 
     def emit(self, record: logging.LogRecord) -> None:
         self.conn.send(LogRecordWorkerMessage(record))
+
+
+class SubprocessTextExtractionTracker(TextExtractionTracker):
+    child_conn: 'Connection[WorkerMessage]'
+
+    def __init__(self, child_conn: 'Connection[WorkerMessage]') -> None:
+        self.child_conn = child_conn
+
+    def mark_page_as_processed(self, page: int) -> None:
+        self.child_conn.send(
+            TextPageProcessedMessage(page),
+        )
+
+    def mark_all_pages_as_processed(self) -> None:
+        self.child_conn.send(
+            TextLayerAlreadyProcessedMessage(),
+        )
 
 
 class SubprocessWorker:
@@ -56,12 +80,8 @@ class SubprocessWorker:
         )
         document.decoding_job.wait()
 
-        def callback(page: int) -> None:
-            self.child_conn.send(
-                TaskDoneWorkerMessage(TaskDoneType.TEXT, page),
-            )
-
-        process_text(self.options, document, callback)
+        tracker = SubprocessTextExtractionTracker(self.child_conn)
+        process_text(self.options, document, tracker)
 
     def process_page_bg(self, worker_id: int) -> None:
         self.setup_child_process()
@@ -75,5 +95,5 @@ class SubprocessWorker:
         for i in range(worker_id, len(document.pages), self.options.pool_size):
             process_page_bg(self.options, document, i)
             self.child_conn.send(
-                TaskDoneWorkerMessage(TaskDoneType.IMAGE, i),
+                ImagePageProcessedMessage(i),
             )

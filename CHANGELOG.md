@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+* Fix bug where a processed text layer would block the program.
 * Fix logging of working directory.
 
 ## 2.8.2 - 2026-07-23

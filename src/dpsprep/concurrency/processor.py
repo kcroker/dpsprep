@@ -9,16 +9,17 @@ from typing import TYPE_CHECKING
 import djvu.decode
 from rich.progress import Progress, TaskID
 
-from dpsprep.concurrency.counter import PageCounter
-from dpsprep.concurrency.message import (
-    ExceptionWorkerMessage,
-    LogRecordWorkerMessage,
-    TaskDoneType,
-    TaskDoneWorkerMessage,
-)
 from dpsprep.exceptions import DpsPrepConcurrencyError
 from dpsprep.options import DpsPrepOptions
 
+from .counter import PageCounter
+from .message import (
+    ExceptionWorkerMessage,
+    ImagePageProcessedMessage,
+    LogRecordWorkerMessage,
+    TextLayerAlreadyProcessedMessage,
+    TextPageProcessedMessage,
+)
 from .worker import SubprocessWorker
 
 
@@ -62,7 +63,7 @@ class SubprocessPageProcessor:
         rich_progress = Progress()
         rich_task = rich_progress.add_task('Processing pages', total=counter.total)
 
-        with rich_progress:
+        with rich_progress:  # ruff: ignore[too-many-nested-blocks]
             if not self.options.no_text:
                 self.pool.apply_async(
                     worker.process_text,
@@ -89,16 +90,24 @@ class SubprocessPageProcessor:
                             case LogRecordWorkerMessage():
                                 logger.handle(message.record)
 
-                            case TaskDoneWorkerMessage():
-                                match message.type:
-                                    case TaskDoneType.IMAGE:
-                                        counter.images[message.page] = True
+                            case ImagePageProcessedMessage():
+                                counter.images[message.page] = True
 
-                                    case TaskDoneType.TEXT:
-                                        counter.text[message.page] = True
-
-                                if counter.images[message.page] and counter.text[message.page]:
+                                if counter.text[message.page]:
                                     rich_progress.advance(rich_task)
+
+                            case TextPageProcessedMessage():
+                                counter.text[message.page] = True
+
+                                if counter.images[message.page]:
+                                    rich_progress.advance(rich_task)
+
+                            case TextLayerAlreadyProcessedMessage():
+                                for page in range(counter.total):
+                                    counter.text[page] = True
+
+                                    if counter.images[page]:
+                                        rich_progress.advance(rich_task)
 
                 except KeyboardInterrupt:
                     logger.info('Conversion interrupted. Terminating all workers.')

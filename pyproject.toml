@@ -143,7 +143,7 @@ strict_bytes = false
 module = [
   "click_man.*",
   "djvu.*",
-  "ocrmypdf.*",
+  #"ocrmypdf.*",
   "pdfrw.*",
   "uv_build.*",
 ]

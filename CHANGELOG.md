@@ -5,8 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 2.8.3 - 2026-08-12
 
+* Fix incompatibility with OCRmyPDF >= 0.17.10.
 * Improve logging of empty DjVu text structures.
 * Fix bug where a processed text layer would block the program.
 * Fix logging of working directory.

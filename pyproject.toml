@@ -5,10 +5,10 @@ description = "A DjVu to PDF converter"
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [
-  { name = "Kevin Arthur Schiff Croker" },
+  { name = "Kevin Croker" },
   { name = "Ianis Vasilev", email = "ianis@ivasilev.net" }
 ]
-license = "GPL-3.0-or-later and CC0-1.0"
+license = "GPL-3.0-or-later AND CC0-1.0"
 license-files = ["LICENSES/GPL-3.0-or-later.txt", "LICENSES/CC0-1.0.txt"]
 
 dependencies = [

@@ -40,9 +40,11 @@ def run_ocrmypdf_optimizer(options: DpsPrepOptions) -> bool:
         jobs=options.pool_size,
         optimize=options.optlevel,
         # When set to 0, OCRmyPDF's "optimize" function attempts to adjust them
-        jpg_quality=quality or 0,
         png_quality=quality or 0,
     )
+
+    # Set jpg_quality via attribute (backwards-compatible setter) rather than constructor kwarg, since the kwarg differs across OMP versions.
+    omp_options.jpg_quality = quality or 0
 
     info = PdfInfo(workdir.combined_pdf_path)
     context = PdfContext(omp_options, workdir.ocrmypdf_tmp_path, workdir.combined_pdf_path, info, None)
